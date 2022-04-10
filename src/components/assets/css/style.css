@@ -1,0 +1,99 @@
+
+.report-logo{
+    height: 100px;
+    width: 200px;
+    padding-top: 10px;
+}
+/* Navbar */
+.MuiAppBar-colorPrimary {
+    color: #000!important;
+    background-color: #FFFFFF!important;
+}
+.MuiListItemIcon-root {
+    padding-left: 10px!important;
+}
+.MuiPaper-elevation4 {
+    box-shadow: 0px 0px 0px 1px rgb(0 0 0 / 0%), 0px 0px 0px 0px rgb(0 0 0 / 0%), 0px 1px 0px 0px rgb(0 0 0 / 12%)!important;
+    
+}
+.hovereffects{
+    cursor: pointer!important;
+}
+*, *::before, *::after {
+    box-sizing: unset!important;
+}
+
+.MuiIconButton-edgeStart {
+    margin-left: -10px!important;
+}
+
+
+/* Navbar-End */
+/* Drawer */
+.MuiListItemIcon-root {
+    color: unset!important;
+}
+.title{
+    margin-right: 20px!important;
+    font-size: 15px;
+}
+.MuiListItem-gutters {
+    max-width: 208px!important;
+}
+.MuiList-padding {
+    padding-top: 0px!important;
+    padding-bottom: 0px!important;
+}
+/* Drawer-End */
+.capture-div{
+    margin: 15px;
+}
+.table-contant{
+    border: 1px solid black;
+    border-collapse: collapse;;
+    width: 96%;
+    height: 25px;
+    text-align: left;
+    margin-top: 10px;
+}
+.table-contant-bottom{
+    border: 1px solid black;
+    border-collapse: collapse;;
+    width: 96%;
+    height: 25px;
+    text-align: left;
+}
+.table-head{
+    border: 1px solid black;
+    border-collapse: collapse;
+    height: 25px;
+    background-color: #E6E6E6;
+    font-weight: bold;
+    padding-left: 10px;
+}
+.table-head-center{
+    border: 1px solid black;
+    border-collapse: collapse;
+    height: 25px;
+    background-color: #E6E6E6;
+    font-weight: bold;
+    padding-left: 10px;
+    text-align: center!important;
+
+}
+.table-data{
+    border: 1px solid black;
+    border-collapse: collapse;
+    height: 25px;
+    padding-left: 10px;
+}
+.table-row{
+    height: 50px;
+}
+.test-prep{
+    height: 350px;
+}
+.text-ins{
+    font-weight: bold;
+}
+
