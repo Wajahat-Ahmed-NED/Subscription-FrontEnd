@@ -31,10 +31,7 @@ import Select from '@mui/material/Select';
 // import Button from '@mui/material/Button';
 // import { logout } from './dashboard';
 import { UserContext } from '../userContext';
-// import Modal from './modal';
-// import Newmodal from './newmodal';
-import Modall from './modal';
-import { WebEdit } from './webeditor';
+
 import { isJwtExpired } from 'jwt-check-expiration';
 import jwt from 'jsonwebtoken'
 import { useDispatch, useSelector } from 'react-redux';
@@ -50,6 +47,7 @@ import EditIcon from '@mui/icons-material/Edit';
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
 // import IconButton from '@mui/material/IconButton';
 import Tooltip from '@mui/material/Tooltip';
+import { getSubscriptions } from './api/subscriptionApi';
 
 
 
@@ -187,7 +185,7 @@ export default function ContactPage() {
                                                 'User Deleted Successfully',
                                                 'success',
                                         )
-                                        getData();
+                                        fetchData();
                                 }).catch(err => {
                                         console.log(err.message, "this error founnd")
                                         Swal.fire({
@@ -244,7 +242,7 @@ export default function ContactPage() {
                                 'Admin Created Successfully',
                                 'success',
                         )
-                        getData();
+                        fetchData();
                 }).catch(err => {
                         console.log(err, "this error founnd")
                         Swal.fire({
@@ -276,26 +274,18 @@ export default function ContactPage() {
 
 
         const [data, setData] = useState([])
-        const getData = async () => {
-                console.log("getData")
-                const api = `http://localhost:5000/admin/getSubscriptions`
-                await axios.get(api, {
-                        headers: {
-                                Authorization: `Bearer ${accessToken}`,
-                        }
-                })
-                        .then(json => {
-                                setData(json.data)
-                                console.log(json.data)
-                        })
-                        .catch(err => {
-                                console.log(err)
-                        })
+        const fetchData = () => {
+                getSubscriptions().then((json) => {
+                        setData(json.data.data)
+                        console.log(json.data.data)
+                }).catch((err) => console.log(err))
         }
+
         useEffect(() => {
-                getData()
-                var adminToken = localStorage.getItem("admin")
-                adminToken && setAccessToken(JSON.parse(adminToken)?.tokens?.accessToken)
+                let adminToken = localStorage.getItem("admin")
+                !adminToken && history.push("/")
+
+                fetchData()
         }, [])
         console.log(accessToken)
 
@@ -354,7 +344,7 @@ export default function ContactPage() {
                                         'user Edited Successfully',
                                         'success',
                                 )
-                                getData();
+                                fetchData();
                         }).catch(err => {
 
 
@@ -382,7 +372,7 @@ export default function ContactPage() {
                                         'user Edited Successfully',
                                         'success',
                                 )
-                                getData();
+                                fetchData();
                         }).catch(err => {
 
 
@@ -428,7 +418,7 @@ export default function ContactPage() {
                         ).then((e) => {
 
                         })
-                        getData();
+                        fetchData();
                 }).catch(err => {
                         setOpen(false);
 
@@ -462,7 +452,7 @@ export default function ContactPage() {
                         {/* <button className='btn btn-primary' onClick={handleUpdate}>Bootstrap</button> */}
                         <div className="container d-flex justify-content-between my-0">
                                 <h1 className='text-center mb-5'> Subscriptions Details</h1>
-                                {/* <Button className="ms-auto me-3 my-3" onClick={getData} size='small' style={{ backgroundColor: 'darkCyan' }} variant="contained">Get Data</Button> */}
+                                {/* <Button className="ms-auto me-3 my-3" onClick={fetchData} size='small' style={{ backgroundColor: 'darkCyan' }} variant="contained">Get Data</Button> */}
                                 {/* <Button className=" mb-5 me-3 " onClick={handleOpen} size='sm' style={{ backgroundColor: 'darkCyan', fontSize: "bolder" }} variant="contained">Create user <AddIcon /></Button> */}
 
 
@@ -489,7 +479,7 @@ export default function ContactPage() {
                                                         {/* /* {isJwtExpired && rows && Array.isArray(rows) && rows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage) */}
                                                         {
 
-                                                                data?.map((e, i) => {
+                                                                data?.[0]?.map((e, i) => {
                                                                         return (
                                                                                 <>
                                                                                         <TableRow hover={true}>
@@ -517,17 +507,13 @@ export default function ContactPage() {
                                 />
 
 
-                                {/* <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
-</div> */}
-                                {/* <!-- Button trigger modal --> */}
-
                         </Paper>
                         <div className="container d-flex justify-content-between mt-5">
                                 <h1 className='text-center mb-5'> Search By SubscriptionID</h1>
                                 <FormControl variant="standard" sx={{ m: 1, minWidth: 200 }}>
                                         <InputLabel id="demo-simple-select-standard-label">Subscription ID</InputLabel>
                                         <Select
-                                                // width='auto'
+
                                                 size='small'
                                                 labelId="demo-simple-select-standard-label"
                                                 id="demo-simple-select-standard"
@@ -539,15 +525,12 @@ export default function ContactPage() {
                                                         <em>None</em>
                                                 </MenuItem>
                                                 {
-                                                        data?.map((e, i) => <MenuItem value={e.PKSubscriptionId}>{e.PKSubscriptionId}</MenuItem>)
+                                                        data[0]?.map((e, i) => <MenuItem value={e.PKSubscriptionId}>{e.PKSubscriptionId}</MenuItem>)
                                                 }
-                                                {/* <MenuItem value={10}>Ten</MenuItem>
-                        <MenuItem value={20}>Twenty</MenuItem>
-                        <MenuItem value={30}>Thirty</MenuItem> */}
+
                                         </Select>
                                 </FormControl>
-                                {/* <Button className="ms-auto me-3 my-3" onClick={getData} size='small' style={{ backgroundColor: 'darkCyan' }} variant="contained">Get Data</Button> */}
-                                <Button className=" mb-5 me-3 " onClick={() => setFilteredData(data?.filter((ev) => ev.PKSubscriptionId === id))} size='sm' style={{ backgroundColor: 'darkCyan', fontSize: "bolder" }} variant="contained">Search <SearchIcon /></Button>
+                                <Button className=" mb-5 me-3 " onClick={() => setFilteredData(data[0]?.filter((ev) => ev.PKSubscriptionId === id))} size='sm' style={{ backgroundColor: 'darkCyan', fontSize: "bolder" }} variant="contained">Search <SearchIcon /></Button>
 
 
                         </div>

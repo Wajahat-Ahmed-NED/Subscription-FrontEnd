@@ -1,12 +1,10 @@
 import React, { useState, useMemo, useEffect } from 'react'
-import Allcustomers from './components/allcustomers';
+
 import Dashboard from './components/dashboard';
 import Login from './components/login';
-import WebEdit from './components/webeditor';
 import AppRouter from './router/router';
-import Renewtoken from './components/renewtoken';
 import { UserContext } from './userContext';
-import Newmodal from './components/newmodal';
+
 import ClassicEditor from "@ckeditor/ckeditor5-build-classic"
 // import CKEditor from "@ckeditor/ckeditor5-react"
 import { Provider } from 'react-redux';

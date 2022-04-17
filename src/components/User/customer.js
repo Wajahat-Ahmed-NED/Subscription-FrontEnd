@@ -373,7 +373,7 @@ export default function UserCustomer() {
                                                         onChange={(e) => setSubsId(e.target.value)} />
                                         </Grid>
                                         <Grid item xs={2}>
-                                                <Button className=" mb-5  " onClick={() => getData()} size='sm' style={{ backgroundColor: 'darkCyan', fontSize: "bolder" }} variant="contained">Search </Button>
+                                                <Button className=" mb-5 ms-3 " onClick={() => getData()} size='sm' style={{ backgroundColor: 'darkCyan', fontSize: "bolder" }} variant="contained">Search </Button>
 
                                         </Grid>
                                 </Grid>

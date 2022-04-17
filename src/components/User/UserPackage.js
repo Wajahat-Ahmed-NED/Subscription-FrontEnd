@@ -211,23 +211,16 @@ export default function UserPackage() {
 
 
                 let obj = {
-                        Email: email,
-                        FirstName: fname,
-                        LastName: lname,
-                        Username: user,
-                        Password: password,
-                        PhoneNumber: phone,
+                        PackageName: fname,
+                        PackageCost: lname,
+                        SubscriptionPeriod: email,
+
                 }
+                console.log(obj)
 
-                console.log(fname,
-                        lname,
-                        email,
-                        user,
-                        password,
-                        phone,
-                )
 
-                await axios.post('http://localhost:5000/admin/addAdmin', obj,
+
+                await axios.post('http://localhost:5000/user/addPackage', obj,
                         {
                                 headers: {
                                         Authorization: `Bearer ${accessToken}`,
@@ -281,8 +274,12 @@ export default function UserPackage() {
         const [data, setData] = useState([])
         const getData = async () => {
                 console.log("getData")
-                const api = `http://localhost:5000/admin/getAdmins`
-                await axios.get(api)
+                const api = `http://localhost:5000/user/userPackages`
+                await axios.get(api, {
+                        headers: {
+                                "Authorization": `Bearer ${accessToken}`
+                        }
+                })
                         .then(json => {
                                 setData(json.data)
                                 console.log(json.data)
@@ -391,14 +388,14 @@ export default function UserPackage() {
                 <>
                         {/* <button className='btn btn-primary' onClick={handleUpdate}>Bootstrap</button> */}
                         <div className="container d-flex justify-content-between my-0">
-                                <h1 className='text-center mb-5'> Admins Details</h1>
+                                <h1 className='text-center mb-5'> Package Details</h1>
                                 {
                                         error && <Alert variant="danger" onClose={() => setError(false)} dismissible>
                                                 <p className="text-center" style={{ fontWeight: 'bold' }}>Session Expired</p>
                                         </Alert>
                                 }
                                 {/* <Button className="ms-auto me-3 my-3" onClick={getData} size='small' style={{ backgroundColor: 'darkCyan' }} variant="contained">Get Data</Button> */}
-                                <Button className=" mb-5 me-3 " onClick={handleOpen} size='sm' style={{ backgroundColor: 'darkCyan', fontSize: "bolder" }} variant="contained">Create Admin <AddIcon /></Button>
+                                <Button className=" mb-5 me-3 " onClick={handleOpen} size='sm' style={{ backgroundColor: 'darkCyan', fontSize: "bolder" }} variant="contained">Add Package <AddIcon /></Button>
 
 
                         </div>
@@ -409,7 +406,7 @@ export default function UserPackage() {
                                 <div >
                                         <Dialog className="px-5" aria-labelledby="customized-dialog-title" open={open}>
                                                 <DialogTitle id="customized-dialog-title" className="mx-3" onClose={handleClose}>
-                                                        {!EditModal ? 'Create Admin' : 'Edit Admin Details'}
+                                                        {!EditModal ? 'Add Package' : 'Edit Admin Details'}
                                                 </DialogTitle>
                                                 <DialogContent dividers className='mx-3'>
                                                         <form className={classes.form} noValidate>
@@ -423,7 +420,7 @@ export default function UserPackage() {
                                                                                         required
                                                                                         fullWidth
                                                                                         name="text"
-                                                                                        label="First Name"
+                                                                                        label="Package Name"
                                                                                         type="text"
                                                                                         id="password"
                                                                                         value={fname}
@@ -436,8 +433,8 @@ export default function UserPackage() {
                                                                                         required
                                                                                         fullWidth
                                                                                         name="text"
-                                                                                        label="Last Name"
-                                                                                        type="text"
+                                                                                        label="Package Cost"
+                                                                                        type="number"
                                                                                         id="password"
                                                                                         value={lname}
                                                                                 />
@@ -449,61 +446,19 @@ export default function UserPackage() {
                                                                                         required
                                                                                         fullWidth
                                                                                         id="email"
-                                                                                        label="Email Address"
-                                                                                        name="email"
-                                                                                        autoComplete="email"
+                                                                                        label="Subscription Period"
+                                                                                        type="text"
+                                                                                        placeholder='Subscription period in months'
+                                                                                        // name="email"
+                                                                                        // autoComplete="email"
                                                                                         value={email}
                                                                                 />
                                                                         </Grid>
 
-                                                                        <Grid item xs={12}>
-                                                                                <TextField
-                                                                                        onChange={(e) => setUser(e.target.value)}
-                                                                                        variant="standard"
-                                                                                        required
-                                                                                        fullWidth
-                                                                                        name="text"
-                                                                                        label="Username"
-                                                                                        type="text"
-                                                                                        id="password"
 
-                                                                                        value={EditModal ? EditModal.Username : user}
-                                                                                // {user.length>0 && disabled}
-                                                                                />
-                                                                        </Grid>
-                                                                        {
-                                                                                !EditModal &&
 
-                                                                                <Grid item xs={12}>
-                                                                                        <TextField
-                                                                                                onChange={(e) => setPassword(e.target.value)}
-                                                                                                variant="standard"
-                                                                                                required
-                                                                                                fullWidth
-                                                                                                name="password"
-                                                                                                label="Password ( Length Should be > 8)"
-                                                                                                type="password"
-                                                                                                id="password"
-                                                                                                autoComplete="current-password"
 
-                                                                                        />
-                                                                                </Grid>
-                                                                        }
 
-                                                                        <Grid item xs={12}>
-                                                                                <TextField
-                                                                                        onChange={(e) => setPhone(e.target.value)}
-                                                                                        variant="standard"
-                                                                                        required
-                                                                                        fullWidth
-                                                                                        name="Phone No"
-                                                                                        label="Phone No (0300-XXXXXXX)"
-                                                                                        type="number"
-                                                                                        id="password"
-                                                                                        autoComplete="phoneNumber"
-                                                                                        value={phone}
-                                                                                />
-                                                                        </Grid>
                                                                         {/* <Grid item xs={12}>
                     <TextField
                       onChange={(e) => setCnic(e.target.value)}
@@ -524,7 +479,7 @@ export default function UserPackage() {
                                                         <Button fullWidth onClick={!EditModal ? (e) => { handleSubmit(e) } : (e) => { handleEditSubmit(e) }} variant="contained" style={{ backgroundColor: "darkcyan" }}>
                                                                 {
 
-                                                                        !EditModal ? 'Create Admin' : 'Edit Admin Details'
+                                                                        !EditModal ? 'Add Package' : 'Edit Admin Details'
                                                                 }
                                                         </Button>
                                                 </DialogActions>

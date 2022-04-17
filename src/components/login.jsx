@@ -3,7 +3,6 @@ import Avatar from '@material-ui/core/Avatar';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import TextField from '@material-ui/core/TextField';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
-import Checkbox from '@material-ui/core/Checkbox';
 import Grid from '@material-ui/core/Grid';
 import Box from '@material-ui/core/Box';
 import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
@@ -15,9 +14,10 @@ import './login.css'
 import { MDBBtn } from 'mdb-react-ui-kit';
 import RadioGroup from '@mui/material/RadioGroup';
 import Radio from '@mui/material/Radio';
-import { Link, useHistory } from "react-router-dom";
+import { useHistory } from "react-router-dom";
 import Alert from 'react-bootstrap/Alert'
 import Swal from 'sweetalert2';
+import api from './api/api';
 
 const useStyles = makeStyles((theme) => ({
   paper: {
@@ -41,7 +41,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function Login({ onClick }) {
+export default function Login() {
 
   const classes = useStyles();
   const [email, setEmail] = useState('');
@@ -52,8 +52,6 @@ export default function Login({ onClick }) {
   const history = useHistory()
 
 
-
-
   async function logginIn(e) {
     e.preventDefault()
 
@@ -62,13 +60,12 @@ export default function Login({ onClick }) {
       'Password': password,
     };
     if (user === 'Admin') {
-      await axios.post('http://localhost:5000/admin/adminSignIn', params)
+      await axios.post(`${api}admin/adminSignIn`, params)
         .then(async function (response) {
           console.log(response, 'asdasdasdjashshdjkashkdhaskjhvcv');
-          if (response.data.message !== 'Login Successful') {
-            console.log(response.data)
+          if (!response.data.success) {
             setError(true)
-            setData(response.data.message)
+            setData(response.message)
             return
           }
           Swal.fire(
@@ -82,16 +79,15 @@ export default function Login({ onClick }) {
 
         })
         .catch(function (error) {
-          // alert("Email or Password is incorrect")
           setError(true)
         });
 
     }
     else if (user == 'User') {
-      await axios.post('http://localhost:5000/user/userSignIn', params)
+      await axios.post(`${api}user/userSignIn`, params)
         .then(async function (response) {
           console.log(response, 'asdasdasdjashshdjkashkdhaskjhvcv');
-          if (response.data.message !== 'Login Succesful') {
+          if (!response.data.success) {
             console.log(response.data)
             setError(true)
             setData(response.data.message)
@@ -119,19 +115,15 @@ export default function Login({ onClick }) {
       )
     }
   };
-  console.log(data)
 
 
   return (
     <>
       <Container component="main" maxWidth="xs"  >
         <CssBaseline />
-
         <Box
           style={{ borderRadius: '20px', backgroundColor: "white" }}
           boxShadow={15}
-
-
         >
           <div className={classes.paper}>
             {
@@ -141,7 +133,6 @@ export default function Login({ onClick }) {
             }
             <Avatar className={classes.avatar}>
               <LockOutlinedIcon color="success" />
-              {/* <LockIcon color="success" /> */}
             </Avatar>
             <Typography component="h1" variant="h5">
               Login
@@ -159,7 +150,6 @@ export default function Login({ onClick }) {
                     onChange={e => setEmail(e.target.value)}
                     label="UserName"
                     name="email"
-                    // autoComplete="email"
                     style={{ borderRadius: '20px' }}
                   />
                 </Grid>

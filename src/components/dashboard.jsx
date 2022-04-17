@@ -1,11 +1,10 @@
-import React, { useContext } from 'react';
+import React from 'react';
 import clsx from 'clsx';
 import { makeStyles, useTheme, alpha } from '@material-ui/core/styles';
 import AdminPanelSettingsIcon from '@mui/icons-material/AdminPanelSettings';
 import Drawer from '@material-ui/core/Drawer';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
-import InputBase from '@material-ui/core/InputBase';
 import List from '@material-ui/core/List';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import Typography from '@material-ui/core/Typography';
@@ -21,20 +20,9 @@ import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
-import SearchIcon from '@material-ui/icons/Search';
 import PeopleIcon from '@mui/icons-material/People';
-import Inbox from './inbox';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faHouseUser } from '@fortawesome/free-solid-svg-icons';
-import { faPhoneAlt } from '@fortawesome/free-solid-svg-icons';
-import { faFolderOpen } from '@fortawesome/free-solid-svg-icons';
-import { faClone } from '@fortawesome/free-solid-svg-icons';
-import Contact from './allorders';
-import Report from './report';
-import ItemCategories from './itemCategories';
-import Items from './items';
+import Admin from './admin';
 import { useHistory } from "react-router-dom";
-import { UserContext } from '../userContext';
 import axios from 'axios';
 import {
   BrowserRouter as Router,
@@ -43,26 +31,22 @@ import {
   Link
 } from "react-router-dom";
 import './assets/css/style.css';
-import Allcustomers from './allcustomers';
-import Alllabs from './alllabs';
-import AllCategories from './allcategories';
-import Allindividuals from './allindividuals';
+import User from './user';
 import Login from './login';
 import Package from './package';
 import Subscription from './subscription';
 import Customer from './customer';
 import Swal from 'sweetalert2';
+import api from './api/api';
 
 const drawerWidth = 240;
 
 const linkTextColor = {
   color: "darkcyan",
   textDecoration: "none",
-  // backgroundColor: "lightcyan"
   '&:hover': {
     backgroundColor: 'lightcyan',
   },
-
 };
 
 
@@ -184,13 +168,12 @@ function Dashboard() {
   const history = useHistory();
 
   const logout = () => {
-    axios.post("http://localhost:5000/admin/logout", { refreshToken: refreshToken },
+    axios.post(`${api}admin/logout`, { refreshToken: refreshToken },
       {
         headers: {
           Authorization: `Bearer ${accessToken}`,
         }
       }).then((res) => {
-
         localStorage.clear();
         history.push('/')
         Swal.fire(
@@ -213,11 +196,11 @@ function Dashboard() {
 
     var adminToken = localStorage.getItem("admin")
     !adminToken && history.push("/")
-    adminToken && setRefreshToken(JSON.parse(adminToken)?.tokens?.refreshToken)
-    adminToken && setAccessToken(JSON.parse(adminToken)?.tokens?.accessToken)
+    adminToken && setRefreshToken(JSON.parse(adminToken)?.data?.[0]?.refreshToken)
+    adminToken && setAccessToken(JSON.parse(adminToken)?.data?.[0]?.accessToken)
 
   }, [])
-  console.log(refreshToken)
+
   const handleDrawerOpen = () => {
     setOpen(true);
   };
@@ -227,7 +210,7 @@ function Dashboard() {
   };
 
   return (
-    <Router basename={process.env.PUBLIC_URL}>
+    <Router >
       <div className={classes.root}>
         <CssBaseline />
         <AppBar
@@ -254,19 +237,6 @@ function Dashboard() {
             <Typography className={classes.title} variant="h5" noWrap>
               Admin Panel
             </Typography>
-            {/* <div className={classes.search}>
-              <div className={classes.searchIcon}>
-                <SearchIcon />
-              </div>
-              <InputBase
-                placeholder="Search…"
-                classes={{
-                  root: classes.inputRoot,
-                  input: classes.inputInput,
-                }}
-                inputProps={{ 'aria-label': 'search' }}
-              />
-            </div> */}
             <Button onClick={changePassword} color="inherit">Change Password</Button>
             <Button onClick={logout} color="inherit">Logout</Button>
           </Toolbar>
@@ -298,15 +268,7 @@ function Dashboard() {
           <Divider />
           <List className='my-5 ' >
 
-            <Link style={linkTextColor} to="/all-Orders">
-              <ListItem button>
-                <ListItemIcon>
-                  <AdminPanelSettingsIcon />
-                </ListItemIcon>
-                <ListItemText primary="Admin Details" />
-              </ListItem>
-            </Link>
-            <Link style={linkTextColor} to="/all-Customers">
+            <Link style={linkTextColor} to="/user">
               <ListItem button>
                 <ListItemIcon>
                   <PeopleIcon />
@@ -344,14 +306,10 @@ function Dashboard() {
         <main className={classes.content}>
           <div className={classes.toolbar} />
           <Switch>
-            <Route path='/all-Orders' component={Contact}></Route>
-            <Route path='/all-Customers' component={Allcustomers}></Route>
+            <Route path='/user' component={User}></Route>
             <Route path='/package' component={Package}></Route>
             <Route path='/subscription' component={Subscription}></Route>
             <Route path='/customer' component={Customer}></Route>
-            <Route path='/all-Individuals' component={Allindividuals}></Route>
-            <Route path='/all-Categories' component={AllCategories}></Route>
-            <Route path='/Report' component={Report}></Route>
             <Route path='/login' component={Login}></Route>
           </Switch>
 

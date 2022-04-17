@@ -20,6 +20,7 @@ import Alert from 'react-bootstrap/Alert'
 import Swal from 'sweetalert2';
 import { isJwtExpired } from 'jwt-check-expiration';
 import jwt from 'jsonwebtoken'
+import api from './api/api';
 
 const useStyles = makeStyles((theme) => ({
         paper: {
@@ -61,8 +62,8 @@ export default function ChangePassword({ onClick }) {
 
                 var adminToken = localStorage.getItem("admin")
                 !adminToken && history.push("/")
-                adminToken && setAccessToken(JSON.parse(adminToken)?.tokens?.accessToken)
-                adminToken && setRenewToken(JSON.parse(adminToken)?.tokens?.refreshToken)
+                adminToken && setAccessToken(JSON.parse(adminToken)?.data?.[0]?.accessToken)
+                adminToken && setRenewToken(JSON.parse(adminToken)?.data?.[0]?.refreshToken)
         }, [])
         accessToken && console.log(isJwtExpired(accessToken))
 
@@ -85,7 +86,7 @@ export default function ChangePassword({ onClick }) {
                 }
                 else {
 
-                        await axios.post('http://localhost:5000/admin/changePassword', params,
+                        await axios.post(`${api}admin/changePassword`, params,
                                 {
                                         headers: {
                                                 Authorization: `Bearer ${accessToken}`,

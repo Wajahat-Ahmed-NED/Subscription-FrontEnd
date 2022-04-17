@@ -227,7 +227,7 @@ export default function UserSubscription() {
                         phone,
                 )
 
-                await axios.post('http://localhost:5000/admin/addAdmin', obj,
+                await axios.post('http://localhost:5000/user/addAdmin', obj,
                         {
                                 headers: {
                                         Authorization: `Bearer ${accessToken}`,
@@ -281,8 +281,12 @@ export default function UserSubscription() {
         const [data, setData] = useState([])
         const getData = async () => {
                 console.log("getData")
-                const api = `http://localhost:5000/admin/getAdmins`
-                await axios.get(api)
+                const api = `http://localhost:5000/user/subscriptionsOfPackages`
+                await axios.get(api, {
+                        headers: {
+                                "Authorization": `Bearer ${accessToken}`
+                        }
+                })
                         .then(json => {
                                 setData(json.data)
                                 console.log(json.data)
@@ -391,14 +395,14 @@ export default function UserSubscription() {
                 <>
                         {/* <button className='btn btn-primary' onClick={handleUpdate}>Bootstrap</button> */}
                         <div className="container d-flex justify-content-between my-0">
-                                <h1 className='text-center mb-5'> Admins Details</h1>
+                                <h1 className='text-center mb-5'> Subscription Details</h1>
                                 {
                                         error && <Alert variant="danger" onClose={() => setError(false)} dismissible>
                                                 <p className="text-center" style={{ fontWeight: 'bold' }}>Session Expired</p>
                                         </Alert>
                                 }
                                 {/* <Button className="ms-auto me-3 my-3" onClick={getData} size='small' style={{ backgroundColor: 'darkCyan' }} variant="contained">Get Data</Button> */}
-                                <Button className=" mb-5 me-3 " onClick={handleOpen} size='sm' style={{ backgroundColor: 'darkCyan', fontSize: "bolder" }} variant="contained">Create Admin <AddIcon /></Button>
+                                {/* <Button className=" mb-5 me-3 " onClick={handleOpen} size='sm' style={{ backgroundColor: 'darkCyan', fontSize: "bolder" }} variant="contained">Create Admin <AddIcon /></Button> */}
 
 
                         </div>

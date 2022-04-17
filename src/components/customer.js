@@ -1,7 +1,6 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { makeStyles, withStyles } from '@material-ui/core/styles';
 import Backdrop from '@material-ui/core/Backdrop';
-import TextField from '@mui/material/TextField';
 import SearchIcon from '@mui/icons-material/Search';
 import Paper from '@material-ui/core/Paper';
 import Table from '@material-ui/core/Table';
@@ -11,46 +10,26 @@ import TableContainer from '@material-ui/core/TableContainer';
 import TableHead from '@material-ui/core/TableHead';
 import TablePagination from '@material-ui/core/TablePagination';
 import TableRow from '@material-ui/core/TableRow';
-// import Button from '@material-ui/core/Button';
-import Dialog from '@material-ui/core/Dialog';
 import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
 import InputLabel from '@mui/material/InputLabel';
 import Select from '@mui/material/Select';
-// import Typography from '@material-ui/core/Typography';
 import MuiDialogTitle from '@material-ui/core/DialogTitle';
 import MuiDialogContent from '@material-ui/core/DialogContent';
 import MuiDialogActions from '@material-ui/core/DialogActions';
 import IconButton from '@material-ui/core/IconButton';
 import CloseIcon from '@material-ui/icons/Close';
 import CircularProgress from '@material-ui/core/CircularProgress';
-import Grid from '@material-ui/core/Grid';
-// import TextField from '@material-ui/core/TextField';
-import { Link, useHistory } from "react-router-dom";
-import CheckCircleIcon from '@mui/icons-material/CheckCircle';
-// import Button from '@mui/material/Button';
-// import Button from '@mui/material/Button';
-// import { logout } from './dashboard';
+import { useHistory } from "react-router-dom";
 import { UserContext } from '../userContext';
-// import Modal from './modal';
-// import Newmodal from './newmodal';
-import Modall from './modal';
-import { WebEdit } from './webeditor';
+
 import { isJwtExpired } from 'jwt-check-expiration';
 import jwt from 'jsonwebtoken'
-import { useDispatch, useSelector } from 'react-redux';
-import axios, { Axios } from 'axios';
-// import { UserContext } from '../userContext';
-import Box from '@mui/material/Box';
+import { useSelector } from 'react-redux';
+
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
-import Modal from '@mui/material/Modal';
-import AddIcon from '@mui/icons-material/Add';
-import Swal from 'sweetalert2';
-import EditIcon from '@mui/icons-material/Edit';
-import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
-// import IconButton from '@mui/material/IconButton';
-import Tooltip from '@mui/material/Tooltip';
+import { getCustomers } from './api/customersApi';
 
 
 const useStyles = makeStyles((theme) => ({
@@ -108,22 +87,8 @@ const DialogActions = withStyles((theme) => ({
 }))(MuiDialogActions);
 
 export default function ContactPage() {
-        // const [open, setOpen] = React.useState(false);
         const handleOpen = () => setOpen(true);
-        // const handleClose = () => setOpen(false);
         const dataFromRedux = useSelector((a) => a)
-        // const dispatch = useDispatch()
-
-        // const handleUpdate = () => {
-        //   const obj = {
-        //     name: 'ali',
-        //     age: 12,
-        //     apiData: [1, 2, 3, 4],
-        //   }
-        //   console.log(obj)
-        //   dispatch({ type: 'DATAFROMAPI', ...obj })
-        //   console.log(dataFromRedux)
-        // }
         console.log(dataFromRedux)
 
         const classes = useStyles();
@@ -149,14 +114,11 @@ export default function ContactPage() {
                 setPhone('')
         };
 
-        // const accessToken = '';
-        // const refreshToken;
-
 
         const [openNew, setOpenNew] = React.useState(false);
 
         const { setToken } = useContext(UserContext);
-        // here useeffect will be implemented
+
         console.log(rows, "get ALL orders");
 
         const handleEditRow = (idEdit, row) => {
@@ -173,29 +135,18 @@ export default function ContactPage() {
 
 
         const [data, setData] = useState([])
-        const getData = async () => {
-                console.log("getData")
-                console.log(accessToken)
-                const api = `http://localhost:5000/admin/getCustomers`
-                await axios.get(api,
-                        {
-                                headers: {
-                                        Authorization: `Bearer ${accessToken}`,
-                                }
-                        }
-                )
-                        .then(json => {
-                                setData(json.data)
-                                console.log(json.data)
-                        })
-                        .catch(err => {
-                                console.log(err)
-                        })
+        const fetchData = () => {
+                getCustomers().then((json) => {
+                        setData(json.data.data)
+                        console.log(json.data.data)
+                }).catch((err) => console.log(err))
         }
+
         useEffect(() => {
-                getData()
-                var adminToken = localStorage.getItem("admin")
-                adminToken && setAccessToken(JSON.parse(adminToken)?.tokens?.accessToken)
+                let adminToken = localStorage.getItem("admin")
+                !adminToken && history.push("/")
+
+                fetchData()
         }, [])
         console.log(accessToken)
 
@@ -232,12 +183,9 @@ export default function ContactPage() {
 
         return (
                 <>
-                        {/* <button className='btn btn-primary' onClick={handleUpdate}>Bootstrap</button> */}
+
                         <div className="container d-flex justify-content-between my-0">
                                 <h1 className='text-center mb-5'> Customers Details</h1>
-                                {/* <Button className="ms-auto me-3 my-3" onClick={getData} size='small' style={{ backgroundColor: 'darkCyan' }} variant="contained">Get Data</Button> */}
-                                {/* <TextField type="number" id="standard-basic" label="Search By Package Id" variant="standard" className='mx-3' value={id} onChange={(e) => handleTextField(e)} /> */}
-
 
 
                         </div>
@@ -271,7 +219,7 @@ export default function ContactPage() {
                                                         {
 
 
-                                                                data?.map((e, i) => {
+                                                                data?.[0]?.map((e, i) => {
                                                                         return (
                                                                                 <>
                                                                                         <TableRow hover={true}>
@@ -326,15 +274,12 @@ export default function ContactPage() {
                                                         <em>None</em>
                                                 </MenuItem>
                                                 {
-                                                        data?.map((e, i) => <MenuItem value={e.PKCustomerId}>{e.PKCustomerId}</MenuItem>)
+                                                        data[0]?.map((e, i) => <MenuItem value={e.PKCustomerId}>{e.PKCustomerId}</MenuItem>)
                                                 }
-                                                {/* <MenuItem value={10}>Ten</MenuItem>
-                        <MenuItem value={20}>Twenty</MenuItem>
-                        <MenuItem value={30}>Thirty</MenuItem> */}
+
                                         </Select>
                                 </FormControl>
-                                {/* <Button className="ms-auto me-3 my-3" onClick={getData} size='small' style={{ backgroundColor: 'darkCyan' }} variant="contained">Get Data</Button> */}
-                                <Button className=" mb-5 me-3 " onClick={() => setFilteredData(data?.filter((ev) => ev.PKCustomerId === id))} size='sm' style={{ backgroundColor: 'darkCyan', fontSize: "bolder" }} variant="contained">Search <SearchIcon /></Button>
+                                <Button className=" mb-5 me-3 " onClick={() => setFilteredData(data[0]?.filter((ev) => ev.PKCustomerId === id))} size='sm' style={{ backgroundColor: 'darkCyan', fontSize: "bolder" }} variant="contained">Search <SearchIcon /></Button>
 
 
                         </div>
