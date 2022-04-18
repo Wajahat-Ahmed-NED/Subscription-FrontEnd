@@ -15,7 +15,7 @@ const apiUrl = api
 export const axiosHandle = token => {
     let adminToken = localStorage.getItem("admin")
     return axios.create({
-        baseURL: `${apiUrl}admin`,
+        baseURL: `${apiUrl}user`,
         headers: {
             ...axios.defaults.headers,
             Authorization: `Bearer ${token ? token : JSON.parse(adminToken)?.data?.[0]?.accessToken

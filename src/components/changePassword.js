@@ -20,7 +20,7 @@ import Alert from 'react-bootstrap/Alert'
 import Swal from 'sweetalert2';
 import { isJwtExpired } from 'jwt-check-expiration';
 import jwt from 'jsonwebtoken'
-import api from './api/api';
+import {api} from './api/api';
 
 const useStyles = makeStyles((theme) => ({
         paper: {

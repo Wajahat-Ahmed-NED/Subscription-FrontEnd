@@ -37,7 +37,8 @@ import Package from './package';
 import Subscription from './subscription';
 import Customer from './customer';
 import Swal from 'sweetalert2';
-import api from './api/api';
+// import {api} from './api/api';
+import {api} from "./api/api"
 
 const drawerWidth = 240;
 

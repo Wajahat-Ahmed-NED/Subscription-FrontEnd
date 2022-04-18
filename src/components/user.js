@@ -24,8 +24,8 @@ import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
 import InputLabel from '@mui/material/InputLabel';
 import Select from '@mui/material/Select';
-import { UserContext } from '../userContext';
-
+import Modal from '@mui/material/Modal';
+import Box from '@mui/material/Box';
 
 import { isJwtExpired } from 'jwt-check-expiration';
 import jwt from 'jsonwebtoken'
@@ -38,8 +38,9 @@ import Swal from 'sweetalert2';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
 import Tooltip from '@mui/material/Tooltip';
-import { addUser, deleteUser, getData, suspendUser, tempSuspendUser } from './api/userApi';
+import { addUser, deleteUser, getData, suspendUser, tempSuspendUser, getUser } from './api/userApi';
 import './assets/css/user.css'
+import {apiHandle} from './api/api'
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -67,6 +68,19 @@ const styles = (theme) => ({
         color: theme.palette.grey[500],
     },
 });
+
+const style = {
+    position: 'absolute',
+    top: '50%',
+    left: '50%',
+    transform: 'translate(-50%, -50%)',
+    width: 400,
+    bgcolor: 'background.paper',
+    border: '2px solid darkcyan',
+    boxShadow: 24,
+    p: 2,
+};
+
 const DialogTitle = withStyles(styles)((props) => {
     const { children, classes, onClose, ...other } = props;
     return (
@@ -113,6 +127,10 @@ export default function ContactPage() {
     const [accessToken, setAccessToken] = React.useState('');
     const [refreshToken, setRefreshToken] = React.useState('');
     const history = useHistory();
+    const [modalOpen, setModalOpen] = React.useState(false);
+    const handleModalOpen = () => setModalOpen(true);
+    const handleModalClose = () => setModalOpen(false);
+
     const handleClickOpen = () => {
         setOpen(true);
     };
@@ -144,7 +162,8 @@ export default function ContactPage() {
         ).then(async (res) => {
             if (res.isConfirmed) {
 
-
+                let adminToken = localStorage.getItem("admin")
+                apiHandle(adminToken).then(()=>{
                 deleteUser(e).then(function (response) {
 
                     console.log(response, "hogaya")
@@ -164,6 +183,7 @@ export default function ContactPage() {
 
                     })
                 })
+            })
             }
             else if (
 
@@ -195,7 +215,8 @@ export default function ContactPage() {
         }
 
         console.log("Password length", obj.Password.length)
-
+        let adminToken = localStorage.getItem("admin")
+        apiHandle(adminToken).then(()=>{
         addUser(obj).then(function (response) {
 
             console.log(response, "hogaya")
@@ -216,6 +237,7 @@ export default function ContactPage() {
             })
             setOpen(true);
         })
+    })
     }
 
     const [openNew, setOpenNew] = React.useState(false);
@@ -237,10 +259,13 @@ export default function ContactPage() {
     const [data, setData] = useState([])
 
     const fetchData = () => {
+        let adminToken = localStorage.getItem("admin")
+        apiHandle(adminToken).then(()=>{
         getData().then((json) => {
             setData(json.data.data)
             console.log(json.data.data)
         }).catch((err) => console.log(err))
+        })
     }
 
     useEffect(() => {
@@ -264,7 +289,7 @@ export default function ContactPage() {
     const [disable, setDisable] = useState(false)
     const [id, setId] = useState('')
     const [filteredData, setFilteredData] = useState([])
-
+    const [currentUser, setCurrentUser] = useState(null)
 
     const handleChangeRowsPerPage = (event) => {
         setRowsPerPage(+event.target.value);
@@ -291,9 +316,35 @@ export default function ContactPage() {
 
 
     }
+    const getDetails = async (e) =>{
+        handleModalOpen()
+        let adminToken = localStorage.getItem("admin")
+        apiHandle(adminToken).then(()=>{
+        getUser(e).then((res) => {
+            
+            console.log("response is ", res?.data?.data?.[0])
+            setCurrentUser(res?.data?.data?.[0])
+            // console.log(currentUser)
+            currentUser && handleModalOpen()
+        }).catch(err => {
+
+
+            console.log(err, "this error founnd")
+            // Swal.fire({
+            //     icon: 'error',
+            //     title: 'Oops...',
+            //     text: 'Wrong Credentials or Something went wrong!',
+
+            // })
+        })
+    })
+    }
 
     const handleSuspend = async (e) => {
+        console.log(e)
         setSuspend(e.IsSuspended ? false : true)
+        let adminToken = localStorage.getItem("admin")
+        apiHandle(adminToken).then(()=>{
         suspendUser(e).then((res) => {
             Swal.fire(
                 'Success',
@@ -312,10 +363,13 @@ export default function ContactPage() {
 
             })
         })
+    })
         // setTempSuspend(e.IsTemporarySuspended ? false : true)
     }
     const handleTempSuspend = async (e) => {
         setTempSuspend(e.IsTemporarySuspended ? false : true)
+        let adminToken = localStorage.getItem("admin")
+        apiHandle(adminToken).then(()=>{
         tempSuspendUser(e).then((res) => {
             Swal.fire(
                 'Success',
@@ -334,6 +388,7 @@ export default function ContactPage() {
 
             })
         })
+    })
     }
 
     const handleEditSubmit = async (e) => {
@@ -367,7 +422,7 @@ export default function ContactPage() {
             ).then((e) => {
 
             })
-            getData();
+            fetchData();
         }).catch(err => {
             setOpen(false);
 
@@ -401,6 +456,170 @@ export default function ContactPage() {
                 <Button className=" mb-5 me-3 " onClick={handleOpen} size='sm' style={{ backgroundColor: 'darkCyan', fontSize: "bolder" }} variant="contained">Create user <AddIcon /></Button>
 
             </div>
+
+            <Modal
+                open={modalOpen}
+                onClose={handleModalClose}
+                aria-labelledby="modal-modal-title"
+                aria-describedby="modal-modal-description"
+            >
+                <Box sx={style}>
+                    <Typography id="modal-modal-title" variant="h6" component="h3" align="center" sx={{mb:3}}>
+                        User Detail
+                    </Typography>
+
+                    <Grid container spacing={2}>
+
+                        {currentUser?.FirstName && <Grid item xs={5}>
+                            <TextField
+                                disabled
+                                fullWidth
+                                inputProps={{
+                                    style: { color: 'black' }
+                                }}
+                                InputLabelProps={{
+                                    style: { color: 'darkcyan' },
+                                  }}
+                                label="First Name"
+                                value={currentUser?.FirstName}
+                            />
+                        </Grid>}
+                        {currentUser?.LastName && <Grid item xs={5} className="ms-auto">
+                            <TextField
+                                disabled
+                                fullWidth
+                                inputProps={{
+                                    style: { color: 'black' }
+                                }}
+                                InputLabelProps={{
+                                    style: { color: 'darkcyan' },
+                                  }}
+                                value={currentUser?.LastName}
+                                label="Last Name"
+                            />
+                        </Grid>}
+                        {currentUser?.Username && <Grid item xs={12}>
+                            <TextField
+                                disabled
+                                fullWidth
+                                inputProps={{
+                                    style: { color: 'black' }
+                                }}
+                                InputLabelProps={{
+                                    style: { color: 'darkcyan' },
+                                  }}
+                                value={currentUser?.Username}
+                                label="Username"
+                                
+                            />
+                        </Grid>}
+
+                        {currentUser?.Email && <Grid item xs={12}>
+                            <TextField
+                                disabled
+                                fullWidth
+                                inputProps={{
+                                    style: { color: 'black' }
+                                }}
+                                InputLabelProps={{
+                                    style: { color: 'darkcyan' },
+                                  }}
+                                value={currentUser?.Email}
+                                label="Email Address"
+                                
+                            />
+                        </Grid>}
+                        
+                        
+
+                        {currentUser?.PhoneNumber && <Grid item xs={12}>
+                            <TextField
+                               disabled
+                               fullWidth
+                               inputProps={{
+                                   style: { color: 'black' }
+                               }}
+                               InputLabelProps={{
+                                style: { color: 'darkcyan' },
+                              }}
+                               value={currentUser?.PhoneNumber}
+                                label="Phone No"
+                            />
+                        </Grid>}
+                        {currentUser?.CNIC && <Grid item xs={12}>
+                            <TextField
+                                disabled
+                                fullWidth
+                                inputProps={{
+                                    style: { color: 'black' }
+                                }}
+                                InputLabelProps={{
+                                    style: { color: 'darkcyan' },
+                                  }}
+                                value={currentUser?.CNIC}
+                                label="CNIC No"
+                            />
+                        </Grid>}
+                        {currentUser?.createdAt && <Grid item xs={12}>
+                            <TextField
+                                disabled
+                                fullWidth
+                                inputProps={{
+                                    style: { color: 'black' }
+                                }}
+                                InputLabelProps={{
+                                    style: { color: 'darkcyan' },
+                                  }}
+                                value={currentUser?.createdAt.split("T")[0]}
+                                label="Creation Date"
+                            />
+                        </Grid>}
+                        {currentUser?.updatedAt && <Grid item xs={12}>
+                            <TextField
+                                disabled
+                                fullWidth
+                                inputProps={{
+                                    style: { color: 'black' }
+                                }}
+                                InputLabelProps={{
+                                    style: { color: 'darkcyan' },
+                                  }}
+                                value={currentUser?.updatedAt.split("T")[0]}
+                                label="Updation Date"
+                            />
+                        </Grid>}
+                        {currentUser?.SuspendedDate && <Grid item xs={12}>
+                            <TextField
+                                disabled
+                                fullWidth
+                                inputProps={{
+                                    style: { color: 'black' }
+                                }}
+                                InputLabelProps={{
+                                    style: { color: 'darkcyan' },
+                                  }}
+                                value={currentUser?.SuspendedDate.split("T")[0]}
+                                label="Suspension Date"
+                            />
+                        </Grid>}
+                        {currentUser?.TemporarySuspendedDate && <Grid item xs={12}>
+                            <TextField
+                                disabled
+                                fullWidth
+                                inputProps={{
+                                    style: { color: 'black' }
+                                }}
+                                InputLabelProps={{
+                                    style: { color: 'darkcyan' },
+                                  }}
+                                value={currentUser?.TemporarySuspendedDate.split("T")[0]}
+                                label="Temporary Suspension Date"
+                            />
+                        </Grid>}
+                    </Grid>
+                </Box>
+            </Modal>
+
             <Paper className={classes.root} style={{ maxWidth: '1100px' }} >
                 <Backdrop className={classes.backdrop} open={openNew}>
                     <CircularProgress color="inherit" />
@@ -531,18 +750,19 @@ export default function ContactPage() {
                 </div>
                 <TableContainer className={classes.container} style={{ maxHeight: '390px', maxWidth: '1078px' }}>
                     <Table stickyHeader aria-label="sticky table" size='small' >
-                        <TableHead>
-                            <TableRow>
+                        <TableHead >
+                            <TableRow >
 
-                                <TableCell style={{ backgroundColor: 'darkcyan', color: 'white', fontSize: '20px' }}>PKUserID</TableCell>
-                                <TableCell style={{ backgroundColor: 'darkcyan', color: 'white', fontSize: '20px' }}>UserName</TableCell>
-                                <TableCell style={{ backgroundColor: 'darkcyan', color: 'white', fontSize: '20px' }}>Name</TableCell>
-                                <TableCell style={{ backgroundColor: 'darkcyan', color: 'white', fontSize: '20px' }}>Email</TableCell>
-                                <TableCell style={{ backgroundColor: 'darkcyan', color: 'white', fontSize: '20px' }}>PhoneNumber</TableCell>
-                                <TableCell style={{ backgroundColor: 'darkcyan', color: 'white', fontSize: '20px' }}>CNIC</TableCell>
-                                <TableCell style={{ backgroundColor: 'darkcyan', color: 'white', fontSize: '20px' }}>Suspend User</TableCell>
+                                <TableCell align='center' style={{ backgroundColor: 'darkcyan', color: 'white', fontSize: '20px' }}>PKUserID</TableCell>
+                                <TableCell align='center' style={{ backgroundColor: 'darkcyan', color: 'white', fontSize: '20px' }}>UserName</TableCell>
+                                <TableCell align='center' style={{ backgroundColor: 'darkcyan', color: 'white', fontSize: '20px' }}>Name</TableCell>
+                                <TableCell align='center' style={{ backgroundColor: 'darkcyan', color: 'white', fontSize: '20px' }}>Email</TableCell>
+                                <TableCell align='center' style={{ backgroundColor: 'darkcyan', color: 'white', fontSize: '20px' }}>PhoneNumber</TableCell>
+                                <TableCell align='center' style={{ backgroundColor: 'darkcyan', color: 'white', fontSize: '20px' }}>CNIC</TableCell>
+                                <TableCell align='center' colSpan={4} style={{ backgroundColor: 'darkcyan', color: 'white', fontSize: '20px' }}>Action</TableCell>
+                                {/* <TableCell style={{ backgroundColor: 'darkcyan', color: 'white', fontSize: '20px' }}>Suspend User</TableCell>
                                 <TableCell style={{ backgroundColor: 'darkcyan', color: 'white', fontSize: '20px' }}>Temporary Suspend</TableCell>
-                                <TableCell style={{ backgroundColor: 'darkcyan', color: 'white', fontSize: '20px' }}>Delete User</TableCell>
+                                <TableCell style={{ backgroundColor: 'darkcyan', color: 'white', fontSize: '20px' }}>Delete User</TableCell> */}
 
 
 
@@ -562,14 +782,19 @@ export default function ContactPage() {
                                                 <TableCell>{e.Email}</TableCell>
                                                 <TableCell>{e.PhoneNumber}</TableCell>
                                                 <TableCell>{e.CNIC}</TableCell>
-                                                <TableCell >{e.IsSuspended ? 'True' : <Button color="success" onClick={() => handleSuspend(e)}>Suspend</Button>}</TableCell>
-                                                <TableCell >{e.IsTemporarySuspended ? 'True' : <Button color="success" onClick={() => handleTempSuspend(e)}>Suspend</Button>}</TableCell>
+                                                <TableCell>
+                                                    <Button variant="outlined" onClick={()=>getDetails(e)}>Details</Button>
+                                                </TableCell>
                                                 <TableCell style={{ textAlign: 'left' }}>
-
                                                     <Tooltip title="Delete">
-                                                        <IconButton><DeleteOutlineIcon color="error" onClick={() => handleDelete(e.PKUserId)} fontSize="medium" />
+                                                        <IconButton><DeleteOutlineIcon variant="contained" color="error" onClick={() => handleDelete(e.PKUserId)} fontSize="medium" />
                                                         </IconButton></Tooltip>
                                                 </TableCell>
+                                                {!e.IsSuspended && <TableCell ><Button color="success" variant="contained" onClick={() => handleSuspend(e)}>Suspend</Button>
+                                                </TableCell>}
+
+                                                {!e.IsTemporarySuspended && <TableCell ><Button color="success" variant="contained" style={{ width: 'max-content' }} onClick={() => handleTempSuspend(e)}>Temp Suspend</Button>
+                                                </TableCell>}
 
                                             </TableRow>
 
@@ -593,102 +818,8 @@ export default function ContactPage() {
 
 
             </Paper>
-            <div className="container d-flex justify-content-between mt-5">
-                <h1 className='text-center mb-5'> Search By UserID</h1>
-                <FormControl variant="standard" sx={{ m: 1, minWidth: 120 }}>
-                    <InputLabel id="demo-simple-select-standard-label">User ID</InputLabel>
-                    <Select
-                        size='small'
-                        labelId="demo-simple-select-standard-label"
-                        id="demo-simple-select-standard"
-                        value={id}
-                        onChange={handleTextField}
-                        label="UserID"
-                    >
-                        <MenuItem value="">
-                            <em>None</em>
-                        </MenuItem>
-                        {
-                            data[0]?.map((e, i) => <MenuItem value={e.PKUserId}>{e.PKUserId}</MenuItem>)
-                        }
-
-                    </Select>
-                </FormControl>
-
-                <Button className=" mb-5 me-3 " onClick={() => setFilteredData(data[0]?.filter((ev) => ev.PKUserId === id))} size='sm' style={{ backgroundColor: 'darkCyan', fontSize: "bolder" }} variant="contained">Search <SearchIcon /></Button>
-
-
-            </div>
-            {
-                filteredData.length > 0 && <Paper className={classes.root} style={{ maxWidth: '1100px' }} >
-                    <Backdrop className={classes.backdrop} open={openNew}>
-                        <CircularProgress color="inherit" />
-                    </Backdrop>
-
-                    <TableContainer className={classes.container} size='small' style={{ maxHeight: '390px', maxWidth: '1078px' }}>
-                        <Table stickyHeader aria-label="sticky table" size='small' >
-                            <TableHead>
-                                <TableRow>
-
-                                    <TableCell style={{ backgroundColor: 'darkcyan', color: 'white', fontSize: '20px' }}>PKUserID</TableCell>
-                                    <TableCell style={{ backgroundColor: 'darkcyan', color: 'white', fontSize: '20px' }}>UserName</TableCell>
-                                    <TableCell style={{ backgroundColor: 'darkcyan', color: 'white', fontSize: '20px' }}>Name</TableCell>
-                                    <TableCell style={{ backgroundColor: 'darkcyan', color: 'white', fontSize: '20px' }}>Email</TableCell>
-                                    <TableCell style={{ backgroundColor: 'darkcyan', color: 'white', fontSize: '20px' }}>PhoneNumber</TableCell>
-                                    <TableCell style={{ backgroundColor: 'darkcyan', color: 'white', fontSize: '20px' }}>CNIC</TableCell>
-                                    <TableCell style={{ backgroundColor: 'darkcyan', color: 'white', fontSize: '20px' }}>Suspend User</TableCell>
-                                    <TableCell style={{ backgroundColor: 'darkcyan', color: 'white', fontSize: '20px' }}>Temporary Suspend</TableCell>
-                                    <TableCell style={{ backgroundColor: 'darkcyan', color: 'white', fontSize: '20px' }}>Temporary Suspend</TableCell>
-                                    <TableCell style={{ backgroundColor: 'darkcyan', color: 'white', fontSize: '20px' }}>Delete User</TableCell>
-
-
-                                </TableRow>
-                            </TableHead>
-                            <TableBody>
-                                {/* /* {isJwtExpired && rows && Array.isArray(rows) && rows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage) */}
-                                {
-
-                                    filteredData?.map((e, i) => {
-                                        return (
-                                            <>
-                                                <TableRow hover={true}>
-                                                    <TableCell>{e.PKUserId}</TableCell>
-                                                    <TableCell>{e.Username}</TableCell>
-                                                    <TableCell>{e.FirstName + " " + e.LastName}</TableCell>
-                                                    <TableCell>{e.Email}</TableCell>
-                                                    <TableCell>{e.PhoneNumber}</TableCell>
-                                                    <TableCell>{e.CNIC}</TableCell>
-                                                    <TableCell >{e.IsSuspended ? 'True' : <Button color="success" onClick={() => handleSuspend(e)}>Suspend</Button>}</TableCell>
-                                                    <TableCell >{e.IsTemporarySuspended ? 'True' : <Button color="success" onClick={() => handleTempSuspend(e)}>Suspend</Button>}</TableCell>
-                                                    <TableCell style={{ textAlign: 'left' }}>
-
-                                                        <Tooltip title="Delete">
-                                                            <IconButton><DeleteOutlineIcon color="error" onClick={() => handleDelete(e.PKUserId)} fontSize="medium" />
-                                                            </IconButton></Tooltip>
-                                                    </TableCell>
-
-                                                </TableRow>
-
-                                            </>
-                                        )
-                                    })
-
-                                }
-                            </TableBody>
-                        </Table>
-                    </TableContainer>
-                    <TablePagination
-                        rowsPerPageOptions={[10, 25, 100]}
-                        component="div"
-                        count={rows.length}
-                        rowsPerPage={rowsPerPage}
-                        page={page}
-                        onPageChange={handleChangePage}
-                        onRowsPerPageChange={handleChangeRowsPerPage}
-                    />
-
-                </Paper>
-            }
+            
+           
         </>
     );
 }

@@ -17,7 +17,7 @@ import Radio from '@mui/material/Radio';
 import { useHistory } from "react-router-dom";
 import Alert from 'react-bootstrap/Alert'
 import Swal from 'sweetalert2';
-import api from './api/api';
+import {api} from './api/api';
 
 const useStyles = makeStyles((theme) => ({
   paper: {
@@ -86,11 +86,10 @@ export default function Login() {
     else if (user == 'User') {
       await axios.post(`${api}user/userSignIn`, params)
         .then(async function (response) {
-          console.log(response, 'asdasdasdjashshdjkashkdhaskjhvcv');
           if (!response.data.success) {
             console.log(response.data)
             setError(true)
-            setData(response.data.message)
+            setData(response.data.message[0])
             return
           }
           Swal.fire(
@@ -105,6 +104,7 @@ export default function Login() {
         })
         .catch(function (error) {
           // alert("Email or Password is incorrect")
+          setData("Email or Password is incorrect")
           setError(true)
         });
     } else {
