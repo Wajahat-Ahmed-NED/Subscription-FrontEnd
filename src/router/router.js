@@ -11,6 +11,7 @@ import Login from "../components/login";
 import UserDashboard from "../components/User/userDashboard";
 import UserUpdateProfile from "../components/User/UserUpdateProfile";
 import UserChangePassword from "../components/User/UserChangePassword";
+import UpdateProfile from "../components/updateProfile";
 
 export default function AppRouter() {
     return (
@@ -24,6 +25,7 @@ export default function AppRouter() {
                     <Route exact path="/changePassword" component={ChangePassword} />
                     <Route exact path="/userChangePassword" component={UserChangePassword} />
                     <Route exact path="/userUpdateProfile" component={UserUpdateProfile} />
+                    <Route exact path="/updateProfile" component={UpdateProfile} />
                     <Route path="/dashboard" component={Dashboard} />
                     <Route path="/userDashboard" component={UserDashboard} />
                     {/* <Route path="/webedit" component={s} /> */}

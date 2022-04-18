@@ -40,7 +40,7 @@ import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
 import Tooltip from '@mui/material/Tooltip';
 import { addUser, deleteUser, getData, suspendUser, tempSuspendUser, getUser } from './api/userApi';
 import './assets/css/user.css'
-import {apiHandle} from './api/api'
+import { apiHandle } from './api/api'
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -146,10 +146,6 @@ export default function ContactPage() {
 
 
     const handleDelete = async (e) => {
-        console.log(typeof (e), e)
-        console.log(accessToken)
-
-
         Swal.fire({
             title: 'Are you sure?',
             text: "You won't be able to revert this!",
@@ -163,27 +159,27 @@ export default function ContactPage() {
             if (res.isConfirmed) {
 
                 let adminToken = localStorage.getItem("admin")
-                apiHandle(adminToken).then(()=>{
-                deleteUser(e).then(function (response) {
+                apiHandle(adminToken).then(() => {
+                    deleteUser(e).then(function (response) {
 
-                    console.log(response, "hogaya")
+                        console.log(response, "hogaya")
 
-                    Swal.fire(
-                        'Success',
-                        'User Deleted Successfully',
-                        'success',
-                    )
-                    fetchData();
-                }).catch(err => {
-                    console.log(err.message, "this error founnd")
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Oops...',
-                        text: 'Something went wrong!',
+                        Swal.fire(
+                            'Success',
+                            'User Deleted Successfully',
+                            'success',
+                        )
+                        fetchData();
+                    }).catch(err => {
+                        console.log(err.message, "this error founnd")
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Oops...',
+                            text: 'Something went wrong!',
 
+                        })
                     })
                 })
-            })
             }
             else if (
 
@@ -216,28 +212,28 @@ export default function ContactPage() {
 
         console.log("Password length", obj.Password.length)
         let adminToken = localStorage.getItem("admin")
-        apiHandle(adminToken).then(()=>{
-        addUser(obj).then(function (response) {
+        apiHandle(adminToken).then(() => {
+            addUser(obj).then(function (response) {
 
-            console.log(response, "hogaya")
+                console.log(response, "hogaya")
 
-            Swal.fire(
-                'Success',
-                'Admin Created Successfully',
-                'success',
-            )
+                Swal.fire(
+                    'Success',
+                    'Admin Created Successfully',
+                    'success',
+                )
 
-            fetchData();
-        }).catch(err => {
-            console.log(err, "this error founnd")
-            Swal.fire({
-                icon: 'error',
-                title: 'Oops...',
-                text: 'Wrong Credentials or Something went wrong!',
+                fetchData();
+            }).catch(err => {
+                console.log(err, "this error founnd")
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Oops...',
+                    text: 'Wrong Credentials or Something went wrong!',
+                })
+                setOpen(true);
             })
-            setOpen(true);
         })
-    })
     }
 
     const [openNew, setOpenNew] = React.useState(false);
@@ -260,11 +256,11 @@ export default function ContactPage() {
 
     const fetchData = () => {
         let adminToken = localStorage.getItem("admin")
-        apiHandle(adminToken).then(()=>{
-        getData().then((json) => {
-            setData(json.data.data)
-            console.log(json.data.data)
-        }).catch((err) => console.log(err))
+        apiHandle(adminToken).then(() => {
+            getData().then((json) => {
+                setData(json.data.data)
+                console.log(json.data.data)
+            }).catch((err) => console.log(err))
         })
     }
 
@@ -316,79 +312,125 @@ export default function ContactPage() {
 
 
     }
-    const getDetails = async (e) =>{
+    const getDetails = async (e) => {
         handleModalOpen()
         let adminToken = localStorage.getItem("admin")
-        apiHandle(adminToken).then(()=>{
-        getUser(e).then((res) => {
-            
-            console.log("response is ", res?.data?.data?.[0])
-            setCurrentUser(res?.data?.data?.[0])
-            // console.log(currentUser)
-            currentUser && handleModalOpen()
-        }).catch(err => {
+        apiHandle(adminToken).then(() => {
+            getUser(e).then((res) => {
+
+                console.log("response is ", res?.data?.data?.[0])
+                setCurrentUser(res?.data?.data?.[0])
+                // console.log(currentUser)
+                currentUser && handleModalOpen()
+            }).catch(err => {
 
 
-            console.log(err, "this error founnd")
-            // Swal.fire({
-            //     icon: 'error',
-            //     title: 'Oops...',
-            //     text: 'Wrong Credentials or Something went wrong!',
+                console.log(err, "this error founnd")
+                // Swal.fire({
+                //     icon: 'error',
+                //     title: 'Oops...',
+                //     text: 'Wrong Credentials or Something went wrong!',
 
-            // })
+                // })
+            })
         })
-    })
     }
 
     const handleSuspend = async (e) => {
-        console.log(e)
         setSuspend(e.IsSuspended ? false : true)
         let adminToken = localStorage.getItem("admin")
-        apiHandle(adminToken).then(()=>{
-        suspendUser(e).then((res) => {
-            Swal.fire(
-                'Success',
-                'user Edited Successfully',
-                'success',
-            )
-            fetchData();
-        }).catch(err => {
+        Swal.fire({
+            title: 'Are you sure?',
+            text: "You won't be able to revert this!",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'Yes, Suspend it!',
+            cancelButtonText: 'No, cancel!',
+            reverseButtons: true
+        }
+        ).then(async (res) => {
+            if (res.isConfirmed) {
+                apiHandle(adminToken).then(() => {
+                    suspendUser(e).then((res) => {
+                        Swal.fire(
+                            'Success',
+                            'user Suspended Successfully',
+                            'success',
+                        )
+                        fetchData();
+                    }).catch(err => {
 
 
-            console.log(err, "this error founnd")
-            Swal.fire({
-                icon: 'error',
-                title: 'Oops...',
-                text: 'Wrong Credentials or Something went wrong!',
+                        console.log(err, "this error founnd")
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Oops...',
+                            text: 'Wrong Credentials or Something went wrong!',
 
-            })
-        })
-    })
+                        })
+                    })
+                })
+            } else if (
+
+                res.dismiss === Swal.DismissReason.cancel
+            ) {
+                Swal.fire(
+                    'Cancelled',
+                    'Your imaginary file is safe :)',
+                    'error'
+                )
+            }
+        }
+        )
+
         // setTempSuspend(e.IsTemporarySuspended ? false : true)
     }
     const handleTempSuspend = async (e) => {
         setTempSuspend(e.IsTemporarySuspended ? false : true)
         let adminToken = localStorage.getItem("admin")
-        apiHandle(adminToken).then(()=>{
-        tempSuspendUser(e).then((res) => {
-            Swal.fire(
-                'Success',
-                'user Edited Successfully',
-                'success',
-            )
-            fetchData();
-        }).catch(err => {
+        Swal.fire({
+            title: 'Are you sure?',
+            text: "You won't be able to revert this!",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'Yes, Suspend it temporarily!',
+            cancelButtonText: 'No, cancel!',
+            reverseButtons: true
+        }
+        ).then(async (res) => {
+            if (res.isConfirmed) {
+                apiHandle(adminToken).then(() => {
+                    tempSuspendUser(e).then((res) => {
+                        Swal.fire(
+                            'Success',
+                            'user Suspended Successfully',
+                            'success',
+                        )
+                        fetchData();
+                    }).catch(err => {
 
 
-            console.log(err, "this error founnd")
-            Swal.fire({
-                icon: 'error',
-                title: 'Oops...',
-                text: 'Wrong Credentials or Something went wrong!',
+                        console.log(err, "this error founnd")
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Oops...',
+                            text: 'Wrong Credentials or Something went wrong!',
 
-            })
-        })
-    })
+                        })
+                    })
+                })
+            } else if (
+
+                res.dismiss === Swal.DismissReason.cancel
+            ) {
+                Swal.fire(
+                    'Cancelled',
+                    'Your imaginary file is safe :)',
+                    'error'
+                )
+            }
+        }
+        )
     }
 
     const handleEditSubmit = async (e) => {
@@ -464,7 +506,7 @@ export default function ContactPage() {
                 aria-describedby="modal-modal-description"
             >
                 <Box sx={style}>
-                    <Typography id="modal-modal-title" variant="h6" component="h3" align="center" sx={{mb:3}}>
+                    <Typography id="modal-modal-title" variant="h6" component="h3" align="center" sx={{ mb: 3 }}>
                         User Detail
                     </Typography>
 
@@ -479,7 +521,7 @@ export default function ContactPage() {
                                 }}
                                 InputLabelProps={{
                                     style: { color: 'darkcyan' },
-                                  }}
+                                }}
                                 label="First Name"
                                 value={currentUser?.FirstName}
                             />
@@ -493,7 +535,7 @@ export default function ContactPage() {
                                 }}
                                 InputLabelProps={{
                                     style: { color: 'darkcyan' },
-                                  }}
+                                }}
                                 value={currentUser?.LastName}
                                 label="Last Name"
                             />
@@ -507,10 +549,10 @@ export default function ContactPage() {
                                 }}
                                 InputLabelProps={{
                                     style: { color: 'darkcyan' },
-                                  }}
+                                }}
                                 value={currentUser?.Username}
                                 label="Username"
-                                
+
                             />
                         </Grid>}
 
@@ -523,26 +565,26 @@ export default function ContactPage() {
                                 }}
                                 InputLabelProps={{
                                     style: { color: 'darkcyan' },
-                                  }}
+                                }}
                                 value={currentUser?.Email}
                                 label="Email Address"
-                                
+
                             />
                         </Grid>}
-                        
-                        
+
+
 
                         {currentUser?.PhoneNumber && <Grid item xs={12}>
                             <TextField
-                               disabled
-                               fullWidth
-                               inputProps={{
-                                   style: { color: 'black' }
-                               }}
-                               InputLabelProps={{
-                                style: { color: 'darkcyan' },
-                              }}
-                               value={currentUser?.PhoneNumber}
+                                disabled
+                                fullWidth
+                                inputProps={{
+                                    style: { color: 'black' }
+                                }}
+                                InputLabelProps={{
+                                    style: { color: 'darkcyan' },
+                                }}
+                                value={currentUser?.PhoneNumber}
                                 label="Phone No"
                             />
                         </Grid>}
@@ -555,7 +597,7 @@ export default function ContactPage() {
                                 }}
                                 InputLabelProps={{
                                     style: { color: 'darkcyan' },
-                                  }}
+                                }}
                                 value={currentUser?.CNIC}
                                 label="CNIC No"
                             />
@@ -569,7 +611,7 @@ export default function ContactPage() {
                                 }}
                                 InputLabelProps={{
                                     style: { color: 'darkcyan' },
-                                  }}
+                                }}
                                 value={currentUser?.createdAt.split("T")[0]}
                                 label="Creation Date"
                             />
@@ -583,7 +625,7 @@ export default function ContactPage() {
                                 }}
                                 InputLabelProps={{
                                     style: { color: 'darkcyan' },
-                                  }}
+                                }}
                                 value={currentUser?.updatedAt.split("T")[0]}
                                 label="Updation Date"
                             />
@@ -597,7 +639,7 @@ export default function ContactPage() {
                                 }}
                                 InputLabelProps={{
                                     style: { color: 'darkcyan' },
-                                  }}
+                                }}
                                 value={currentUser?.SuspendedDate.split("T")[0]}
                                 label="Suspension Date"
                             />
@@ -611,7 +653,7 @@ export default function ContactPage() {
                                 }}
                                 InputLabelProps={{
                                     style: { color: 'darkcyan' },
-                                  }}
+                                }}
                                 value={currentUser?.TemporarySuspendedDate.split("T")[0]}
                                 label="Temporary Suspension Date"
                             />
@@ -760,16 +802,12 @@ export default function ContactPage() {
                                 <TableCell align='center' style={{ backgroundColor: 'darkcyan', color: 'white', fontSize: '20px' }}>PhoneNumber</TableCell>
                                 <TableCell align='center' style={{ backgroundColor: 'darkcyan', color: 'white', fontSize: '20px' }}>CNIC</TableCell>
                                 <TableCell align='center' colSpan={4} style={{ backgroundColor: 'darkcyan', color: 'white', fontSize: '20px' }}>Action</TableCell>
-                                {/* <TableCell style={{ backgroundColor: 'darkcyan', color: 'white', fontSize: '20px' }}>Suspend User</TableCell>
-                                <TableCell style={{ backgroundColor: 'darkcyan', color: 'white', fontSize: '20px' }}>Temporary Suspend</TableCell>
-                                <TableCell style={{ backgroundColor: 'darkcyan', color: 'white', fontSize: '20px' }}>Delete User</TableCell> */}
 
 
 
                             </TableRow>
                         </TableHead>
                         <TableBody>
-                            {/* /* {isJwtExpired && rows && Array.isArray(rows) && rows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage) */}
                             {
 
                                 data[0]?.map((e, i) => {
@@ -783,18 +821,26 @@ export default function ContactPage() {
                                                 <TableCell>{e.PhoneNumber}</TableCell>
                                                 <TableCell>{e.CNIC}</TableCell>
                                                 <TableCell>
-                                                    <Button variant="outlined" onClick={()=>getDetails(e)}>Details</Button>
+                                                    <Button variant="outlined" onClick={() => getDetails(e)}>Details</Button>
                                                 </TableCell>
                                                 <TableCell style={{ textAlign: 'left' }}>
                                                     <Tooltip title="Delete">
                                                         <IconButton><DeleteOutlineIcon variant="contained" color="error" onClick={() => handleDelete(e.PKUserId)} fontSize="medium" />
                                                         </IconButton></Tooltip>
                                                 </TableCell>
-                                                {!e.IsSuspended && <TableCell ><Button color="success" variant="contained" onClick={() => handleSuspend(e)}>Suspend</Button>
-                                                </TableCell>}
+                                                <TableCell style={{ color: 'red' }}>
+                                                    {
+                                                        !e.IsSuspended ? <Button color="success" variant="contained" onClick={() => handleSuspend(e)}>Suspend</Button> : <Typography>Suspended</Typography>
+                                                    }
+                                                </TableCell>
+                                                {
+                                                    !e.IsTemporarySuspended ? <TableCell>
+                                                        {
+                                                            !e.IsSuspended && <Button color="success" variant="contained" style={{ width: 'max-content' }} onClick={() => handleTempSuspend(e)}>Temp Suspend</Button> 
+                                                        }
+                                                    </TableCell> : <TableCell style={{ color: 'red' }}><Typography style={{ width: 'max-content' }}>Temporary Suspended </Typography></TableCell>
+                                                }
 
-                                                {!e.IsTemporarySuspended && <TableCell ><Button color="success" variant="contained" style={{ width: 'max-content' }} onClick={() => handleTempSuspend(e)}>Temp Suspend</Button>
-                                                </TableCell>}
 
                                             </TableRow>
 
@@ -818,8 +864,8 @@ export default function ContactPage() {
 
 
             </Paper>
-            
-           
+
+
         </>
     );
 }

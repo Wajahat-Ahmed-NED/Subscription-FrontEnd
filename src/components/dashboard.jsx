@@ -193,6 +193,9 @@ function Dashboard() {
   const changePassword = () => {
     history.push("/changePassword")
   }
+  const updateProfile = () => {
+    history.push("/updateProfile")
+}
   React.useEffect(() => {
 
     var adminToken = localStorage.getItem("admin")
@@ -238,6 +241,7 @@ function Dashboard() {
             <Typography className={classes.title} variant="h5" noWrap>
               Admin Panel
             </Typography>
+            <Button onClick={updateProfile} color="inherit">Update Profile</Button>
             <Button onClick={changePassword} color="inherit">Change Password</Button>
             <Button onClick={logout} color="inherit">Logout</Button>
           </Toolbar>

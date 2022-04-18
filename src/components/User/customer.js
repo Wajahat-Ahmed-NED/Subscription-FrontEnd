@@ -49,7 +49,7 @@ import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
 import Tooltip from '@mui/material/Tooltip';
 import Alert  from 'react-bootstrap/Alert';
 import {apiHandle} from "../api/user/api"
-import { addCustomer } from '../api/user/userCustomersApi';
+import { addCustomer, editCustomer, deleteCustomer, getCustomerBySubscriptionId } from '../api/user/userCustomersApi';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -145,7 +145,6 @@ export default function UserCustomer() {
         setLname('')
         setEmail('')
         setPhone('')
-        setPhone('')
         setCnic('')
         setAddress('')
         setCountry('')
@@ -221,21 +220,25 @@ export default function UserCustomer() {
 
     const [data, setData] = useState([])
     const getData = async () => {
-        const api = `http://localhost:5000/user/customerBySubscriptionId/${subsId}`
-        await axios.get(api, {
-            headers:{
-                'Authorization' : `Bearer ${accessToken}`
-            }
-        }).then(json => {
-            setData(json.data.data)
-            console.log(json.data.data)
-            })
-            .catch(err => {
-                console.log(err)
-            })
+        let adminToken = localStorage.getItem('admin')
+        apiHandle(adminToken).then(()=>{
+            getCustomerBySubscriptionId(subsId).then(json => {
+                setData(json.data.data)
+                console.log(json.data.data)
+                })
+                .catch(err => {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Oops...',
+                        text: 'Wrong Credentials or Something went wrong!',
+
+                    })
+                    console.log(err)
+                })
+        })
+        
     }
     useEffect(() => {
-        // getData()
         var adminToken = localStorage.getItem("admin")
         adminToken && setAccessToken(JSON.parse(adminToken)?.data?.[0]?.accessToken)
         
@@ -254,7 +257,7 @@ export default function UserCustomer() {
     const [city, setCity] = useState('')
     const [area, setArea] = useState('')
     const [EditModal, setEditModal] = useState(false)
-    const [id, setId] = useState(0)
+    const [id, setId] = useState(null)
     const [disable, setDisable] = useState(false)
 
     const handleChangeRowsPerPage = (event) => {
@@ -272,68 +275,109 @@ export default function UserCustomer() {
         setLname(e.LastName)
         setEmail(e.Email)
         setPhone(e.PhoneNumber)
-        // setCnic(e.Email)
-        // setUser(e.user)
-        console.log(e)
+        setCnic(e.CNIC)
+        setAddress(e.Address)
+        setCountry(e.Country)
+        setCity(e.City)
+        setArea(e.Area)
         setOpen(true);
-        setId(e.PKAdminId)
+        setId(e.PKCustomerId)
+    }
+    const handleDelete = async (e) => {
+        Swal.fire({
+            title: 'Are you sure?',
+            text: "You won't be able to revert this!",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'Yes, delete it!',
+            cancelButtonText: 'No, cancel!',
+            reverseButtons: true
+        }
+        ).then(async (res) => {
+            if (res.isConfirmed) {
 
+                let adminToken = localStorage.getItem("admin")
+                apiHandle(adminToken).then(() => {
+                    deleteCustomer(e).then(function (response) {
 
+                        Swal.fire(
+                            'Success',
+                            'Customer Deleted Successfully',
+                            'success',
+                        )
+                        setData([]);
+                        getData();
+                    }).catch(err => {
+                        console.log(err.message, "this error founnd")
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Oops...',
+                            text: 'Something went wrong!',
 
+                        })
+                    })
+                })
+            }
+            else if (
+
+                res.dismiss === Swal.DismissReason.cancel
+            ) {
+                Swal.fire(
+                    'Cancelled',
+                    'Your imaginary file is safe :)',
+                    'error'
+                )
+            }
+        }
+        )
 
     }
 
-    const handleEditSubmit = async (e) => {
+    const handleEditSubmit = async () => {
         let obj = {
-            Email: email,
             FirstName: fname,
             LastName: lname,
+            Email: email,
             PhoneNumber: phone,
-
+            CNIC: cnic,
+            Address: address,
+            Country: country,
+            City: city,
+            Area: area
         }
 
-        await axios.put(`http://localhost:5000/admin/updateProfile/${id}`, obj,
-            {
-                headers: {
-                    Authorization: `Bearer ${accessToken}`,
-                }
-            }
-        ).then(function (response) {
+       let adminToken = localStorage.getItem("admin")
+        apiHandle(adminToken).then(()=>{
+            editCustomer(id,obj).then(function (response) {
 
-            setOpen(false);
-            console.log(response, "hogaya")
-            setEditModal(null)
-            setFname('')
-            setLname('')
-            setEmail('')
-            setPhone('')
-            Swal.fire(
-                'Success',
-                'Admin Edited Successfully',
-                'success',
-            ).then((e) => {
-
-            })
-            getData();
-        }).catch(err => {
-            setOpen(false);
-
-            console.log(err, "this error founnd")
-            Swal.fire({
-                icon: 'error',
-                title: 'Oops...',
-                text: 'Wrong Credentials or Something went wrong!',
-
-            }).then((e) => {
-
-                setOpen(true);
-
+                setOpen(false);
+                setEditModal(null)
+                setFname('')
+                setLname('')
+                setEmail('')
+                setPhone('')
+                Swal.fire(
+                    'Success',
+                    'Customer Edited Successfully',
+                    'success',
+                )
+                getData();
+            }).catch(err => {
+                setOpen(false);
+                setError(true)
+                setErrorMsg(err?.response?.data?.message[0])
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Oops...',
+                    text: 'Wrong Credentials or Something went wrong!',
+    
+                }).then((e) => {
+    
+                    setOpen(true);
+    
+                })
             })
         })
-
-
-
-
     }
     return (
         <>
@@ -457,6 +501,7 @@ export default function UserCustomer() {
                                             label="CNIC No (42202XXXXXXXXXXX) should be equal to 13"
                                             type="number"
                                             id="password"
+                                            value={cnic}
                                             autoComplete="cnic"
                                         />
                                     </Grid>
@@ -469,7 +514,7 @@ export default function UserCustomer() {
                                             name="Address"
                                             label="Address"
                                             type="text"
-                                            // id="password"
+                                            value={address}
                                             autoComplete="address"
                                         />
                                     </Grid>
@@ -482,7 +527,7 @@ export default function UserCustomer() {
                                             name="Country"
                                             label="Country"
                                             type="text"
-                                            // id="password"
+                                            value={country}
                                             autoComplete="country"
                                         />
                                     </Grid>
@@ -495,7 +540,7 @@ export default function UserCustomer() {
                                             name="City"
                                             label="City"
                                             type="text"
-                                            // id="password"
+                                            value={city}
                                             autoComplete="city"
                                         />
                                     </Grid>
@@ -508,7 +553,7 @@ export default function UserCustomer() {
                                             name="Area"
                                             label="Area"
                                             type="text"
-                                            // id="password"
+                                            value={area}
                                             autoComplete="area"
                                         />
                                     </Grid>
@@ -530,12 +575,11 @@ export default function UserCustomer() {
                         <TableHead>
                             <TableRow>
 
-                                <TableCell style={{ backgroundColor: 'darkcyan', color: 'white', fontSize: '20px' }}>PKAdminID</TableCell>
-                                <TableCell style={{ backgroundColor: 'darkcyan', color: 'white', fontSize: '20px' }}>UserName</TableCell>
-                                <TableCell style={{ backgroundColor: 'darkcyan', color: 'white', fontSize: '20px' }}>Name</TableCell>
-                                <TableCell style={{ backgroundColor: 'darkcyan', color: 'white', fontSize: '20px' }}>Email</TableCell>
-                                <TableCell style={{ backgroundColor: 'darkcyan', color: 'white', fontSize: '20px' }}>PhoneNumber</TableCell>
-                                <TableCell style={{ backgroundColor: 'darkcyan', color: 'white', fontSize: '20px' }}>Action</TableCell>
+                                <TableCell align='center' style={{ backgroundColor: 'darkcyan', color: 'white', fontSize: '20px' }}>PKCustomerID</TableCell>
+                                <TableCell align='center' style={{ backgroundColor: 'darkcyan', color: 'white', fontSize: '20px' }}>Name</TableCell>
+                                <TableCell align='center' style={{ backgroundColor: 'darkcyan', color: 'white', fontSize: '20px' }}>Email</TableCell>
+                                <TableCell align='center' style={{ backgroundColor: 'darkcyan', color: 'white', fontSize: '20px' }}>PhoneNumber</TableCell>
+                                <TableCell align='center' colSpan={2} style={{ backgroundColor: 'darkcyan', color: 'white', fontSize: '20px' }}>Action</TableCell>
 
 
 
@@ -548,13 +592,17 @@ export default function UserCustomer() {
                                         <>
                                             <TableRow hover={true}>
                                                 <TableCell>{e.PKAdminId || e.PKCustomerId}</TableCell>
-                                                <TableCell>{e.Username}</TableCell>
                                                 <TableCell>{e.FirstName + " " + e.LastName}</TableCell>
                                                 <TableCell>{e.Email}</TableCell>
                                                 <TableCell>{e.PhoneNumber}</TableCell>
                                                 <TableCell style={{ textAlign: 'left' }}>
                                                     <Tooltip title="Edit" onClick={() => handleEdit(e)}>
                                                         <IconButton><EditIcon color="success" fontSize="medium" />
+                                                        </IconButton></Tooltip>
+                                                </TableCell>
+                                                <TableCell style={{ textAlign: 'left' }}>
+                                                    <Tooltip title="Delete">
+                                                        <IconButton><DeleteOutlineIcon variant="contained" color="error" onClick={() => handleDelete(e.PKCustomerId)} fontSize="medium" />
                                                         </IconButton></Tooltip>
                                                 </TableCell>
                                             </TableRow>
