@@ -182,6 +182,7 @@ export default function UserSubscription() {
     // console.log(dataFromRedux)
 
     const classes = useStyles();
+    const [nodata, setNodata] = useState(false)
 
 
     const [page, setPage] = React.useState(0);
@@ -237,8 +238,15 @@ export default function UserSubscription() {
         let adminToken = localStorage.getItem('admin')
         apiHandle(adminToken).then(()=>{
             getSubscription().then(json => {
-                setData(json?.data?.data?.[0])
-                // console.log(json?.data?.data?.[0])
+                if(json?.data?.data?.[0].length === 0)
+                {
+                    setNodata(true)
+                }
+                else
+                {
+                    setNodata(false)
+                    setData(json?.data?.data?.[0])
+                }
 
             })
             .catch(err => {
@@ -251,8 +259,16 @@ export default function UserSubscription() {
         let adminToken = localStorage.getItem('admin')
         apiHandle(adminToken).then(()=>{
             getSubscriptionByPkgId(pkgId).then(json => {
-                setData(json?.data?.data)
-                // console.log(json?.data?.data)
+                if(json.data.message[0] == "No subscriptions of current package id found" || json?.data?.data?.length === 0)
+                {
+                    setNodata(true)
+                }
+                else
+                {
+                    setNodata(false)
+                    setData(json?.data?.data)
+                }
+                
             })
             .catch(err => {
                 console.log(err)
@@ -345,7 +361,7 @@ export default function UserSubscription() {
         <>
             {/* <button className='btn btn-primary' onClick={handleUpdate}>Bootstrap</button> */}
             <div className="container d-flex justify-content-between my-0">
-                <h1 className='text-center mb-5'> Subscription Details</h1>
+                <h2 className='text-center mb-3'> Subscription Details</h2>
                 {/* {
                     error && <Alert variant="danger" onClose={() => setError(false)} dismissible>
                         <p className="text-center" style={{ fontWeight: 'bold' }}>Session Expired</p>
@@ -369,7 +385,7 @@ export default function UserSubscription() {
                             onChange={(e) => setPkgId(e.target.value)} />
                     </Grid>
                     <Grid item xs={2}>
-                        <Button className=" mb-5 ms-3 " onClick={() => getDataByPkg()} size='sm' style={{ backgroundColor: 'darkCyan', fontSize: "bolder" }} variant="contained">Search </Button>
+                        <Button className=" mb-4 ms-3 " onClick={() => getDataByPkg()} size='sm' style={{ backgroundColor: 'darkCyan', fontSize: "bolder" }} variant="contained">Search </Button>
 
                     </Grid>
                 </Grid>
@@ -437,7 +453,7 @@ export default function UserSubscription() {
                         </DialogActions>
                     </Dialog>
                 </div>
-                <TableContainer className={classes.container} size='small' style={{ maxHeight: '390px', maxWidth: '1078px' }}>
+                <TableContainer className={classes.container} size='small' style={{ maxHeight: '670px', maxWidth: '1078px' }}>
                     <Table stickyHeader aria-label="sticky table" size='small' >
                         <TableHead>
                             <TableRow>
@@ -451,7 +467,13 @@ export default function UserSubscription() {
 
                             </TableRow>
                         </TableHead>
-                        <TableBody>
+                        {
+                            nodata ? <TableBody>
+                            <TableRow>
+                                <TableCell colSpan={4} align="center"><Typography> No data in table yet </Typography></TableCell>
+                            
+                            </TableRow>
+                            </TableBody> :<TableBody>
                             {
                                 data?.map((e, i) => {
                                     return (
@@ -472,6 +494,8 @@ export default function UserSubscription() {
                                 })
                             }
                         </TableBody>
+                        }
+                        
                     </Table>
                 </TableContainer>
                 <TablePagination

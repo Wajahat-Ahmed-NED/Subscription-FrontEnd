@@ -223,8 +223,15 @@ export default function UserCustomer() {
         let adminToken = localStorage.getItem('admin')
         apiHandle(adminToken).then(()=>{
             getCustomerBySubscriptionId(subsId).then(json => {
-                setData(json.data.data)
-                console.log(json.data.data)
+                if(json.data.message[0] == "Customer is not subscribed to this subscription" || json.data.data[0].length === 0)
+                {
+                    setNodata(true)
+                }
+                else
+                {
+                    setNodata(false)
+                    setData(json.data.data)
+                }
                 })
                 .catch(err => {
                     Swal.fire({
@@ -244,6 +251,7 @@ export default function UserCustomer() {
         
     }, [])
     // console.log(accessToken)
+    const [nodata, setNodata] = useState(true)
 
     const [fname, setFname] = useState('')
     const [lname, setLname] = useState('')
@@ -383,14 +391,14 @@ export default function UserCustomer() {
         <>
             {/* <button className='btn btn-primary' onClick={handleUpdate}>Bootstrap</button> */}
             <div className="container d-flex justify-content-between my-0">
-                <h1 className='text-center mb-5'> Customer Details</h1>
+                <h2 className='text-center mb-3'> Customer Details</h2>
                 {/* {
                     error && <Alert variant="danger" onClose={() => setError(false)} dismissible>
                         <p className="text-center" style={{ fontWeight: 'bold' }}>{data}</p>
                     </Alert>
                 } */}
                 {/* <Button className="ms-auto me-3 my-3" onClick={getData} size='small' style={{ backgroundColor: 'darkCyan' }} variant="contained">Get Data</Button> */}
-                <Button className=" mb-5 me-3 " onClick={handleOpen} size='sm' style={{ backgroundColor: 'darkCyan', fontSize: "bolder" }} variant="contained">Create Customer <AddIcon /></Button>
+                <Button className=" mb-3 me-3 " onClick={handleOpen} size='sm' style={{ backgroundColor: 'darkCyan', fontSize: "bolder" }} variant="contained">Create Customer <AddIcon /></Button>
 
 
             </div>
@@ -407,7 +415,7 @@ export default function UserCustomer() {
                             onChange={(e) => setSubsId(e.target.value)} />
                     </Grid>
                     <Grid item xs={2}>
-                        <Button className=" mb-5 ms-3 " onClick={() => getData()} size='sm' style={{ backgroundColor: 'darkCyan', fontSize: "bolder" }} variant="contained">Search </Button>
+                        <Button className=" mb-4 ms-3 " onClick={() => getData()} size='sm' style={{ backgroundColor: 'darkCyan', fontSize: "bolder" }} variant="contained">Search </Button>
 
                     </Grid>
                 </Grid>
@@ -570,7 +578,7 @@ export default function UserCustomer() {
                         </DialogActions>
                     </Dialog>
                 </div>
-                <TableContainer className={classes.container} size='small' style={{ maxHeight: '390px', maxWidth: '1078px' }}>
+                <TableContainer className={classes.container} size='small' style={{ maxHeight: '670px', maxWidth: '1078px' }}>
                     <Table stickyHeader aria-label="sticky table" size='small' >
                         <TableHead>
                             <TableRow>
@@ -581,11 +589,15 @@ export default function UserCustomer() {
                                 <TableCell align='center' style={{ backgroundColor: 'darkcyan', color: 'white', fontSize: '20px' }}>PhoneNumber</TableCell>
                                 <TableCell align='center' colSpan={2} style={{ backgroundColor: 'darkcyan', color: 'white', fontSize: '20px' }}>Action</TableCell>
 
-
-
                             </TableRow>
                         </TableHead>
-                        <TableBody>
+                        {
+                            nodata ? <TableBody>
+                            <TableRow>
+                                <TableCell colSpan={5} align="center"><Typography> No data in table yet </Typography></TableCell>
+                            
+                            </TableRow>
+                            </TableBody> :<TableBody>
                             {
                                 data?.map((e, i) => {
                                     return (
@@ -612,6 +624,8 @@ export default function UserCustomer() {
                                 })
                             }
                         </TableBody>
+                        }
+                        
                     </Table>
                 </TableContainer>
                 <TablePagination

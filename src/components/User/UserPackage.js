@@ -47,7 +47,7 @@ import EditIcon from '@mui/icons-material/Edit';
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
 // import IconButton from '@mui/material/IconButton';
 import Tooltip from '@mui/material/Tooltip';
-import Alert  from 'react-bootstrap/Alert';
+import Alert from 'react-bootstrap/Alert';
 import { apiHandle } from '../api/user/api'
 import { addPackage, getPackage, deletePackage, editPackage, getPackageById } from '../api/user/userPackageApi';
 
@@ -56,11 +56,14 @@ const style = {
     top: '50%',
     left: '50%',
     transform: 'translate(-50%, -50%)',
-    width: 400,
+    width: 450,
+    overflow:'scroll',
+    maxHeight:'500px',
     bgcolor: 'background.paper',
     border: '2px solid darkcyan',
     boxShadow: 24,
-    p: 4,
+    pb: 4,
+    pl: 4
 };
 
 const columns = [
@@ -178,6 +181,7 @@ export default function UserPackage() {
     //   console.log(dataFromRedux)
     // }
     // console.log(dataFromRedux)
+    const [nodata, setNodata] = useState(false)
 
     const classes = useStyles();
     const [errorMsg, setErrorMsg] = useState('')
@@ -191,7 +195,7 @@ export default function UserPackage() {
     const [rowsPerPage, setRowsPerPage] = React.useState(10);
     const [open, setOpen] = React.useState(false);
     const [accessToken, setAccessToken] = React.useState('');
-    
+
 
     const [refreshToken, setRefreshTokn] = React.useState('');
     const history = useHistory();
@@ -209,22 +213,22 @@ export default function UserPackage() {
         setPhone('')
     };
 
-    const getDetails = async (e) =>{
-        handleModalOpen()
+    const getDetails = async (e) => {
+        // handleModalOpen()
         let adminToken = localStorage.getItem("admin")
-        apiHandle(adminToken).then(()=>{
-        getPackageById(e).then((res) => {
-            
-            console.log("response is ", res?.data?.data?.[0])
-            setcurrentPackage(res?.data?.data?.[0])
-            // console.log(currentPackage)
-            handleModalOpen()
-        }).catch(err => {
+        apiHandle(adminToken).then(() => {
+            getPackageById(e).then((res) => {
 
-            console.log(err?.response?.data?.message)
-            console.log(err, "this error founnd")
+                // console.log("response is ", res?.data?.data?.[0])
+                handleModalOpen()
+                setcurrentPackage(res?.data?.data?.[0])
+                // console.log(currentPackage)
+            }).catch(err => {
+
+                console.log(err?.response?.data?.message)
+                console.log(err, "this error founnd")
+            })
         })
-    })
     }
 
 
@@ -291,8 +295,14 @@ export default function UserPackage() {
         let adminToken = localStorage.getItem('admin')
         apiHandle(adminToken).then(() => {
             getPackage().then(json => {
-                setData(json.data.data[0])
-                console.log(json.data.data[0])
+
+                if (json.data.message[0] == "No packages of current user found" || json.data.data[0].length === 0) {
+                    setNodata(true)
+                }
+                else {
+                    setNodata(false)
+                    setData(json.data.data[0])
+                }
             })
                 .catch(err => {
                     console.log(err)
@@ -329,6 +339,7 @@ export default function UserPackage() {
         // e.preventDefault()
 
         setEditModal(e)
+        setModalOpen(false)
         setpackageName(e.PackageName)
         setpackageCost(e.PackageCost)
         setperiod(e.SubscriptionPeriod)
@@ -344,6 +355,7 @@ export default function UserPackage() {
 
     }
     const handleDelete = async (e) => {
+        setModalOpen(false)
         Swal.fire({
             title: 'Are you sure?',
             text: "You won't be able to revert this!",
@@ -403,8 +415,8 @@ export default function UserPackage() {
         }
 
         let adminToken = localStorage.getItem('admin')
-        apiHandle(adminToken).then(()=>{
-            editPackage(id,obj).then(function (response) {
+        apiHandle(adminToken).then(() => {
+            editPackage(id, obj).then(function (response) {
                 setOpen(false);
                 setEditModal(null)
                 setError(false)
@@ -418,7 +430,7 @@ export default function UserPackage() {
                     'Package Edited Successfully',
                     'success',
                 ).then((e) => {
-    
+
                 })
                 getData();
             }).catch(err => {
@@ -430,15 +442,15 @@ export default function UserPackage() {
                     icon: 'error',
                     title: 'Oops...',
                     text: 'Wrong Credentials or Something went wrong!',
-    
+
                 }).then((e) => {
-    
+
                     setOpen(true);
-    
+
                 })
             })
         })
-        
+
 
 
 
@@ -448,102 +460,71 @@ export default function UserPackage() {
         <>
             {/* <button className='btn btn-primary' onClick={handleUpdate}>Bootstrap</button> */}
             <div className="container d-flex justify-content-between my-0">
-                <h1 className='text-center mb-5'> Package Details</h1>
+                <h2 className='text-center mb-3'> Package Details</h2>
                 {/* {
                     error && <Alert variant="danger" onClose={() => setError(false)} dismissible>
                         <p className="text-center" style={{ fontWeight: 'bold' }}>Session Expired</p>
                     </Alert>
                 } */}
                 {/* <Button className="ms-auto me-3 my-3" onClick={getData} size='small' style={{ backgroundColor: 'darkCyan' }} variant="contained">Get Data</Button> */}
-                <Button className=" mb-5 me-3 " onClick={handleOpen} size='sm' style={{ backgroundColor: 'darkCyan', fontSize: "bolder" }} variant="contained">Add Package <AddIcon /></Button>
+                <Button className=" mb-3 me-3 " onClick={handleOpen} size='sm' style={{ backgroundColor: 'darkCyan', fontSize: "bolder" }} variant="contained">Add Package <AddIcon /></Button>
 
 
             </div>
             <Modal
                 open={modalOpen}
-                onClose={handleModalClose}
+                // onClose={handleModalClose}
                 aria-labelledby="modal-modal-title"
                 aria-describedby="modal-modal-description"
             >
+                
                 <Box sx={style}>
-                    <Typography id="modal-modal-title" variant="h6" component="h3" align="center" sx={{mb:3}}>
-                    Package Detail
+                    <Box  style={{width:"100%",float:"right"}}>
+                    <Tooltip style={{ float: 'right', cursor: 'pointer'}} onClick={handleModalClose}  title="Close">
+                            <IconButton><CloseIcon  style={{ float: 'right', cursor: 'pointer'}} fontSize="medium" /></IconButton>
+                                </Tooltip>
+                        <Tooltip title="Edit" style={{ float: 'right', cursor: 'pointer'}} onClick={() => handleEdit(currentPackage)}>
+                                    <IconButton><EditIcon color="success" fontSize="medium" />
+                                    </IconButton></Tooltip>
+                                <Tooltip style={{ float: 'right', cursor: 'pointer'}} title="Delete">
+                                    <IconButton><DeleteOutlineIcon variant="contained" color="error" onClick={() => handleDelete(currentPackage?.PKPackageId)} fontSize="medium" />
+                                    </IconButton></Tooltip>
+                    </Box>
+                    <Box  style={{width:"fit-content"}}>
+                    <Typography id="modal-modal-title" variant="h6" component="h3" align="center" sx={{ mb: 3 }}>
+                        Package Detail
                     </Typography>
+                    </Box>
+                    
 
                     <Grid container spacing={2}>
 
-                        {currentPackage?.PackageName && <Grid item xs={12}>
-                            <TextField
-                                disabled
-                                fullWidth
-                                inputProps={{
-                                    style: { color: 'black' }
-                                }}
-                                InputLabelProps={{
-                                    style: { color: 'darkcyan' },
-                                  }}
-                                label="Package Name"
-                                value={currentPackage?.PackageName}
-                            />
+                        {currentPackage?.PackageName && <Grid item xs={5}>
+                            <Typography style={{ color: "darkcyan" }}>Package Name</Typography>
+                            <Typography style={{ color: "black" }}>{currentPackage?.PackageName}</Typography>
                         </Grid>}
-                        {currentPackage?.PackageCost && <Grid item xs={12}>
-                            <TextField
-                                disabled
-                                fullWidth
-                                inputProps={{
-                                    style: { color: 'black' }
-                                }}
-                                InputLabelProps={{
-                                    style: { color: 'darkcyan' },
-                                  }}
-                                value={currentPackage?.PackageCost}
-                                label="Package Cost"
-                            />
+                        {currentPackage?.PackageCost && <Grid item xs={5}>
+                        <Typography style={{ color: "darkcyan" }}>Package Cost</Typography>
+                            <Typography style={{ color: "black" }}>{currentPackage?.PackageCost}</Typography>
+                            
                         </Grid>}
 
-                       {currentPackage?.SubscriptionPeriod &&  <Grid item xs={12}>
-                            <TextField
-                                disabled
-                                fullWidth
-                                inputProps={{
-                                    style: { color: 'black' }
-                                }}
-                                InputLabelProps={{
-                                    style: { color: 'darkcyan' },
-                                  }}
-                                value={currentPackage?.SubscriptionPeriod}
-                                label="Subscription Period"
-                                
-                            />
+                        {currentPackage?.SubscriptionPeriod && <Grid item xs={5}>
+                        <Typography style={{ color: "darkcyan" }}>Subscription Period</Typography>
+                            <Typography style={{ color: "black" }}>{currentPackage?.SubscriptionPeriod}</Typography>
                         </Grid>}
-                        {currentPackage?.createdAt && <Grid item xs={12}>
-                            <TextField
-                                disabled
-                                fullWidth
-                                inputProps={{
-                                    style: { color: 'black' }
-                                }}
-                                InputLabelProps={{
-                                    style: { color: 'darkcyan' },
-                                  }}
-                                value={currentPackage?.createdAt.split("T")[0]}
-                                label="Creation Date"
-                            />
+
+
+                        {currentPackage?.createdAt && <Grid item xs={5}>
+                        <Typography style={{ color: "darkcyan" }}>Creation Date</Typography>
+                            <Typography style={{ color: "black" }}>{currentPackage?.createdAt.split("T")[0]}</Typography>
                         </Grid>}
-                        {currentPackage?.updatedAt && <Grid item xs={12}>
-                            <TextField
-                                disabled
-                                fullWidth
-                                inputProps={{
-                                    style: { color: 'black' }
-                                }}
-                                InputLabelProps={{
-                                    style: { color: 'darkcyan' },
-                                  }}
-                                value={currentPackage?.updatedAt.split("T")[0]}
-                                label="Updation Date"
-                            />
+
+                        {currentPackage?.updatedAt && <Grid item xs={5}>
+                        <Typography style={{ color: "darkcyan" }}>Updation Date</Typography>
+                            <Typography style={{ color: "black" }}>{currentPackage?.updatedAt.split("T")[0]}</Typography>
                         </Grid>}
+
                     </Grid>
                 </Box>
             </Modal>
@@ -557,11 +538,11 @@ export default function UserPackage() {
                             {!EditModal ? 'Add Package' : 'Edit Package Details'}
                         </DialogTitle>
                         <DialogContent dividers className='mx-3'>
-                        {
-                    error && <Alert variant="danger" onClose={() => setError(false)} dismissible>
-                        <p className="text-center" style={{ fontWeight: 'bold' }}>{errorMsg}</p>
-                    </Alert>
-                }
+                            {
+                                error && <Alert variant="danger" onClose={() => setError(false)} dismissible>
+                                    <p className="text-center" style={{ fontWeight: 'bold' }}>{errorMsg}</p>
+                                </Alert>
+                            }
                             <form className={classes.form} noValidate>
                                 <Grid container spacing={2}>
 
@@ -592,7 +573,7 @@ export default function UserPackage() {
                                             value={packageCost}
                                         />
                                     </Grid>
-                                    <Grid item xs={12}>
+                                    <Grid item xs={5}>
                                         <TextField
                                             onChange={(e) => setperiod(e.target.value)}
                                             variant="standard"
@@ -612,7 +593,7 @@ export default function UserPackage() {
 
 
 
-                                    {/* <Grid item xs={12}>
+                                    {/* <Grid item xs={5}>
                     <TextField
                       onChange={(e) => setCnic(e.target.value)}
                       variant="standard"
@@ -631,14 +612,13 @@ export default function UserPackage() {
                         <DialogActions className='mx-4 mb-2'>
                             <Button fullWidth onClick={!EditModal ? (e) => { handleSubmit(e) } : (e) => { handleEditSubmit(e) }} variant="contained" style={{ backgroundColor: "darkcyan" }}>
                                 {
-
                                     !EditModal ? 'Add Package' : 'Edit Package Details'
                                 }
                             </Button>
                         </DialogActions>
                     </Dialog>
                 </div>
-                <TableContainer className={classes.container} size='small' style={{ maxHeight: '390px', maxWidth: '1078px' }}>
+                <TableContainer className={classes.container} size='small' style={{ maxHeight: '670px', maxWidth: '1078px' }}>
                     <Table stickyHeader aria-label="sticky table" size='small' >
                         <TableHead>
                             <TableRow>
@@ -653,36 +633,43 @@ export default function UserPackage() {
 
                             </TableRow>
                         </TableHead>
-                        <TableBody>
-                            {
-                                data?.map((e, i) => {
-                                    return (
-                                        <>
-                                            <TableRow hover={true}>
-                                                <TableCell>{e.PKPackageId}</TableCell>
-                                                <TableCell>{e.PackageName}</TableCell>
-                                                <TableCell>{e.PackageCost}</TableCell>
-                                                <TableCell>{e.SubscriptionPeriod}</TableCell>
-                                                <TableCell><Button variant="outlined" onClick={()=>getDetails(e)}>Details</Button></TableCell>
-                                                <TableCell style={{ textAlign: 'left' }}>
-                                                    <Tooltip title="Edit" onClick={() => handleEdit(e)}>
-                                                        <IconButton><EditIcon color="success" fontSize="medium" />
-                                                        </IconButton></Tooltip>
-                                                </TableCell>
-                                                <TableCell style={{ textAlign: 'left' }}>
-                                                    <Tooltip title="Delete">
-                                                        <IconButton><DeleteOutlineIcon variant="contained" color="error" onClick={() => handleDelete(e.PKPackageId)} fontSize="medium" />
-                                                        </IconButton></Tooltip>
-                                                </TableCell>
-                                                
+                        {
+                            nodata ? <TableBody>
+                                <TableRow>
+                                    <TableCell colSpan={5} align="center"><Typography> No data in table yet </Typography></TableCell>
 
-                                            </TableRow>
+                                </TableRow>
+                            </TableBody> : <TableBody>
+                                {
+                                    data?.map((e, i) => {
+                                        return (
+                                            <>
+                                                <TableRow hover={true}>
+                                                    <TableCell>{e.PKPackageId}</TableCell>
+                                                    <TableCell>{e.PackageName}</TableCell>
+                                                    <TableCell>{e.PackageCost}</TableCell>
+                                                    <TableCell>{e.SubscriptionPeriod}</TableCell>
+                                                    <TableCell><Button variant="outlined" onClick={() => getDetails(e)}>Details</Button></TableCell>
+                                                    <TableCell style={{ textAlign: 'left' }}>
+                                                        <Tooltip title="Edit" onClick={() => handleEdit(e)}>
+                                                            <IconButton><EditIcon color="success" fontSize="medium" />
+                                                            </IconButton></Tooltip>
+                                                    </TableCell>
+                                                    <TableCell style={{ textAlign: 'left' }}>
+                                                        <Tooltip title="Delete">
+                                                            <IconButton><DeleteOutlineIcon variant="contained" color="error" onClick={() => handleDelete(e.PKPackageId)} fontSize="medium" />
+                                                            </IconButton></Tooltip>
+                                                    </TableCell>
 
-                                        </>
-                                    )
-                                })
-                            }
-                        </TableBody>
+                                                </TableRow>
+
+                                            </>
+                                        )
+                                    })
+                                }
+                            </TableBody>
+                        }
+
                     </Table>
                 </TableContainer>
                 <TablePagination

@@ -74,11 +74,14 @@ const style = {
     top: '50%',
     left: '50%',
     transform: 'translate(-50%, -50%)',
-    width: 400,
+    width: 500,
+    overflow:'scroll',
+    maxHeight:'500px',
     bgcolor: 'background.paper',
     border: '2px solid darkcyan',
     boxShadow: 24,
-    p: 2,
+    pb: 4,
+    pl: 4
 };
 
 const DialogTitle = withStyles(styles)((props) => {
@@ -114,7 +117,6 @@ export default function ContactPage() {
     const handleOpen = () => setOpen(true);
 
     const dataFromRedux = useSelector((a) => a)
-    console.log(dataFromRedux)
 
     const classes = useStyles();
 
@@ -130,7 +132,7 @@ export default function ContactPage() {
     const [modalOpen, setModalOpen] = React.useState(false);
     const handleModalOpen = () => setModalOpen(true);
     const handleModalClose = () => setModalOpen(false);
-
+    const [nodata, setNodata] = useState(false)
     const handleClickOpen = () => {
         setOpen(true);
     };
@@ -162,8 +164,6 @@ export default function ContactPage() {
                 apiHandle(adminToken).then(() => {
                     deleteUser(e).then(function (response) {
 
-                        console.log(response, "hogaya")
-
                         Swal.fire(
                             'Success',
                             'User Deleted Successfully',
@@ -171,7 +171,6 @@ export default function ContactPage() {
                         )
                         fetchData();
                     }).catch(err => {
-                        console.log(err.message, "this error founnd")
                         Swal.fire({
                             icon: 'error',
                             title: 'Oops...',
@@ -209,13 +208,9 @@ export default function ContactPage() {
             PhoneNumber: phone,
             CNIC: cnic
         }
-
-        console.log("Password length", obj.Password.length)
         let adminToken = localStorage.getItem("admin")
         apiHandle(adminToken).then(() => {
             addUser(obj).then(function (response) {
-
-                console.log(response, "hogaya")
 
                 Swal.fire(
                     'Success',
@@ -225,7 +220,6 @@ export default function ContactPage() {
 
                 fetchData();
             }).catch(err => {
-                console.log(err, "this error founnd")
                 Swal.fire({
                     icon: 'error',
                     title: 'Oops...',
@@ -258,8 +252,15 @@ export default function ContactPage() {
         let adminToken = localStorage.getItem("admin")
         apiHandle(adminToken).then(() => {
             getData().then((json) => {
-                setData(json.data.data)
-                console.log(json.data.data)
+                if(json.data.message[0] == "No users found" || json.data.data[0].length === 0)
+                {
+                    setNodata(true)
+                }
+                else
+                {
+                    setNodata(false)
+                    setData(json.data.data)
+                }
             }).catch((err) => console.log(err))
         })
     }
@@ -270,7 +271,6 @@ export default function ContactPage() {
 
         fetchData()
     }, [])
-    console.log(accessToken)
 
     const [fname, setFname] = useState('')
     const [lname, setLname] = useState('')
@@ -295,43 +295,23 @@ export default function ContactPage() {
 
 
     const handleEdit = async (e) => {
-        // e.preventDefault()
-
         setEditModal(e)
         setFname(e.FirstName)
         setLname(e.LastName)
         setEmail(e.Email)
         setPhone(e.PhoneNumber)
-        // setCnic(e.Email)
-        // setUser(e.user)
-        console.log(e)
         setOpen(true);
         setId(e.PKUserId)
-
-
-
-
     }
     const getDetails = async (e) => {
-        handleModalOpen()
+        // handleModalOpen()
         let adminToken = localStorage.getItem("admin")
         apiHandle(adminToken).then(() => {
             getUser(e).then((res) => {
-
-                console.log("response is ", res?.data?.data?.[0])
+                handleModalOpen()
                 setCurrentUser(res?.data?.data?.[0])
-                // console.log(currentUser)
-                currentUser && handleModalOpen()
             }).catch(err => {
-
-
                 console.log(err, "this error founnd")
-                // Swal.fire({
-                //     icon: 'error',
-                //     title: 'Oops...',
-                //     text: 'Wrong Credentials or Something went wrong!',
-
-                // })
             })
         })
     }
@@ -359,9 +339,6 @@ export default function ContactPage() {
                         )
                         fetchData();
                     }).catch(err => {
-
-
-                        console.log(err, "this error founnd")
                         Swal.fire({
                             icon: 'error',
                             title: 'Oops...',
@@ -408,9 +385,6 @@ export default function ContactPage() {
                         )
                         fetchData();
                     }).catch(err => {
-
-
-                        console.log(err, "this error founnd")
                         Swal.fire({
                             icon: 'error',
                             title: 'Oops...',
@@ -451,7 +425,6 @@ export default function ContactPage() {
         ).then(function (response) {
 
             setOpen(false);
-            console.log(response, "hogaya")
             setEditModal(null)
             setFname('')
             setLname('')
@@ -467,8 +440,6 @@ export default function ContactPage() {
             fetchData();
         }).catch(err => {
             setOpen(false);
-
-            console.log(err, "this error founnd")
             Swal.fire({
                 icon: 'error',
                 title: 'Oops...',
@@ -494,169 +465,86 @@ export default function ContactPage() {
     return (
         <>
             <div className="container d-flex justify-content-between my-0">
-                <h1 className='text-center mb-5'> Users Details</h1>
-                <Button className=" mb-5 me-3 " onClick={handleOpen} size='sm' style={{ backgroundColor: 'darkCyan', fontSize: "bolder" }} variant="contained">Create user <AddIcon /></Button>
+                <h2 className='text-center mb-3'> Users Details</h2>
+                <Button className=" mb-3 me-3 " onClick={handleOpen} size='sm' style={{ backgroundColor: 'darkCyan', fontSize: "bolder" }} variant="contained">Create user <AddIcon /></Button>
 
             </div>
 
             <Modal
                 open={modalOpen}
-                onClose={handleModalClose}
+                // onClose={handleModalClose}
                 aria-labelledby="modal-modal-title"
                 aria-describedby="modal-modal-description"
             >
                 <Box sx={style}>
+                <Box  style={{width:"100%",float:"right"}}>
+                    <Tooltip onClick={handleModalClose}  style={{ float: 'right', cursor: 'pointer'}} title="Close">
+                            <IconButton><CloseIcon style={{ float: 'right', cursor: 'pointer'}} fontSize="medium" /></IconButton>
+                                </Tooltip>
+                    </Box>
+                    <Box  style={{width:"fit-content"}}>
                     <Typography id="modal-modal-title" variant="h6" component="h3" align="center" sx={{ mb: 3 }}>
                         User Detail
                     </Typography>
+                    </Box>
+                    
 
                     <Grid container spacing={2}>
 
                         {currentUser?.FirstName && <Grid item xs={5}>
-                            <TextField
-                                disabled
-                                fullWidth
-                                inputProps={{
-                                    style: { color: 'black' }
-                                }}
-                                InputLabelProps={{
-                                    style: { color: 'darkcyan' },
-                                }}
-                                label="First Name"
-                                value={currentUser?.FirstName}
-                            />
+                        <Typography style={{ color: "darkcyan" }}>First Name</Typography>
+                            <Typography style={{ color: "black" }}>{currentUser?.FirstName}</Typography>
+                          
                         </Grid>}
-                        {currentUser?.LastName && <Grid item xs={5} className="ms-auto">
-                            <TextField
-                                disabled
-                                fullWidth
-                                inputProps={{
-                                    style: { color: 'black' }
-                                }}
-                                InputLabelProps={{
-                                    style: { color: 'darkcyan' },
-                                }}
-                                value={currentUser?.LastName}
-                                label="Last Name"
-                            />
-                        </Grid>}
-                        {currentUser?.Username && <Grid item xs={12}>
-                            <TextField
-                                disabled
-                                fullWidth
-                                inputProps={{
-                                    style: { color: 'black' }
-                                }}
-                                InputLabelProps={{
-                                    style: { color: 'darkcyan' },
-                                }}
-                                value={currentUser?.Username}
-                                label="Username"
-
-                            />
+                        {currentUser?.LastName && <Grid item xs={5}>
+                        <Typography style={{ color: "darkcyan" }}>Last Name</Typography>
+                            <Typography style={{ color: "black" }}>{currentUser?.LastName}</Typography>
                         </Grid>}
 
-                        {currentUser?.Email && <Grid item xs={12}>
-                            <TextField
-                                disabled
-                                fullWidth
-                                inputProps={{
-                                    style: { color: 'black' }
-                                }}
-                                InputLabelProps={{
-                                    style: { color: 'darkcyan' },
-                                }}
-                                value={currentUser?.Email}
-                                label="Email Address"
+                        {currentUser?.Username && <Grid item xs={5}>
+                        <Typography style={{ color: "darkcyan" }}>Username</Typography>
+                            <Typography style={{ color: "black" }}>{currentUser?.Username}</Typography>
+                            
+                        </Grid>}
 
-                            />
+                        {currentUser?.Email && <Grid item xs={5}>
+                        <Typography style={{ color: "darkcyan" }}>Email Address</Typography>
+                            <Typography style={{ color: "black" }}>{currentUser?.Email}</Typography>
+                         
                         </Grid>}
 
 
 
-                        {currentUser?.PhoneNumber && <Grid item xs={12}>
-                            <TextField
-                                disabled
-                                fullWidth
-                                inputProps={{
-                                    style: { color: 'black' }
-                                }}
-                                InputLabelProps={{
-                                    style: { color: 'darkcyan' },
-                                }}
-                                value={currentUser?.PhoneNumber}
-                                label="Phone No"
-                            />
+                        {currentUser?.PhoneNumber && <Grid item xs={5}>
+                        <Typography style={{ color: "darkcyan" }}>Phone No</Typography>
+                            <Typography style={{ color: "black" }}>{currentUser?.PhoneNumber}</Typography>
+                          
                         </Grid>}
-                        {currentUser?.CNIC && <Grid item xs={12}>
-                            <TextField
-                                disabled
-                                fullWidth
-                                inputProps={{
-                                    style: { color: 'black' }
-                                }}
-                                InputLabelProps={{
-                                    style: { color: 'darkcyan' },
-                                }}
-                                value={currentUser?.CNIC}
-                                label="CNIC No"
-                            />
+                        {currentUser?.CNIC && <Grid item xs={5}>
+                        <Typography style={{ color: "darkcyan" }}>CNIC No</Typography>
+                            <Typography style={{ color: "black" }}>{currentUser?.CNIC}</Typography>
+                           
                         </Grid>}
-                        {currentUser?.createdAt && <Grid item xs={12}>
-                            <TextField
-                                disabled
-                                fullWidth
-                                inputProps={{
-                                    style: { color: 'black' }
-                                }}
-                                InputLabelProps={{
-                                    style: { color: 'darkcyan' },
-                                }}
-                                value={currentUser?.createdAt.split("T")[0]}
-                                label="Creation Date"
-                            />
+
+                        {currentUser?.createdAt && <Grid item xs={5}>
+                        <Typography style={{ color: "darkcyan" }}>Creation Date</Typography>
+                            <Typography style={{ color: "black" }}>{currentUser?.createdAt.split("T")[0]}</Typography>
+                           
                         </Grid>}
-                        {currentUser?.updatedAt && <Grid item xs={12}>
-                            <TextField
-                                disabled
-                                fullWidth
-                                inputProps={{
-                                    style: { color: 'black' }
-                                }}
-                                InputLabelProps={{
-                                    style: { color: 'darkcyan' },
-                                }}
-                                value={currentUser?.updatedAt.split("T")[0]}
-                                label="Updation Date"
-                            />
+
+                        {currentUser?.updatedAt && <Grid item xs={5}>
+                        <Typography style={{ color: "darkcyan" }}>Updation Date</Typography>
+                            <Typography style={{ color: "black" }}>{currentUser?.updatedAt.split("T")[0]}</Typography>
                         </Grid>}
-                        {currentUser?.SuspendedDate && <Grid item xs={12}>
-                            <TextField
-                                disabled
-                                fullWidth
-                                inputProps={{
-                                    style: { color: 'black' }
-                                }}
-                                InputLabelProps={{
-                                    style: { color: 'darkcyan' },
-                                }}
-                                value={currentUser?.SuspendedDate.split("T")[0]}
-                                label="Suspension Date"
-                            />
+
+                        {currentUser?.SuspendedDate && <Grid item xs={5}>
+                        <Typography style={{ color: "darkcyan" }}>Suspension Date</Typography>
+                            <Typography style={{ color: "black" }}>{currentUser?.SuspendedDate.split("T")[0]}</Typography>
                         </Grid>}
-                        {currentUser?.TemporarySuspendedDate && <Grid item xs={12}>
-                            <TextField
-                                disabled
-                                fullWidth
-                                inputProps={{
-                                    style: { color: 'black' }
-                                }}
-                                InputLabelProps={{
-                                    style: { color: 'darkcyan' },
-                                }}
-                                value={currentUser?.TemporarySuspendedDate.split("T")[0]}
-                                label="Temporary Suspension Date"
-                            />
+
+                        {currentUser?.TemporarySuspendedDate && <Grid item xs={5}>
+                        <Typography style={{ color: "darkcyan" }}>Temporary Suspension Date</Typography>
+                            <Typography style={{ color: "black" }}>{currentUser?.TemporarySuspendedDate.split("T")[0]}</Typography>
                         </Grid>}
                     </Grid>
                 </Box>
@@ -790,7 +678,7 @@ export default function ContactPage() {
                         </DialogActions>
                     </Dialog>
                 </div>
-                <TableContainer className={classes.container} style={{ maxHeight: '390px', maxWidth: '1078px' }}>
+                <TableContainer className={classes.container} style={{ maxHeight: '670px', maxWidth: '1078px' }}>
                     <Table stickyHeader aria-label="sticky table" size='small' >
                         <TableHead >
                             <TableRow >
@@ -807,7 +695,14 @@ export default function ContactPage() {
 
                             </TableRow>
                         </TableHead>
-                        <TableBody>
+                        {
+                            nodata ? <TableBody>
+                                <TableRow>
+                                    <TableCell colSpan={7} align="center"><Typography> No data in table yet </Typography></TableCell>
+                                
+                                </TableRow>
+                                </TableBody> :
+<TableBody>
                             {
 
                                 data[0]?.map((e, i) => {
@@ -828,20 +723,17 @@ export default function ContactPage() {
                                                         <IconButton><DeleteOutlineIcon variant="contained" color="error" onClick={() => handleDelete(e.PKUserId)} fontSize="medium" />
                                                         </IconButton></Tooltip>
                                                 </TableCell>
-                                                <TableCell style={{ color: 'red' }}>
-                                                    {
-                                                        !e.IsSuspended ? <Button color="success" variant="contained" onClick={() => handleSuspend(e)}>Suspend</Button> : <Typography>Suspended</Typography>
-                                                    }
-                                                </TableCell>
                                                 {
-                                                    !e.IsTemporarySuspended ? <TableCell>
+                                                    e.IsSuspended ? <TableCell style={{ color: 'red' }}>
+                                                        <Typography>Suspended</Typography>
+                                                    </TableCell> : <> <TableCell> <Button color="success" variant="contained" onClick={() => handleSuspend(e)}>Suspend</Button></TableCell>
                                                         {
-                                                            !e.IsSuspended && <Button color="success" variant="contained" style={{ width: 'max-content' }} onClick={() => handleTempSuspend(e)}>Temp Suspend</Button> 
-                                                        }
-                                                    </TableCell> : <TableCell style={{ color: 'red' }}><Typography style={{ width: 'max-content' }}>Temporary Suspended </Typography></TableCell>
+                                                            e.IsTemporarySuspended ? <TableCell style={{ color: 'red' }}><Typography style={{ width: 'max-content' }}>Temporary Suspended </Typography></TableCell> :
+                                                                <TableCell><Button color="success" variant="contained" style={{ width: 'max-content' }} onClick={() => handleTempSuspend(e)}>Temp Suspend</Button>
+
+                                                                </TableCell>
+                                                        }</>
                                                 }
-
-
                                             </TableRow>
 
                                         </>
@@ -850,6 +742,8 @@ export default function ContactPage() {
 
                             }
                         </TableBody>
+                        }
+                        
                     </Table>
                 </TableContainer>
                 <TablePagination

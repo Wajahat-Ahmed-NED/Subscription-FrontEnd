@@ -54,14 +54,15 @@ const style = {
     top: '50%',
     left: '50%',
     transform: 'translate(-50%, -50%)',
-    width: 500,
+    width: 450,
     overflow:'scroll',
-    height:'fit-content',
+    maxHeight:'500px',
     display:'block',
     bgcolor: 'background.paper',
     border: '2px solid darkcyan',
     boxShadow: 24,
-    p: 4,
+    pb: 4,
+    pl: 4
 };
 
 const useStyles = makeStyles((theme) => ({
@@ -151,6 +152,7 @@ export default function ContactPage() {
     const [accessToken, setAccessToken] = React.useState('');
     const [refreshToken, setRefreshTokn] = React.useState('');
     const history = useHistory();
+    const [nodata, setNodata] = useState(false)
 
 
     const [openNew, setOpenNew] = React.useState(false);
@@ -177,8 +179,15 @@ export default function ContactPage() {
         let adminToken = localStorage.getItem("admin")
         apiHandle(adminToken).then(()=>{
         getSubscriptions().then((json) => {
-            setData(json.data.data)
-            // console.log(json.data.data)
+            if(json.data.message[0] == "No subscriptions found" || json.data.data[0].length === 0)
+                {
+                    setNodata(true)
+                }
+                else
+                {
+                    setNodata(false)
+                    setData(json.data.data)
+                }
         }).catch((err) => console.log(err))
     })
     }
@@ -214,16 +223,16 @@ export default function ContactPage() {
 
 
     const getDetails = async (e) =>{
-        handleModalOpen()
+        // handleModalOpen()
         let adminToken = localStorage.getItem("admin")
         apiHandle(adminToken).then(()=>{
         getSubscriptionById(e).then((res) => {
             
             
+            handleModalOpen()
             setcurrentSubscription(res)
             
             // console.log(currentSubscription)
-            handleModalOpen()
         }).catch(err => {
 
 
@@ -236,7 +245,7 @@ export default function ContactPage() {
         <>
             {/* <button className='btn btn-primary' onClick={handleUpdate}>Bootstrap</button> */}
             <div className="container d-flex justify-content-between my-0">
-                <h1 className='text-center mb-5'> Subscriptions Details</h1>
+                <h2 className='text-center mb-3'> Subscriptions Details</h2>
                 {/* <Button className="ms-auto me-3 my-3" onClick={fetchData} size='small' style={{ backgroundColor: 'darkCyan' }} variant="contained">Get Data</Button> */}
                 {/* <Button className=" mb-5 me-3 " onClick={handleOpen} size='sm' style={{ backgroundColor: 'darkCyan', fontSize: "bolder" }} variant="contained">Create user <AddIcon /></Button> */}
 
@@ -245,74 +254,44 @@ export default function ContactPage() {
 
             <Modal
                 open={modalOpen}
-                onClose={handleModalClose}
+                // onClose={handleModalClose}
                 aria-labelledby="modal-modal-title"
                 aria-describedby="modal-modal-description"
             >
                 <Box sx={style}>
+                <Box  style={{width:"100%",float:"right"}}>
+                    <Tooltip style={{ float: 'right', cursor: 'pointer'}} onClick={handleModalClose} title="Close">
+                            <IconButton><CloseIcon style={{ float: 'right', cursor: 'pointer'}} fontSize="medium" /></IconButton>
+                                </Tooltip>
+                    </Box>
+                    <Box  style={{width:"fit-content"}}>
                     <Typography id="modal-modal-title" variant="h6" component="h3" align="center" sx={{mb:3}}>
                     Subscription Detail
                     </Typography>
+                    </Box>
+                    
 
                     <Grid container spacing={2}>
 
-                        {currentSubscription?.FKCustomerName && <Grid item xs={12}>
-                            <TextField
-                                disabled
-                                fullWidth
-                                inputProps={{
-                                    style: { color: 'black' }
-                                }}
-                                InputLabelProps={{
-                                    style: { color: 'darkcyan' },
-                                  }}
-                                label="Customer Name"
-                                value={currentSubscription?.FKCustomerName}
-                            />
+                        {currentSubscription?.FKCustomerName && <Grid item xs={5}>
+                        <Typography style={{ color: "darkcyan" }}>Customer Name</Typography>
+                            <Typography style={{ color: "black" }}>{currentSubscription?.FKCustomerName}</Typography>
                         </Grid>}
-                        {currentSubscription?.FKPackageName && <Grid item xs={12}>
-                            <TextField
-                                disabled
-                                fullWidth
-                                inputProps={{
-                                    style: { color: 'black' }
-                                }}
-                                InputLabelProps={{
-                                    style: { color: 'darkcyan' },
-                                  }}
-                                value={currentSubscription?.FKPackageName}
-                                label="Package Name"
-                            />
+
+                        {currentSubscription?.FKPackageName && <Grid item xs={5}>
+                        <Typography style={{ color: "darkcyan" }}>Package Name</Typography>
+                            <Typography style={{ color: "black" }}>{currentSubscription?.FKPackageName}</Typography>
                         </Grid>}
 
                         
-                        {currentSubscription?.createdAt && <Grid item xs={12}>
-                            <TextField
-                                disabled
-                                fullWidth
-                                inputProps={{
-                                    style: { color: 'black' }
-                                }}
-                                InputLabelProps={{
-                                    style: { color: 'darkcyan' },
-                                  }}
-                                value={currentSubscription?.createdAt.split("T")[0]}
-                                label="Creation Date"
-                            />
+                        {currentSubscription?.createdAt && <Grid item xs={5}>
+                        <Typography style={{ color: "darkcyan" }}>Creation Date</Typography>
+                            <Typography style={{ color: "black" }}>{currentSubscription?.createdAt.split("T")[0]}</Typography>
                         </Grid>}
-                        {currentSubscription?.updatedAt && <Grid item xs={12}>
-                            <TextField
-                                disabled
-                                fullWidth
-                                inputProps={{
-                                    style: { color: 'black' }
-                                }}
-                                InputLabelProps={{
-                                    style: { color: 'darkcyan' },
-                                  }}
-                                value={currentSubscription?.updatedAt.split("T")[0]}
-                                label="Updation Date"
-                            />
+
+                        {currentSubscription?.updatedAt && <Grid item xs={5}>
+                        <Typography style={{ color: "darkcyan" }}>Updation Date</Typography>
+                            <Typography style={{ color: "black" }}>{currentSubscription?.updatedAt.split("T")[0]}</Typography>
                         </Grid>}
                     </Grid>
                 </Box>
@@ -324,7 +303,7 @@ export default function ContactPage() {
                     <CircularProgress color="inherit" />
                 </Backdrop>
 
-                <TableContainer className={classes.container} size='small' style={{ maxHeight: '390px', maxWidth: '1078px' }}>
+                <TableContainer className={classes.container} size='small' style={{ maxHeight: '670px', maxWidth: '1078px' }}>
                     <Table stickyHeader aria-label="sticky table" size='small' >
                         <TableHead>
                             <TableRow>
@@ -337,8 +316,13 @@ export default function ContactPage() {
 
                             </TableRow>
                         </TableHead>
-                        <TableBody>
-                            {/* /* {isJwtExpired && rows && Array.isArray(rows) && rows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage) */}
+                        {
+                            nodata ? <TableBody>
+                            <TableRow>
+                                <TableCell colSpan={7} align="center"><Typography> No data in table yet </Typography></TableCell>
+                            
+                            </TableRow>
+                            </TableBody> : <TableBody>
                             {
 
                                 data?.[0]?.map((e, i) => {
@@ -357,6 +341,8 @@ export default function ContactPage() {
 
                             }
                         </TableBody>
+                        }
+                        
                     </Table>
                 </TableContainer>
                 <TablePagination

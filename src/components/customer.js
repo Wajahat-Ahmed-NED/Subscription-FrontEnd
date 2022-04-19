@@ -17,6 +17,7 @@ import Select from '@mui/material/Select';
 import MuiDialogTitle from '@material-ui/core/DialogTitle';
 import MuiDialogContent from '@material-ui/core/DialogContent';
 import MuiDialogActions from '@material-ui/core/DialogActions';
+import Tooltip from '@mui/material/Tooltip';
 import IconButton from '@material-ui/core/IconButton';
 import Grid from '@material-ui/core/Grid';
 import TextField from '@material-ui/core/TextField';
@@ -40,14 +41,15 @@ const style = {
     top: '50%',
     left: '50%',
     transform: 'translate(-50%, -50%)',
-    width: 500,
+    width: 450,
     overflow:'scroll',
-    height:'90%',
+    maxHeight:'500px',
     display:'block',
     bgcolor: 'background.paper',
     border: '2px solid darkcyan',
     boxShadow: 24,
-    p: 2,
+    pb: 4,
+    pl: 4
 };
 
 const useStyles = makeStyles((theme) => ({
@@ -159,8 +161,15 @@ export default function ContactPage() {
         let adminToken = localStorage.getItem("admin")
         apiHandle(adminToken).then(()=>{
             getCustomers().then((json) => {
-                setData(json.data.data)
-                console.log(json.data.data)
+                if(json.data.message[0] == "No customers found" || json.data.data[0].length === 0)
+                {
+                    setNodata(true)
+                }
+                else
+                {
+                    setNodata(false)
+                    setData(json.data.data)
+                }
             }).catch((err) => console.log(err))
         })
         
@@ -187,6 +196,7 @@ export default function ContactPage() {
     const [id2, setId2] = useState('')
     const [filteredData, setFilteredData] = useState([])
     const [filteredData2, setFilteredData2] = useState([])
+    const [nodata, setNodata] = useState(false)
 
     const handleChangeRowsPerPage = (event) => {
         setRowsPerPage(+event.target.value);
@@ -207,15 +217,12 @@ export default function ContactPage() {
     console.log(filteredData)
 
     const getDetails = async (e) =>{
-        handleModalOpen()
+        // handleModalOpen()
         let adminToken = localStorage.getItem("admin")
         apiHandle(adminToken).then(()=>{
         getCustomerById(e).then((res) => {
-            
-            console.log("response is ", res?.data?.data?.[0])
-            setcurrentCustomer(res?.data?.data?.[0])
-            // console.log(currentCustomer)
             handleModalOpen()
+            setcurrentCustomer(res?.data?.data?.[0])
         }).catch(err => {
 
 
@@ -234,182 +241,93 @@ export default function ContactPage() {
         <>
 
             <div className="container d-flex justify-content-between my-0">
-                <h1 className='text-center mb-5'> Customers Details</h1>
-
-
+                <h2 className='text-center mb-3'> Customers Details</h2>
             </div>
 
             <Modal
                 open={modalOpen}
-                onClose={handleModalClose}
                 aria-labelledby="modal-modal-title"
                 aria-describedby="modal-modal-description"
             >
                 <Box sx={style}>
+                <Box  style={{width:"100%",float:"right"}}>
+                    <Tooltip style={{ float: 'right', cursor: 'pointer'}} onClick={handleModalClose}  title="Close">
+                            <IconButton><CloseIcon style={{ float: 'right', cursor: 'pointer'}} fontSize="medium" /></IconButton>
+                                </Tooltip>
+                    </Box>
+                    <Box  style={{width:"fit-content"}}>
                     <Typography id="modal-modal-title" variant="h6" component="h3" align="center" sx={{mb:3}}>
                         Customer Detail
                     </Typography>
+                    </Box>
+                    
 
                     <Grid container spacing={2}>
 
                         {currentCustomer?.FirstName && <Grid item xs={5}>
-                            <TextField
-                                disabled
-                                fullWidth
-                                inputProps={{
-                                    style: { color: 'black' }
-                                }}
-                                InputLabelProps={{
-                                    style: { color: 'darkcyan' },
-                                  }}
-                                label="First Name"
-                                value={currentCustomer?.FirstName}
-                            />
+                        <Typography style={{ color: "darkcyan" }}>First Name</Typography>
+                            <Typography style={{ color: "black" }}>{currentCustomer?.FirstName}</Typography>
                         </Grid>}
-                        {currentCustomer?.LastName && <Grid item xs={5} className="ms-auto">
-                            <TextField
-                                disabled
-                                fullWidth
-                                inputProps={{
-                                    style: { color: 'black' }
-                                }}
-                                InputLabelProps={{
-                                    style: { color: 'darkcyan' },
-                                  }}
-                                value={currentCustomer?.LastName}
-                                label="Last Name"
-                            />
+                        {currentCustomer?.LastName && <Grid item xs={5}>
+                        <Typography style={{ color: "darkcyan" }}>Last Name</Typography>
+                            <Typography style={{ color: "black" }}>{currentCustomer?.LastName}</Typography>
+                            
                         </Grid>}
 
-                        {currentCustomer?.Email && <Grid item xs={12}>
-                            <TextField
-                                disabled
-                                fullWidth
-                                inputProps={{
-                                    style: { color: 'black' }
-                                }}
-                                InputLabelProps={{
-                                    style: { color: 'darkcyan' },
-                                  }}
-                                value={currentCustomer?.Email}
-                                label="Email Address"
-                                
-                            />
+                        {currentCustomer?.Email && <Grid item xs={5}>
+                        <Typography style={{ color: "darkcyan" }}>Email Address</Typography>
+                            <Typography style={{ color: "black" }}>{currentCustomer?.Email}</Typography>
+                          
                         </Grid>}
                         
                         
 
-                        {currentCustomer?.PhoneNumber && <Grid item xs={12}>
-                            <TextField
-                               disabled
-                               fullWidth
-                               inputProps={{
-                                   style: { color: 'black' }
-                               }}
-                               InputLabelProps={{
-                                style: { color: 'darkcyan' },
-                              }}
-                               value={currentCustomer?.PhoneNumber}
-                                label="Phone No"
-                            />
+                        {currentCustomer?.PhoneNumber && <Grid item xs={5}>
+                        <Typography style={{ color: "darkcyan" }}>Phone No</Typography>
+                            <Typography style={{ color: "black" }}>{currentCustomer?.PhoneNumber}</Typography>
                         </Grid>}
-                        {currentCustomer?.CNIC && <Grid item xs={12}>
-                            <TextField
-                                disabled
-                                fullWidth
-                                inputProps={{
-                                    style: { color: 'black' }
-                                }}
-                                InputLabelProps={{
-                                    style: { color: 'darkcyan' },
-                                  }}
-                                value={currentCustomer?.CNIC}
-                                label="CNIC No"
-                            />
+
+                        {currentCustomer?.CNIC && <Grid item xs={5}>
+                        <Typography style={{ color: "darkcyan" }}>CNIC No</Typography>
+                            <Typography style={{ color: "black" }}>{currentCustomer?.CNIC}</Typography>
+                            
                         </Grid>}
+
+                        
+
+                        {currentCustomer?.Country && <Grid item xs={5}>
+                        <Typography style={{ color: "darkcyan" }}>Country</Typography>
+                            <Typography style={{ color: "black" }}>{currentCustomer?.Country}</Typography>
+                        
+                        </Grid>}
+
+                        {currentCustomer?.City && <Grid item xs={5}>
+                        <Typography style={{ color: "darkcyan" }}>City</Typography>
+                            <Typography style={{ color: "black" }}>{currentCustomer?.City}</Typography>
+                          
+                        </Grid>}
+
+                        {currentCustomer?.Area && <Grid item xs={5}>
+                        <Typography style={{ color: "darkcyan" }}>Area</Typography>
+                            <Typography style={{ color: "black" }}>{currentCustomer?.Area}</Typography>
+                        
+                        </Grid>}
+
                         {currentCustomer?.Address && <Grid item xs={12}>
-                            <TextField
-                                disabled
-                                fullWidth
-                                inputProps={{
-                                    style: { color: 'black' }
-                                }}
-                                InputLabelProps={{
-                                    style: { color: 'darkcyan' },
-                                  }}
-                                value={currentCustomer?.Address}
-                                label="Address"
-                            />
+                        <Typography style={{ color: "darkcyan" }}>Address</Typography>
+                            <Typography style={{ color: "black" }}>{currentCustomer?.Address}</Typography>
+                          
                         </Grid>}
-                        {currentCustomer?.Country && <Grid item xs={12}>
-                            <TextField
-                                disabled
-                                fullWidth
-                                inputProps={{
-                                    style: { color: 'black' }
-                                }}
-                                InputLabelProps={{
-                                    style: { color: 'darkcyan' },
-                                  }}
-                                value={currentCustomer?.Country}
-                                label="Country"
-                            />
+
+
+                        {currentCustomer?.createdAt && <Grid item xs={5}>
+                        <Typography style={{ color: "darkcyan" }}>Creation Date</Typography>
+                            <Typography style={{ color: "black" }}>{currentCustomer?.createdAt.split("T")[0]}</Typography>
                         </Grid>}
-                        {currentCustomer?.City && <Grid item xs={12}>
-                            <TextField
-                                disabled
-                                fullWidth
-                                inputProps={{
-                                    style: { color: 'black' }
-                                }}
-                                InputLabelProps={{
-                                    style: { color: 'darkcyan' },
-                                  }}
-                                value={currentCustomer?.City}
-                                label="City"
-                            />
-                        </Grid>}
-                        {currentCustomer?.Area && <Grid item xs={12}>
-                            <TextField
-                                disabled
-                                fullWidth
-                                inputProps={{
-                                    style: { color: 'black' }
-                                }}
-                                InputLabelProps={{
-                                    style: { color: 'darkcyan' },
-                                  }}
-                                value={currentCustomer?.Area}
-                                label="Area"
-                            />
-                        </Grid>}
-                        {currentCustomer?.createdAt && <Grid item xs={12}>
-                            <TextField
-                                disabled
-                                fullWidth
-                                inputProps={{
-                                    style: { color: 'black' }
-                                }}
-                                InputLabelProps={{
-                                    style: { color: 'darkcyan' },
-                                  }}
-                                value={currentCustomer?.createdAt.split("T")[0]}
-                                label="Creation Date"
-                            />
-                        </Grid>}
-                        {currentCustomer?.updatedAt && <Grid item xs={12}>
-                            <TextField
-                                disabled
-                                fullWidth
-                                inputProps={{
-                                    style: { color: 'black' }
-                                }}
-                                InputLabelProps={{
-                                    style: { color: 'darkcyan' },
-                                  }}
-                                value={currentCustomer?.updatedAt.split("T")[0]}
-                                label="Updation Date"
-                            />
+
+                        {currentCustomer?.updatedAt && <Grid item xs={5}>
+                        <Typography style={{ color: "darkcyan" }}>Updation Date</Typography>
+                            <Typography style={{ color: "black" }}>{currentCustomer?.updatedAt.split("T")[0]}</Typography>
                         </Grid>}
                     </Grid>
                 </Box>
@@ -419,7 +337,7 @@ export default function ContactPage() {
                     <CircularProgress color="inherit" />
                 </Backdrop>
 
-                <TableContainer className={classes.container} size='small' style={{ maxHeight: '390px', maxWidth: '1078px' }}>
+                <TableContainer className={classes.container} size='small' style={{ maxHeight: '670px', maxWidth: '1078px' }}>
                     <Table stickyHeader aria-label="sticky table" size='small' >
                         <TableHead>
                             <TableRow>
@@ -440,12 +358,15 @@ export default function ContactPage() {
 
                             </TableRow>
                         </TableHead>
-                        <TableBody>
-                            {/* /* {isJwtExpired && rows && Array.isArray(rows) && rows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage) */}
+                        {
+                            nodata ? <TableBody>
+                            <TableRow>
+                                <TableCell colSpan={10} align="center"><Typography> No data in table yet </Typography></TableCell>
+                            
+                            </TableRow>
+                            </TableBody> : <TableBody>
                             {
-
-
-                                data?.[0]?.map((e, i) => {
+                            data?.[0]?.map((e, i) => {
                                     return (
                                         <>
                                             <TableRow hover={true}>
@@ -470,6 +391,8 @@ export default function ContactPage() {
 
                             }
                         </TableBody>
+                        }
+                        
                     </Table>
 
                 </TableContainer>

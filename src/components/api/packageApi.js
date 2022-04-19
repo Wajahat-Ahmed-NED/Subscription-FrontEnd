@@ -23,3 +23,13 @@ export const getPackageById = async (e) => {
             }
         })
 }
+
+export const getPackageByUserId = async (e) =>{
+	let adminToken = localStorage.getItem("admin")
+    return await axios.get(`${api}admin/getPackagesByUserId/${e}`,
+        {
+            headers: {
+                'Authorization': `Bearer ${JSON.parse(adminToken)?.data?.[0]?.accessToken}`,
+            }
+        })
+}
