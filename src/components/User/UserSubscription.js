@@ -362,26 +362,10 @@ export default function UserSubscription() {
             {/* <button className='btn btn-primary' onClick={handleUpdate}>Bootstrap</button> */}
             <div className="container d-flex justify-content-between my-0">
                 <h2 className='text-center mb-3'> Subscription Details</h2>
-                {/* {
-                    error && <Alert variant="danger" onClose={() => setError(false)} dismissible>
-                        <p className="text-center" style={{ fontWeight: 'bold' }}>Session Expired</p>
-                    </Alert>
-                } */}
-                {/* <Button className="ms-auto me-3 my-3" onClick={getData} size='small' style={{ backgroundColor: 'darkCyan' }} variant="contained">Get Data</Button> */}
-                {/* <Button className=" mb-5 me-3 " onClick={handleOpen} size='sm' style={{ backgroundColor: 'darkCyan', fontSize: "bolder" }} variant="contained">Create Admin <AddIcon /></Button> */}
-
-
-            </div>
-            <div class="container">
-                <h4>Get Subscription by Package ID</h4>
+                <div style={{ float: 'right' }}>
                 <Grid container >
-
-
-
-                    <Grid item xs={2}>
-
-
-                        <input placeholder='Enter Package ID' type='number' style={{ height: '33px', outline: 'none' }}
+                     <Grid item xs={7}>
+                        <input placeholder='Subscription by Package ID' type='number' style={{ height: '33px', outline: 'none', width:"215px" }}
                             onChange={(e) => setPkgId(e.target.value)} />
                     </Grid>
                     <Grid item xs={2}>
@@ -389,6 +373,8 @@ export default function UserSubscription() {
 
                     </Grid>
                 </Grid>
+                </div>
+
             </div>
             <Paper className={classes.root} style={{ maxWidth: '1100px' }} >
                 <Backdrop className={classes.backdrop} open={openNew}>

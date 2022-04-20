@@ -32,7 +32,7 @@ import { useSelector } from 'react-redux';
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
 import { getPackages, getPackageById, getPackageByUserId } from './api/packageApi';
-import {apiHandle} from './api/api'
+import { apiHandle } from './api/api'
 
 
 const style = {
@@ -40,10 +40,11 @@ const style = {
     top: '50%',
     left: '50%',
     transform: 'translate(-50%, -50%)',
-    width: 450,
-    overflow:'scroll',
-    maxHeight:'500px',
-    display:'block',
+    width: '450',
+    overflowX:'hidden', 
+    overflowY:'auto',
+    maxHeight: '500px',
+    display: 'block',
     bgcolor: 'background.paper',
     border: '2px solid darkcyan',
     boxShadow: 24,
@@ -97,11 +98,8 @@ export default function ContactPage() {
 
     const [page, setPage] = React.useState(0);
     const [rows, setRow] = useState([]);
-    const [no, setNo] = useState(0);
     const [rowsPerPage, setRowsPerPage] = React.useState(10);
     const [open, setOpen] = React.useState(false);
-    const [accessToken, setAccessToken] = React.useState('');
-    const [refreshToken, setRefreshTokn] = React.useState('');
     const history = useHistory();
     const handleClickOpen = () => {
         setOpen(true);
@@ -137,34 +135,30 @@ export default function ContactPage() {
 
     const fetchData = () => {
         let adminToken = localStorage.getItem("admin")
-        apiHandle(adminToken).then(()=>{
-        getPackages().then((json) => {
-            if(json.data.message[0] == "No packages found" || json.data.data[0].length === 0)
-                {
+        apiHandle(adminToken).then(() => {
+            getPackages().then((json) => {
+                if (json.data.message[0] == "No packages found" || json.data.data[0].length === 0) {
                     setNodata(true)
                 }
-                else
-                {
+                else {
                     setNodata(false)
                     setData(json.data.data)
                 }
-        }).catch((err) => console.log(err))
-    })
+            }).catch((err) => console.log(err))
+        })
     }
 
-    const getDataByUser =()=>{
+    const getDataByUser = () => {
         let adminToken = localStorage.getItem("admin")
-        apiHandle(adminToken).then(()=>{
+        apiHandle(adminToken).then(() => {
             getPackageByUserId(userId).then((json) => {
-                if(json.data.data[0].length === 0)
-                    {
-                        setNodata(true)
-                    }
-                    else
-                    {
-                        setNodata(false)
-                        setData(json.data.data)
-                    }
+                if (json.data.data[0].length === 0) {
+                    setNodata(true)
+                }
+                else {
+                    setNodata(false)
+                    setData(json.data.data)
+                }
             }).catch((err) => console.log(err))
         })
     }
@@ -192,28 +186,28 @@ export default function ContactPage() {
         setPage(0);
     };
 
-    const getDetails = async (e) =>{
+    const getDetails = async (e) => {
         // handleModalOpen()
         let adminToken = localStorage.getItem("admin")
-        apiHandle(adminToken).then(()=>{
-        getPackageById(e).then((res) => {
-            
-            // console.log("response is ", res?.data?.data?.[0])
-            handleModalOpen()
-            setcurrentPackage(res?.data?.data?.[0])
-            // console.log(currentPackage)
-        }).catch(err => {
+        apiHandle(adminToken).then(() => {
+            getPackageById(e).then((res) => {
+
+                // console.log("response is ", res?.data?.data?.[0])
+                handleModalOpen()
+                setcurrentPackage(res?.data?.data?.[0])
+                // console.log(currentPackage)
+            }).catch(err => {
 
 
-            console.log(err, "this error founnd")
-            // Swal.fire({
-            //     icon: 'error',
-            //     title: 'Oops...',
-            //     text: 'Wrong Credentials or Something went wrong!',
+                console.log(err, "this error founnd")
+                // Swal.fire({
+                //     icon: 'error',
+                //     title: 'Oops...',
+                //     text: 'Wrong Credentials or Something went wrong!',
 
-            // })
+                // })
+            })
         })
-    })
     }
     const handleTextField = (e) => {
         setId(e.target.value)
@@ -231,6 +225,18 @@ export default function ContactPage() {
 
             <div className="container d-flex justify-content-between my-0">
                 <h2 className='text-center mb-3'> Packages Details</h2>
+                <div style={{ float: 'right' }}>
+                    <Grid container  >
+                        <Grid item xs={7}>
+                            <input placeholder='Package By User ID' onChange={(e) => setUserId(e.target.value)} type='number' style={{ height: '33px', outline: 'none' }}
+                            />
+                        </Grid>
+                        <Grid item xs={1}>
+                            <Button className="ms-3 " onClick={() => getDataByUser()} size='sm' style={{ backgroundColor: 'darkCyan', fontSize: "bolder" }} variant="contained">Search </Button>
+
+                        </Grid>
+                    </Grid>
+                </div>
             </div>
 
             <Modal
@@ -240,17 +246,17 @@ export default function ContactPage() {
                 aria-describedby="modal-modal-description"
             >
                 <Box sx={style}>
-                <Box  style={{width:"100%",float:"right"}}>
-                    <Tooltip style={{ float: 'right', cursor: 'pointer'}} onClick={handleModalClose}  title="Close">
-                            <IconButton><CloseIcon  style={{ float: 'right', cursor: 'pointer'}} fontSize="medium" /></IconButton>
-                                </Tooltip>
+                    <Box style={{ width:"100%",float: "right" }}>
+                        <Tooltip style={{float:"right",cursor: 'pointer' }} onClick={handleModalClose} title="Close">
+                            <IconButton><CloseIcon style={{ float: 'right', cursor: 'pointer' }} fontSize="medium" /></IconButton>
+                        </Tooltip>
                     </Box>
-                    <Box  style={{width:"fit-content"}}>
-                    <Typography id="modal-modal-title" variant="h6" component="h3" align="center" sx={{mb:3}}>
-                    Package Detail
-                    </Typography>
+                    <Box style={{ width: "fit-content" }}>
+                        <Typography id="modal-modal-title" variant="h6" component="h3" align="center" sx={{ mb: 3 }}>
+                            Package Detail
+                        </Typography>
                     </Box>
-                    
+
 
                     <Grid container spacing={2}>
 
@@ -259,24 +265,24 @@ export default function ContactPage() {
                             <Typography style={{ color: "black" }}>{currentPackage?.PackageName}</Typography>
                         </Grid>}
                         {currentPackage?.PackageCost && <Grid item xs={5}>
-                        <Typography style={{ color: "darkcyan" }}>Package Cost</Typography>
+                            <Typography style={{ color: "darkcyan" }}>Package Cost</Typography>
                             <Typography style={{ color: "black" }}>{currentPackage?.PackageCost}</Typography>
-                            
+
                         </Grid>}
 
                         {currentPackage?.SubscriptionPeriod && <Grid item xs={5}>
-                        <Typography style={{ color: "darkcyan" }}>Subscription Period</Typography>
+                            <Typography style={{ color: "darkcyan" }}>Subscription Period</Typography>
                             <Typography style={{ color: "black" }}>{currentPackage?.SubscriptionPeriod}</Typography>
                         </Grid>}
 
 
                         {currentPackage?.createdAt && <Grid item xs={5}>
-                        <Typography style={{ color: "darkcyan" }}>Creation Date</Typography>
+                            <Typography style={{ color: "darkcyan" }}>Creation Date</Typography>
                             <Typography style={{ color: "black" }}>{currentPackage?.createdAt.split("T")[0]}</Typography>
                         </Grid>}
 
                         {currentPackage?.updatedAt && <Grid item xs={5}>
-                        <Typography style={{ color: "darkcyan" }}>Updation Date</Typography>
+                            <Typography style={{ color: "darkcyan" }}>Updation Date</Typography>
                             <Typography style={{ color: "black" }}>{currentPackage?.updatedAt.split("T")[0]}</Typography>
                         </Grid>}
 
@@ -285,19 +291,21 @@ export default function ContactPage() {
             </Modal>
 
 
-            <div class="container">
-                <h4>Search Package By UserID</h4>
-                <Grid container >
-                    <Grid item xs={2}>
-                        <input placeholder='Enter User ID' onChange={(e) => setUserId(e.target.value)} type='number' style={{ height: '33px', outline: 'none' }}
-                             />
-                    </Grid>
-                    <Grid item xs={2}>
-                        <Button className=" mb-4 ms-3 " onClick={() => getDataByUser()} size='sm' style={{ backgroundColor: 'darkCyan', fontSize: "bolder" }} variant="contained">Search </Button>
+            {/* <div className="container mb-4">
+                <h4 style={{ display: 'inline' }}>Search Package By UserID</h4>
+                <div style={{ float: 'right' }}>
+                    <Grid container  >
+                        <Grid item xs={7}>
+                            <input placeholder='Enter User ID' onChange={(e) => setUserId(e.target.value)} type='number' style={{ height: '33px', outline: 'none' }}
+                            />
+                        </Grid>
+                        <Grid item xs={1}>
+                            <Button className="ms-3 " onClick={() => getDataByUser()} size='sm' style={{ backgroundColor: 'darkCyan', fontSize: "bolder" }} variant="contained">Search </Button>
 
+                        </Grid>
                     </Grid>
-                </Grid>
-            </div>
+                </div>
+            </div> */}
 
             <Paper className={classes.root} style={{ maxWidth: '1100px' }} >
                 <Backdrop className={classes.backdrop} open={openNew}>
@@ -322,36 +330,36 @@ export default function ContactPage() {
                         </TableHead>
                         {
                             nodata ? <TableBody>
-                            <TableRow>
-                                <TableCell colSpan={7} align="center"><Typography> No data in table yet </Typography></TableCell>
-                            
-                            </TableRow>
-                            </TableBody> :  <TableBody>
-                            {
+                                <TableRow>
+                                    <TableCell colSpan={7} align="center"><Typography> No data in table yet </Typography></TableCell>
+
+                                </TableRow>
+                            </TableBody> : <TableBody>
+                                {
 
 
-                                data?.[0]?.map((e, i) => {
-                                    return (
-                                        <>
-                                            <TableRow hover={true}>
-                                                <TableCell>{e.PKPackageId}</TableCell>
-                                                <TableCell>{e.PackageName}</TableCell>
-                                                <TableCell>{e.PackageCost}</TableCell>
-                                                <TableCell>{e.SubscriptionPeriod}</TableCell>
-                                                <TableCell><Button variant="outlined" onClick={()=>getDetails(e)}>Details</Button></TableCell>
+                                    data?.[0]?.map((e, i) => {
+                                        return (
+                                            <>
+                                                <TableRow hover={true}>
+                                                    <TableCell>{e.PKPackageId}</TableCell>
+                                                    <TableCell>{e.PackageName}</TableCell>
+                                                    <TableCell>{e.PackageCost}</TableCell>
+                                                    <TableCell>{e.SubscriptionPeriod}</TableCell>
+                                                    <TableCell><Button variant="outlined" onClick={() => getDetails(e)}>Details</Button></TableCell>
 
-                                            </TableRow>
+                                                </TableRow>
 
-                                        </>
-                                    )
-                                })
+                                            </>
+                                        )
+                                    })
 
 
 
-                            }
-                        </TableBody>
+                                }
+                            </TableBody>
                         }
-                       
+
                     </Table>
 
                 </TableContainer>

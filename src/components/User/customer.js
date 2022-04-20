@@ -47,8 +47,8 @@ import EditIcon from '@mui/icons-material/Edit';
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
 // import IconButton from '@mui/material/IconButton';
 import Tooltip from '@mui/material/Tooltip';
-import Alert  from 'react-bootstrap/Alert';
-import {apiHandle} from "../api/user/api"
+import Alert from 'react-bootstrap/Alert';
+import { apiHandle } from "../api/user/api"
 import { addCustomer, editCustomer, deleteCustomer, getCustomerBySubscriptionId } from '../api/user/userCustomersApi';
 
 const useStyles = makeStyles((theme) => ({
@@ -171,10 +171,10 @@ export default function UserCustomer() {
             Area: area
         }
         let adminToken = localStorage.getItem("admin")
-        apiHandle(adminToken).then(()=>{
+        apiHandle(adminToken).then(() => {
             addCustomer(obj).then(function (response) {
                 setOpen(false);
-    
+
                 Swal.fire(
                     'Success',
                     'Customer Created Successfully',
@@ -190,13 +190,13 @@ export default function UserCustomer() {
                     icon: 'error',
                     title: 'Oops...',
                     text: 'Something went wrong!',
-    
+
                 }).then((e) => {
                     setOpen(true);
                 })
             })
         })
-        
+
     }
 
     const [openNew, setOpenNew] = React.useState(false);
@@ -221,18 +221,16 @@ export default function UserCustomer() {
     const [data, setData] = useState([])
     const getData = async () => {
         let adminToken = localStorage.getItem('admin')
-        apiHandle(adminToken).then(()=>{
+        apiHandle(adminToken).then(() => {
             getCustomerBySubscriptionId(subsId).then(json => {
-                if(json.data.message[0] == "Customer is not subscribed to this subscription" || json.data.data[0].length === 0)
-                {
+                if (json.data.message[0] == "Customer is not subscribed to this subscription" || json.data.data[0].length === 0) {
                     setNodata(true)
                 }
-                else
-                {
+                else {
                     setNodata(false)
                     setData(json.data.data)
                 }
-                })
+            })
                 .catch(err => {
                     Swal.fire({
                         icon: 'error',
@@ -243,12 +241,12 @@ export default function UserCustomer() {
                     console.log(err)
                 })
         })
-        
+
     }
     useEffect(() => {
         var adminToken = localStorage.getItem("admin")
         adminToken && setAccessToken(JSON.parse(adminToken)?.data?.[0]?.accessToken)
-        
+
     }, [])
     // console.log(accessToken)
     const [nodata, setNodata] = useState(true)
@@ -354,9 +352,9 @@ export default function UserCustomer() {
             Area: area
         }
 
-       let adminToken = localStorage.getItem("admin")
-        apiHandle(adminToken).then(()=>{
-            editCustomer(id,obj).then(function (response) {
+        let adminToken = localStorage.getItem("admin")
+        apiHandle(adminToken).then(() => {
+            editCustomer(id, obj).then(function (response) {
 
                 setOpen(false);
                 setEditModal(null)
@@ -378,11 +376,11 @@ export default function UserCustomer() {
                     icon: 'error',
                     title: 'Oops...',
                     text: 'Wrong Credentials or Something went wrong!',
-    
+
                 }).then((e) => {
-    
+
                     setOpen(true);
-    
+
                 })
             })
         })
@@ -398,27 +396,22 @@ export default function UserCustomer() {
                     </Alert>
                 } */}
                 {/* <Button className="ms-auto me-3 my-3" onClick={getData} size='small' style={{ backgroundColor: 'darkCyan' }} variant="contained">Get Data</Button> */}
-                <Button className=" mb-3 me-3 " onClick={handleOpen} size='sm' style={{ backgroundColor: 'darkCyan', fontSize: "bolder" }} variant="contained">Create Customer <AddIcon /></Button>
-
-
-            </div>
-            <div class="container">
-                <h4>Get Customer by Subscription ID</h4>
+                <div>
                 <Grid container >
-
-
-
-                    <Grid item xs={2}>
-
-
-                        <input placeholder='Enter Subscription ID' type='number' style={{ height: '33px', outline: 'none' }}
+                    <Grid item xs={7}>
+                        <input placeholder='Customer by Subscription ID' type='number' style={{ height: '33px', outline: 'none', width:"215px"}}
                             onChange={(e) => setSubsId(e.target.value)} />
                     </Grid>
-                    <Grid item xs={2}>
+                    <Grid item xs={1}>
                         <Button className=" mb-4 ms-3 " onClick={() => getData()} size='sm' style={{ backgroundColor: 'darkCyan', fontSize: "bolder" }} variant="contained">Search </Button>
 
                     </Grid>
                 </Grid>
+                <Button className=" mb-3 me-3 " onClick={handleOpen} size='sm' style={{ backgroundColor: 'darkCyan', fontSize: "bolder", float:"right"  }} variant="contained">Create Customer <AddIcon /></Button>
+                
+                </div>
+                
+
             </div>
 
 
@@ -433,11 +426,11 @@ export default function UserCustomer() {
                         </DialogTitle>
                         <DialogContent dividers className='mx-3'>
 
-                        {
-                    error && <Alert variant="danger" onClose={() => setError(false)} dismissible>
-                        <p className="text-center" style={{ fontWeight: 'bold' }}>{errorMsg}</p>
-                    </Alert>
-                }
+                            {
+                                error && <Alert variant="danger" onClose={() => setError(false)} dismissible>
+                                    <p className="text-center" style={{ fontWeight: 'bold' }}>{errorMsg}</p>
+                                </Alert>
+                            }
                             <form className={classes.form} noValidate>
                                 <Grid container spacing={2}>
 
@@ -593,39 +586,39 @@ export default function UserCustomer() {
                         </TableHead>
                         {
                             nodata ? <TableBody>
-                            <TableRow>
-                                <TableCell colSpan={5} align="center"><Typography> No data in table yet </Typography></TableCell>
-                            
-                            </TableRow>
-                            </TableBody> :<TableBody>
-                            {
-                                data?.map((e, i) => {
-                                    return (
-                                        <>
-                                            <TableRow hover={true}>
-                                                <TableCell>{e.PKAdminId || e.PKCustomerId}</TableCell>
-                                                <TableCell>{e.FirstName + " " + e.LastName}</TableCell>
-                                                <TableCell>{e.Email}</TableCell>
-                                                <TableCell>{e.PhoneNumber}</TableCell>
-                                                <TableCell style={{ textAlign: 'left' }}>
-                                                    <Tooltip title="Edit" onClick={() => handleEdit(e)}>
-                                                        <IconButton><EditIcon color="success" fontSize="medium" />
-                                                        </IconButton></Tooltip>
-                                                </TableCell>
-                                                <TableCell style={{ textAlign: 'left' }}>
-                                                    <Tooltip title="Delete">
-                                                        <IconButton><DeleteOutlineIcon variant="contained" color="error" onClick={() => handleDelete(e.PKCustomerId)} fontSize="medium" />
-                                                        </IconButton></Tooltip>
-                                                </TableCell>
-                                            </TableRow>
+                                <TableRow>
+                                    <TableCell colSpan={5} align="center"><Typography> No data in table yet </Typography></TableCell>
 
-                                        </>
-                                    )
-                                })
-                            }
-                        </TableBody>
+                                </TableRow>
+                            </TableBody> : <TableBody>
+                                {
+                                    data?.map((e, i) => {
+                                        return (
+                                            <>
+                                                <TableRow hover={true}>
+                                                    <TableCell>{e.PKAdminId || e.PKCustomerId}</TableCell>
+                                                    <TableCell>{e.FirstName + " " + e.LastName}</TableCell>
+                                                    <TableCell>{e.Email}</TableCell>
+                                                    <TableCell>{e.PhoneNumber}</TableCell>
+                                                    <TableCell style={{ textAlign: 'left' }}>
+                                                        <Tooltip title="Edit" onClick={() => handleEdit(e)}>
+                                                            <IconButton><EditIcon color="success" fontSize="medium" />
+                                                            </IconButton></Tooltip>
+                                                    </TableCell>
+                                                    <TableCell style={{ textAlign: 'left' }}>
+                                                        <Tooltip title="Delete">
+                                                            <IconButton><DeleteOutlineIcon variant="contained" color="error" onClick={() => handleDelete(e.PKCustomerId)} fontSize="medium" />
+                                                            </IconButton></Tooltip>
+                                                    </TableCell>
+                                                </TableRow>
+
+                                            </>
+                                        )
+                                    })
+                                }
+                            </TableBody>
                         }
-                        
+
                     </Table>
                 </TableContainer>
                 <TablePagination

@@ -62,10 +62,10 @@ export default function Login() {
     if (user === 'Admin') {
       await axios.post(`${api}admin/adminSignIn`, params)
         .then(async function (response) {
-          console.log(response, 'asdasdasdjashshdjkashkdhaskjhvcv');
           if (!response.data.success) {
             setError(true)
-            setData(response.message)
+            console.log(response.data)
+            setData(response.data.message[0])
             return
           }
           Swal.fire(
@@ -79,6 +79,7 @@ export default function Login() {
 
         })
         .catch(function (error) {
+          setData("Username or Password is incorrect")
           setError(true)
         });
 
@@ -87,7 +88,6 @@ export default function Login() {
       await axios.post(`${api}user/userSignIn`, params)
         .then(async function (response) {
           if (!response.data.success) {
-            console.log(response.data)
             setError(true)
             setData(response.data.message[0])
             return
@@ -104,7 +104,7 @@ export default function Login() {
         })
         .catch(function (error) {
           // alert("Email or Password is incorrect")
-          setData("Email or Password is incorrect")
+          setData("Username or Password is incorrect")
           setError(true)
         });
     } else {
