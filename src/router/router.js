@@ -12,6 +12,7 @@ import UserDashboard from "../components/User/userDashboard";
 import UserUpdateProfile from "../components/User/UserUpdateProfile";
 import UserChangePassword from "../components/User/UserChangePassword";
 import UpdateProfile from "../components/updateProfile";
+import ContactUs from "../components/ContactUs";
 
 export default function AppRouter() {
     return (
@@ -22,6 +23,7 @@ export default function AppRouter() {
             renders the first one that matches the current URL. */}
                 <Switch>
                     <Route exact path="/" component={Login} />
+                    <Route exact path="/contact" component={ContactUs} />
                     <Route exact path="/changePassword" component={ChangePassword} />
                     <Route exact path="/userChangePassword" component={UserChangePassword} />
                     <Route exact path="/userUpdateProfile" component={UserUpdateProfile} />

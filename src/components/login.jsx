@@ -14,7 +14,7 @@ import './login.css'
 import { MDBBtn } from 'mdb-react-ui-kit';
 import RadioGroup from '@mui/material/RadioGroup';
 import Radio from '@mui/material/Radio';
-import { useHistory } from "react-router-dom";
+import { useHistory, Link } from "react-router-dom";
 import Alert from 'react-bootstrap/Alert'
 import Swal from 'sweetalert2';
 import {api} from './api/api';
@@ -188,6 +188,10 @@ export default function Login() {
                 <div className='d-grid gap-3 col-12 mx-auto my-3'>
 
                   <MDBBtn size='lg' style={{ backgroundColor: 'darkcyan' }} type="submit">Sign In</MDBBtn>
+                </div>
+                <div className='d-grid gap-3 col-12 mx-auto my-3' style={{textAlign:"center"}}>
+
+                  <Link to="/contact">Contact Us</Link>
                 </div>
               </Grid>
             </form>
