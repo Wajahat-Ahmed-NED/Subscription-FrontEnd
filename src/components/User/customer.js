@@ -330,7 +330,7 @@ export default function UserCustomer() {
             ) {
                 Swal.fire(
                     'Cancelled',
-                    'Your imaginary file is safe :)',
+                    '',
                     'error'
                 )
             }
@@ -398,7 +398,7 @@ export default function UserCustomer() {
                 {/* <Button className="ms-auto me-3 my-3" onClick={getData} size='small' style={{ backgroundColor: 'darkCyan' }} variant="contained">Get Data</Button> */}
                 <div>
                 <Grid container >
-                    <Grid item xs={7}>
+                    <Grid item xs={8}>
                         <input placeholder='Customer by Subscription ID' type='number' style={{ height: '33px', outline: 'none', width:"215px"}}
                             onChange={(e) => setSubsId(e.target.value)} />
                     </Grid>

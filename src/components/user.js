@@ -187,7 +187,7 @@ export default function ContactPage() {
             ) {
                 Swal.fire(
                     'Cancelled',
-                    'Your imaginary file is safe :)',
+                    '',
                     'error'
                 )
             }
@@ -354,7 +354,7 @@ export default function ContactPage() {
             ) {
                 Swal.fire(
                     'Cancelled',
-                    'Your imaginary file is safe :)',
+                    '',
                     'error'
                 )
             }
@@ -400,7 +400,7 @@ export default function ContactPage() {
             ) {
                 Swal.fire(
                     'Cancelled',
-                    'Your imaginary file is safe :)',
+                    '',
                     'error'
                 )
             }

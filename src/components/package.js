@@ -227,7 +227,7 @@ export default function ContactPage() {
                 <h2 className='text-center mb-3'> Packages Details</h2>
                 <div style={{ float: 'right' }}>
                     <Grid container  >
-                        <Grid item xs={7}>
+                        <Grid item xs={8}>
                             <input placeholder='Package By User ID' onChange={(e) => setUserId(e.target.value)} type='number' style={{ height: '33px', outline: 'none' }}
                             />
                         </Grid>

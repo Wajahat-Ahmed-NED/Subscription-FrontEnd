@@ -28,7 +28,6 @@ export const axiosHandle = token => {
 export const apiHandle = async (adminToken, navigate) => {
     let refreshToken=JSON.parse(adminToken)?.data?.[0]?.refreshToken;
     let token=JSON.parse(adminToken)?.data?.[0]?.accessToken;
-    console.log(token)
     if (isJwtExpired(token) === false) {
         return axiosHandle(token)
     } 

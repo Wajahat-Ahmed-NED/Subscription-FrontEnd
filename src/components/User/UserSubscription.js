@@ -364,11 +364,11 @@ export default function UserSubscription() {
                 <h2 className='text-center mb-3'> Subscription Details</h2>
                 <div style={{ float: 'right' }}>
                 <Grid container >
-                     <Grid item xs={7}>
+                     <Grid item xs={8}>
                         <input placeholder='Subscription by Package ID' type='number' style={{ height: '33px', outline: 'none', width:"215px" }}
                             onChange={(e) => setPkgId(e.target.value)} />
                     </Grid>
-                    <Grid item xs={2}>
+                    <Grid item xs={1}>
                         <Button className=" mb-4 ms-3 " onClick={() => getDataByPkg()} size='sm' style={{ backgroundColor: 'darkCyan', fontSize: "bolder" }} variant="contained">Search </Button>
 
                     </Grid>

@@ -33,10 +33,11 @@ import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 // import Modall from './modal';
 // import { WebEdit } from './webeditor';
 import { isJwtExpired } from 'jwt-check-expiration';
-import jwt from 'jsonwebtoken'
+import jwt, { verify } from 'jsonwebtoken'
 import { useDispatch, useSelector } from 'react-redux';
 import axios, { Axios } from 'axios';
-// import { UserContext } from '../userContext';
+import { MDBBtn } from 'mdb-react-ui-kit';
+
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
@@ -49,7 +50,8 @@ import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
 import Tooltip from '@mui/material/Tooltip';
 import Alert from 'react-bootstrap/Alert';
 import { apiHandle } from '../api/user/api'
-import { addPackage, getPackage, deletePackage, editPackage, getPackageById } from '../api/user/userPackageApi';
+import { addPackage, getPackage, deletePackage, editPackage, getPackageById, sendOtp, verifySubscription } from '../api/user/userPackageApi';
+import { getSubscriptionByPkgId } from '../api/user/userSubscriptionApi'
 
 const style = {
     position: 'absolute',
@@ -57,9 +59,9 @@ const style = {
     left: '50%',
     transform: 'translate(-50%, -50%)',
     width: 450,
-    overflowX:'hidden', 
-    overflowY:'auto',
-    maxHeight:'500px',
+    overflowX: 'hidden',
+    overflowY: 'auto',
+    maxHeight: '500px',
     bgcolor: 'background.paper',
     border: '2px solid darkcyan',
     boxShadow: 24,
@@ -189,6 +191,9 @@ export default function UserPackage() {
     const [modalOpen, setModalOpen] = React.useState(false);
     const handleModalOpen = () => setModalOpen(true);
     const handleModalClose = () => setModalOpen(false);
+    const [submodalOpen, setSubModalOpen] = React.useState(false);
+    const handleSubModalOpen = () => setSubModalOpen(true);
+    const handleSubModalClose = () => setSubModalOpen(false);
     const [currentPackage, setcurrentPackage] = useState(null)
     const [page, setPage] = React.useState(0);
     const [rows, setRow] = useState([]);
@@ -215,24 +220,96 @@ export default function UserPackage() {
     };
 
     const getDetails = async (e) => {
-        // handleModalOpen()
         let adminToken = localStorage.getItem("admin")
         apiHandle(adminToken).then(() => {
             getPackageById(e).then((res) => {
-
-                // console.log("response is ", res?.data?.data?.[0])
                 handleModalOpen()
                 setcurrentPackage(res?.data?.data?.[0])
-                // console.log(currentPackage)
             }).catch(err => {
-
                 console.log(err?.response?.data?.message)
-                console.log(err, "this error founnd")
             })
         })
     }
 
+    const subscribe = async (e) => {
+        setId(e.PKPackageId)
+        setPhone('')
+        setOtp('')
+        setDisplayStyle("none")
+        let adminToken = localStorage.getItem("admin")
+        apiHandle(adminToken).then(() => {
+            handleSubModalOpen()
+            // getPackageById(e).then((res) => {
+            //     setcurrentPackage(res?.data?.data?.[0])
+            // }).catch(err => {
+            //     console.log(err?.response?.data?.message)
+            // })
+        })
+    }
 
+    const getOtp = async () => {
+        const obj = {
+            "PhoneNumber": phone,
+            "FKPackageId": id
+        }
+        let adminToken = localStorage.getItem("admin")
+        apiHandle(adminToken).then(() => {
+            sendOtp(obj).then((res) => {
+                setSubModalOpen(false)
+                setDisplayStyle("block")
+                Swal.fire(
+                    'Success',
+                    'Otp sent Successfully',
+                    'success',
+                ).then(() => {
+                    setSubModalOpen(true)
+                })
+            }).catch(err => {
+                setSubModalOpen(false)
+                setDisplayStyle("none")
+                console.log(err?.response)
+                Swal.fire(
+                    'Cannot Send Otp',
+                    'Invalid Phone Number or Something Went Wrong',
+                    'error',
+                ).then(() => {
+                    setSubModalOpen(true)
+                })
+                // setSubModalOpen(true)
+            })
+        })
+    }
+    const verifySubs = async () => {
+        const obj = {
+            "Otp": otp,
+            "PhoneNumber": phone,
+            "FKPackageId": id
+        }
+        let adminToken = localStorage.getItem("admin")
+        apiHandle(adminToken).then(() => {
+            verifySubscription(obj).then((res) => {
+                setSubModalOpen(false)
+                setDisplayStyle("none")
+                Swal.fire(
+                    'Success',
+                    'Subscribed Successfully',
+                    'success',
+                )
+            }).catch(err => {
+                setSubModalOpen(false)
+                setDisplayStyle("block")
+                console.log(err?.response)
+                Swal.fire(
+                    'Cannot Verify Otp',
+                    err?.response?.data?.message?.[0],
+                    'error',
+                ).then(() => {
+                    setSubModalOpen(true)
+                })
+                // setSubModalOpen(true)
+            })
+        })
+    }
 
     const handleSubmit = async (e) => {
         e.preventDefault()
@@ -296,7 +373,6 @@ export default function UserPackage() {
         let adminToken = localStorage.getItem('admin')
         apiHandle(adminToken).then(() => {
             getPackage().then(json => {
-
                 if (json.data.message[0] == "No packages of current user found" || json.data.data[0].length === 0) {
                     setNodata(true)
                 }
@@ -321,10 +397,10 @@ export default function UserPackage() {
     const [packageName, setpackageName] = useState('')
     const [packageCost, setpackageCost] = useState('')
     const [period, setperiod] = useState('')
-    const [user, setUser] = useState('')
+    const [displayStyle, setDisplayStyle] = useState('none')
     const [password, setPassword] = useState('')
     const [phone, setPhone] = useState('')
-    const [cnic, setCnic] = useState('')
+    const [otp, setOtp] = useState('')
     const [EditModal, setEditModal] = useState(false)
     const [id, setId] = useState(0)
     const [disable, setDisable] = useState(false)
@@ -337,24 +413,15 @@ export default function UserPackage() {
 
 
     const handleEdit = async (e) => {
-        // e.preventDefault()
-
         setEditModal(e)
         setModalOpen(false)
         setpackageName(e.PackageName)
         setpackageCost(e.PackageCost)
         setperiod(e.SubscriptionPeriod)
-        // setPhone(e.PhoneNumber)
-        // setCnic(e.period)
-        // setUser(e.user)
-        // console.log(e)
         setOpen(true);
         setId(e.PKPackageId)
-
-
-
-
     }
+
     const handleDelete = async (e) => {
         setModalOpen(false)
         Swal.fire({
@@ -398,7 +465,7 @@ export default function UserPackage() {
             ) {
                 Swal.fire(
                     'Cancelled',
-                    'Your imaginary file is safe :)',
+                    '',
                     'error'
                 )
             }
@@ -411,8 +478,6 @@ export default function UserPackage() {
             SubscriptionPeriod: period,
             PackageName: packageName,
             PackageCost: packageCost,
-            // PhoneNumber: phone,
-
         }
 
         let adminToken = localStorage.getItem('admin')
@@ -459,44 +524,95 @@ export default function UserPackage() {
     }
     return (
         <>
-            {/* <button className='btn btn-primary' onClick={handleUpdate}>Bootstrap</button> */}
             <div className="container d-flex justify-content-between my-0">
                 <h2 className='text-center mb-3'> Package Details</h2>
-                {/* {
-                    error && <Alert variant="danger" onClose={() => setError(false)} dismissible>
-                        <p className="text-center" style={{ fontWeight: 'bold' }}>Session Expired</p>
-                    </Alert>
-                } */}
-                {/* <Button className="ms-auto me-3 my-3" onClick={getData} size='small' style={{ backgroundColor: 'darkCyan' }} variant="contained">Get Data</Button> */}
+
                 <Button className=" mb-3 me-3 " onClick={handleOpen} size='sm' style={{ backgroundColor: 'darkCyan', fontSize: "bolder" }} variant="contained">Add Package <AddIcon /></Button>
 
 
             </div>
             <Modal
-                open={modalOpen}
-                // onClose={handleModalClose}
+                open={submodalOpen}
                 aria-labelledby="modal-modal-title"
                 aria-describedby="modal-modal-description"
             >
-                
+
                 <Box sx={style}>
-                    <Box  style={{width:"100%",float:"right"}}>
-                    <Tooltip style={{ float: 'right', cursor: 'pointer'}} onClick={handleModalClose}  title="Close">
-                            <IconButton><CloseIcon  style={{ float: 'right', cursor: 'pointer'}} fontSize="medium" /></IconButton>
-                                </Tooltip>
-                        <Tooltip title="Edit" style={{ float: 'right', cursor: 'pointer'}} onClick={() => handleEdit(currentPackage)}>
-                                    <IconButton><EditIcon color="success" fontSize="medium" />
-                                    </IconButton></Tooltip>
-                                <Tooltip style={{ float: 'right', cursor: 'pointer'}} title="Delete">
-                                    <IconButton><DeleteOutlineIcon variant="contained" color="error" onClick={() => handleDelete(currentPackage?.PKPackageId)} fontSize="medium" />
-                                    </IconButton></Tooltip>
+                    <Box style={{ width: "100%", float: "right" }}>
+                        <Tooltip style={{ float: 'right', cursor: 'pointer' }} onClick={handleSubModalClose} title="Close">
+                            <IconButton><CloseIcon style={{ float: 'right', cursor: 'pointer' }} fontSize="medium" /></IconButton>
+                        </Tooltip>
                     </Box>
-                    <Box  style={{width:"fit-content"}}>
-                    <Typography id="modal-modal-title" variant="h6" component="h3" align="center" sx={{ mb: 3 }}>
-                        Package Detail
-                    </Typography>
+                    <Box style={{ width: "fit-content" }}>
+                        <Typography id="modal-modal-title" variant="h6" component="h3" align="center" sx={{ mb: 3 }}>
+                            Subscribe to this package
+                        </Typography>
                     </Box>
-                    
+                    {/* <form className={classes.form} noValidate> */}
+                    <Grid container spacing={2} alignItems="center" justify="center">
+
+                        <Grid item xs={6}>
+                            <TextField
+
+                                onChange={(e) => setPhone(e.target.value)}
+                                variant="standard"
+                                required
+                                fullWidth
+                                name="phone"
+                                label="Phone No"
+                                type="text"
+                                id="phone"
+                                value={phone}
+                            />
+                        </Grid>
+                        <Grid item xs={5}>
+                            <MDBBtn size='medium' style={{ backgroundColor: 'darkcyan' }} onClick={() => getOtp()}>Get Otp</MDBBtn>
+                        </Grid>
+                        <Grid item xs={6} style={{ display: displayStyle }}>
+                            <TextField
+                                onChange={(e) => setOtp(e.target.value)}
+                                variant="standard"
+                                required
+                                name="otp"
+                                label="Otp Code"
+                                type="text"
+                                id="otp"
+                                value={otp}
+                            />
+                        </Grid>
+                        <Grid item xs={6} style={{ display: displayStyle }}>
+                            <MDBBtn size='medium' style={{ backgroundColor: 'darkcyan' }} onClick={() => verifySubs()}>Verify Subscription</MDBBtn>
+                        </Grid>
+                    </Grid>
+                    {/* </form> */}
+
+
+                </Box>
+            </Modal>
+            <Modal
+                open={modalOpen}
+                aria-labelledby="modal-modal-title"
+                aria-describedby="modal-modal-description"
+            >
+
+                <Box sx={style}>
+                    <Box style={{ width: "100%", float: "right" }}>
+                        <Tooltip style={{ float: 'right', cursor: 'pointer' }} onClick={handleModalClose} title="Close">
+                            <IconButton><CloseIcon style={{ float: 'right', cursor: 'pointer' }} fontSize="medium" /></IconButton>
+                        </Tooltip>
+                        <Tooltip title="Edit" style={{ float: 'right', cursor: 'pointer' }} onClick={() => handleEdit(currentPackage)}>
+                            <IconButton><EditIcon color="success" fontSize="medium" />
+                            </IconButton></Tooltip>
+                        <Tooltip style={{ float: 'right', cursor: 'pointer' }} title="Delete">
+                            <IconButton><DeleteOutlineIcon variant="contained" color="error" onClick={() => handleDelete(currentPackage?.PKPackageId)} fontSize="medium" />
+                            </IconButton></Tooltip>
+                    </Box>
+                    <Box style={{ width: "fit-content" }}>
+                        <Typography id="modal-modal-title" variant="h6" component="h3" align="center" sx={{ mb: 3 }}>
+                            Package Detail
+                        </Typography>
+                    </Box>
+
 
                     <Grid container spacing={2}>
 
@@ -505,24 +621,24 @@ export default function UserPackage() {
                             <Typography style={{ color: "black" }}>{currentPackage?.PackageName}</Typography>
                         </Grid>}
                         {currentPackage?.PackageCost && <Grid item xs={5}>
-                        <Typography style={{ color: "darkcyan" }}>Package Cost</Typography>
+                            <Typography style={{ color: "darkcyan" }}>Package Cost</Typography>
                             <Typography style={{ color: "black" }}>{currentPackage?.PackageCost}</Typography>
-                            
+
                         </Grid>}
 
                         {currentPackage?.SubscriptionPeriod && <Grid item xs={5}>
-                        <Typography style={{ color: "darkcyan" }}>Subscription Period</Typography>
+                            <Typography style={{ color: "darkcyan" }}>Subscription Period</Typography>
                             <Typography style={{ color: "black" }}>{currentPackage?.SubscriptionPeriod}</Typography>
                         </Grid>}
 
 
                         {currentPackage?.createdAt && <Grid item xs={5}>
-                        <Typography style={{ color: "darkcyan" }}>Creation Date</Typography>
+                            <Typography style={{ color: "darkcyan" }}>Creation Date</Typography>
                             <Typography style={{ color: "black" }}>{currentPackage?.createdAt.split("T")[0]}</Typography>
                         </Grid>}
 
                         {currentPackage?.updatedAt && <Grid item xs={5}>
-                        <Typography style={{ color: "darkcyan" }}>Updation Date</Typography>
+                            <Typography style={{ color: "darkcyan" }}>Updation Date</Typography>
                             <Typography style={{ color: "black" }}>{currentPackage?.updatedAt.split("T")[0]}</Typography>
                         </Grid>}
 
@@ -584,29 +700,9 @@ export default function UserPackage() {
                                             label="Subscription Period"
                                             type="text"
                                             placeholder='Subscription period in months'
-                                            // name="period"
-                                            // autoComplete="period"
                                             value={period}
                                         />
                                     </Grid>
-
-
-
-
-
-                                    {/* <Grid item xs={5}>
-                    <TextField
-                      onChange={(e) => setCnic(e.target.value)}
-                      variant="standard"
-                      required
-                      fullWidth
-                      name="CNIC"
-                      label="CNIC No (42202XXXXXXXXXXX) should be equal to 11"
-                      type="number"
-                      id="password"
-                      autoComplete="cnic"
-                    />
-                  </Grid> */}
                                 </Grid>
                             </form>
                         </DialogContent>
@@ -628,7 +724,7 @@ export default function UserPackage() {
                                 <TableCell align="center" style={{ backgroundColor: 'darkcyan', color: 'white', fontSize: '20px' }}>Package Name</TableCell>
                                 <TableCell align="center" style={{ backgroundColor: 'darkcyan', color: 'white', fontSize: '20px' }}>Package Cost</TableCell>
                                 <TableCell align="center" style={{ backgroundColor: 'darkcyan', color: 'white', fontSize: '20px' }}>Subscription Period</TableCell>
-                                <TableCell align="center" colSpan={3} style={{ backgroundColor: 'darkcyan', color: 'white', fontSize: '20px' }}>Action</TableCell>
+                                <TableCell align="center" colSpan={4} style={{ backgroundColor: 'darkcyan', color: 'white', fontSize: '20px' }}>Action</TableCell>
 
 
 
@@ -645,12 +741,14 @@ export default function UserPackage() {
                                     data?.map((e, i) => {
                                         return (
                                             <>
-                                                <TableRow hover={true}>
+                                                <TableRow hover={true} key={i}>
                                                     <TableCell>{e.PKPackageId}</TableCell>
                                                     <TableCell>{e.PackageName}</TableCell>
                                                     <TableCell>{e.PackageCost}</TableCell>
                                                     <TableCell>{e.SubscriptionPeriod}</TableCell>
                                                     <TableCell><Button variant="outlined" onClick={() => getDetails(e)}>Details</Button></TableCell>
+
+                                                    <TableCell><Button variant="outlined" color="secondary" onClick={() => subscribe(e)}>Subscribe</Button></TableCell>
                                                     <TableCell style={{ textAlign: 'left' }}>
                                                         <Tooltip title="Edit" onClick={() => handleEdit(e)}>
                                                             <IconButton><EditIcon color="success" fontSize="medium" />

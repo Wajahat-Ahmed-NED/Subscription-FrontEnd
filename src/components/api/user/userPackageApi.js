@@ -1,5 +1,6 @@
 import axios from "axios"
 import { api } from "./api"
+import {getSubscriptionByPkgId} from './userSubscriptionApi'
 
 export const addPackage = async (params)=>{
     let adminToken = localStorage.getItem("admin")
@@ -49,4 +50,24 @@ export const getPackageById = async (e) => {
                 'Authorization': `Bearer ${JSON.parse(adminToken)?.data?.[0]?.accessToken}`,
             }
         })
+}
+
+export const sendOtp = async (params) =>{
+	let adminToken = localStorage.getItem("admin")
+    return await axios.post(`${api}user/sendOtp`, params ,
+    {
+        headers: {
+            'Authorization': `Bearer ${JSON.parse(adminToken)?.data?.[0]?.accessToken}`,
+        }
+    })
+}
+
+export const verifySubscription = async (params) =>{
+	let adminToken = localStorage.getItem("admin")
+    return await axios.post(`${api}user/verifySubscription`, params ,
+    {
+        headers: {
+            'Authorization': `Bearer ${JSON.parse(adminToken)?.data?.[0]?.accessToken}`,
+        }
+    })
 }
