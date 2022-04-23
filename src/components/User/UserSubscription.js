@@ -238,7 +238,8 @@ export default function UserSubscription() {
         let adminToken = localStorage.getItem('admin')
         apiHandle(adminToken).then(()=>{
             getSubscription().then(json => {
-                if(json?.data?.data?.[0].length === 0)
+                console.log(json?.data?.data?.[0])
+                if(json?.data?.data?.[0]?.length === 0)
                 {
                     setNodata(true)
                 }
@@ -259,6 +260,7 @@ export default function UserSubscription() {
         let adminToken = localStorage.getItem('admin')
         apiHandle(adminToken).then(()=>{
             getSubscriptionByPkgId(pkgId).then(json => {
+                console.log(json.data.message[0])
                 if(json.data.message[0] == "No subscriptions of current package id found" || json?.data?.data?.length === 0)
                 {
                     setNodata(true)
@@ -266,11 +268,14 @@ export default function UserSubscription() {
                 else
                 {
                     setNodata(false)
-                    setData(json?.data?.data)
+                    setData(json?.data?.data?.[0])
                 }
                 
             })
             .catch(err => {
+                Swal.fire(
+                    "Can not search","Invalid ID or something went wrong","error"
+                )
                 console.log(err)
             })
         })
@@ -337,8 +342,6 @@ export default function UserSubscription() {
                 getData();
             }).catch(err => {
                 setOpen(false);
-                setError(true)
-                setErrorMsg(err?.response?.data?.message[0])
                 Swal.fire({
                     icon: 'error',
                     title: 'Oops...',
@@ -465,11 +468,11 @@ export default function UserSubscription() {
                                     return (
                                         <>
                                             <TableRow hover={true}>
-                                                <TableCell>{e?.subscriptions?.[0].PKSubscriptionId}</TableCell>
-                                                <TableCell>{e?.subscriptions?.[0].FKCustomerId}</TableCell>
-                                                <TableCell>{e?.subscriptions?.[0].FKPackageId}</TableCell>
+                                                <TableCell>{e?.PKSubscriptionId}</TableCell>
+                                                <TableCell>{e?.FKCustomerId}</TableCell>
+                                                <TableCell>{e?.FKPackageId}</TableCell>
                                                 <TableCell style={{ textAlign: 'left' }}>
-                                                    <Tooltip title="Edit" onClick={() => handleEdit(e?.subscriptions?.[0])}>
+                                                    <Tooltip title="Edit" onClick={() => handleEdit(e)}>
                                                         <IconButton><EditIcon color="success" fontSize="medium" />
                                                         </IconButton></Tooltip>
                                                 </TableCell>

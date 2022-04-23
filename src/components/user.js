@@ -215,7 +215,7 @@ export default function ContactPage() {
 
                 Swal.fire(
                     'Success',
-                    'Admin Created Successfully',
+                    'User Created Successfully',
                     'success',
                 )
 

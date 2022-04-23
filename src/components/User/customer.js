@@ -150,6 +150,8 @@ export default function UserCustomer() {
         setCountry('')
         setCity('')
         setArea('')
+        setError(false)
+        setErrorMsg('')
     };
 
     // const accessToken = '';
@@ -174,14 +176,11 @@ export default function UserCustomer() {
         apiHandle(adminToken).then(() => {
             addCustomer(obj).then(function (response) {
                 setOpen(false);
-
                 Swal.fire(
                     'Success',
                     'Customer Created Successfully',
                     'success',
                 )
-                // setOpen(false);
-                getData();
             }).catch(err => {
                 setOpen(false);
                 setError(true)

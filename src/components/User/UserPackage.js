@@ -238,12 +238,7 @@ export default function UserPackage() {
         setDisplayStyle("none")
         let adminToken = localStorage.getItem("admin")
         apiHandle(adminToken).then(() => {
-            handleSubModalOpen()
-            // getPackageById(e).then((res) => {
-            //     setcurrentPackage(res?.data?.data?.[0])
-            // }).catch(err => {
-            //     console.log(err?.response?.data?.message)
-            // })
+                handleSubModalOpen()
         })
     }
 
@@ -268,13 +263,25 @@ export default function UserPackage() {
                 setSubModalOpen(false)
                 setDisplayStyle("none")
                 console.log(err?.response)
-                Swal.fire(
-                    'Cannot Send Otp',
-                    'Invalid Phone Number or Something Went Wrong',
-                    'error',
-                ).then(() => {
-                    setSubModalOpen(true)
-                })
+                if(err?.response?.data?.message?.[0] === "Subscription already exists")
+                {
+                    Swal.fire(
+                        'Already Subscribed',
+                        'Subscription Already Exists',
+                        'error',
+                    )
+                }
+                else
+                {
+                    Swal.fire(
+                        'Cannot Send Otp',
+                        'Invalid Phone Number or Something Went Wrong',
+                        'error',
+                    ).then(() => {
+                        setSubModalOpen(true)
+                    })
+                }
+                
                 // setSubModalOpen(true)
             })
         })
@@ -376,7 +383,7 @@ export default function UserPackage() {
                 if (json.data.message[0] == "No packages of current user found" || json.data.data[0].length === 0) {
                     setNodata(true)
                 }
-                else {
+                else{
                     setNodata(false)
                     setData(json.data.data[0])
                 }
@@ -387,6 +394,7 @@ export default function UserPackage() {
         })
 
     }
+
     useEffect(() => {
         getData()
         var adminToken = localStorage.getItem("admin")
@@ -747,7 +755,6 @@ export default function UserPackage() {
                                                     <TableCell>{e.PackageCost}</TableCell>
                                                     <TableCell>{e.SubscriptionPeriod}</TableCell>
                                                     <TableCell><Button variant="outlined" onClick={() => getDetails(e)}>Details</Button></TableCell>
-
                                                     <TableCell><Button variant="outlined" color="secondary" onClick={() => subscribe(e)}>Subscribe</Button></TableCell>
                                                     <TableCell style={{ textAlign: 'left' }}>
                                                         <Tooltip title="Edit" onClick={() => handleEdit(e)}>

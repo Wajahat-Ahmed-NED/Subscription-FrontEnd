@@ -20,6 +20,8 @@ export const getPackage = async ()=>{
                     "Authorization": `Bearer ${JSON.parse(adminToken)?.data?.[0]?.accessToken}`
             }
     })
+
+
 }
 
 export const deletePackage = async (e)=>{
