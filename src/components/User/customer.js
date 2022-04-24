@@ -311,9 +311,8 @@ export default function UserCustomer() {
                             'success',
                         )
                         setData([]);
-                        getData();
                     }).catch(err => {
-                        console.log(err.message, "this error founnd")
+                        console.log(err.response, "this error founnd")
                         Swal.fire({
                             icon: 'error',
                             title: 'Oops...',

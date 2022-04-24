@@ -24,6 +24,7 @@ import TextField from '@material-ui/core/TextField';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import { useHistory } from "react-router-dom";
 import { UserContext } from '../userContext';
+import Swal from 'sweetalert2';
 
 import { isJwtExpired } from 'jwt-check-expiration';
 import jwt from 'jsonwebtoken'
@@ -86,8 +87,6 @@ export default function ContactPage() {
 
     const dataFromRedux = useSelector((a) => a)
 
-    console.log(dataFromRedux)
-
     const classes = useStyles();
 
     const [modalOpen, setModalOpen] = React.useState(false);
@@ -116,7 +115,6 @@ export default function ContactPage() {
 
     const [openNew, setOpenNew] = React.useState(false);
 
-    console.log(rows, "get ALL orders");
 
     const handleEditRow = (idEdit, row) => {
         let filteredRow = rows.filter(({ id }) => {
@@ -142,7 +140,7 @@ export default function ContactPage() {
                 }
                 else {
                     setNodata(false)
-                    setData(json.data.data)
+                    setData(json.data.data[0])
                 }
             }).catch((err) => console.log(err))
         })
@@ -152,14 +150,23 @@ export default function ContactPage() {
         let adminToken = localStorage.getItem("admin")
         apiHandle(adminToken).then(() => {
             getPackageByUserId(userId).then((json) => {
+                console.log(json)
                 if (json.data.data[0].length === 0) {
                     setNodata(true)
                 }
                 else {
                     setNodata(false)
-                    setData(json.data.data)
+                    setData(json.data.data[0])
                 }
-            }).catch((err) => console.log(err))
+            }).catch((err) => 
+            {
+                Swal.fire(
+                    "Can not found package",
+                    "User does not exist or Something went wrong",
+                    "error"
+                )
+            }
+            )
         })
     }
 
@@ -192,10 +199,8 @@ export default function ContactPage() {
         apiHandle(adminToken).then(() => {
             getPackageById(e).then((res) => {
 
-                // console.log("response is ", res?.data?.data?.[0])
                 handleModalOpen()
                 setcurrentPackage(res?.data?.data?.[0])
-                // console.log(currentPackage)
             }).catch(err => {
 
 
@@ -227,7 +232,7 @@ export default function ContactPage() {
                 <h2 className='text-center mb-3'> Packages Details</h2>
                 <div style={{ float: 'right' }}>
                     <Grid container  >
-                        <Grid item xs={8}>
+                        <Grid item xs={7}>
                             <input placeholder='Package By User ID' onChange={(e) => setUserId(e.target.value)} type='number' style={{ height: '33px', outline: 'none' }}
                             />
                         </Grid>
@@ -338,7 +343,7 @@ export default function ContactPage() {
                                 {
 
 
-                                    data?.[0]?.map((e, i) => {
+                                    data?.map((e, i) => {
                                         return (
                                             <>
                                                 <TableRow hover={true}>
