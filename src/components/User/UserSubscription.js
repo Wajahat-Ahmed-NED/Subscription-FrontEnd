@@ -363,16 +363,16 @@ export default function UserSubscription() {
     return (
         <>
             {/* <button className='btn btn-primary' onClick={handleUpdate}>Bootstrap</button> */}
-            <div className="container d-flex justify-content-between my-0">
+            <div className="container d-flex justify-content-between my-0 me-0">
                 <h2 className='text-center mb-3'> Subscription Details</h2>
-                <div style={{ float: 'right' }}>
+                <div>
                 <Grid container >
-                     <Grid item xs={8}>
-                        <input placeholder='Subscription by Package ID' type='number' style={{ height: '33px', outline: 'none', width:"215px" }}
+                     <Grid item xs={7}>
+                        <input  className="me-2" placeholder='Subscription by Package ID' type='number' style={{ height: '33px', outline: 'none', width:"215px" }}
                             onChange={(e) => setPkgId(e.target.value)} />
                     </Grid>
-                    <Grid item xs={1}>
-                        <Button className=" mb-4 ms-3 " onClick={() => getDataByPkg()} size='sm' style={{ backgroundColor: 'darkCyan', fontSize: "bolder" }} variant="contained">Search </Button>
+                    <Grid item xs={5}>
+                        <Button  className="ms-4 me-0"  onClick={() => getDataByPkg()} size='sm' style={{ backgroundColor: 'darkCyan', fontSize: "bolder" }} variant="contained">Search </Button>
 
                     </Grid>
                 </Grid>

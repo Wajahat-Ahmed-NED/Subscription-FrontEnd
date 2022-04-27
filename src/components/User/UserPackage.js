@@ -50,8 +50,8 @@ import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
 import Tooltip from '@mui/material/Tooltip';
 import Alert from 'react-bootstrap/Alert';
 import { apiHandle } from '../api/user/api'
-import { addPackage, getPackage, deletePackage, editPackage, getPackageById, sendOtp, verifySubscription } from '../api/user/userPackageApi';
-import { getSubscriptionByPkgId } from '../api/user/userSubscriptionApi'
+import { addPackage, getPackage, deletePackage, editPackage, getPackageById, sendOtp, verifySubscription, billGeneration } from '../api/user/userPackageApi';
+import { getSubscription, getSubscriptionByPkgId } from '../api/user/userSubscriptionApi'
 
 const style = {
     position: 'absolute',
@@ -194,6 +194,9 @@ export default function UserPackage() {
     const [submodalOpen, setSubModalOpen] = React.useState(false);
     const handleSubModalOpen = () => setSubModalOpen(true);
     const handleSubModalClose = () => setSubModalOpen(false);
+    const [billmodalOpen, setBillModalOpen] = React.useState(false);
+    const handleBillModalOpen = () => setBillModalOpen(true);
+    const handleBillModalClose = () => setBillModalOpen(false);
     const [currentPackage, setcurrentPackage] = useState(null)
     const [page, setPage] = React.useState(0);
     const [rows, setRow] = useState([]);
@@ -286,6 +289,40 @@ export default function UserPackage() {
             })
         })
     }
+    const generateBill = async () =>{
+        
+        let adminToken = localStorage.getItem("admin")
+        apiHandle(adminToken).then(() => {
+            getSubscription().then((res)=>{
+                // console.log(res?.data?.data?.[0]?.[(res?.data?.data?.[0]).length -1 ]?.PKSubscriptionId)
+                let subscriptionId = res?.data?.data?.[0]?.[(res?.data?.data?.[0]).length -1 ]?.PKSubscriptionId;
+                let obj ={
+                    "FKSubscriptionId": subscriptionId
+                }
+                billGeneration(obj).then((res)=>{
+                    console.log(res)
+                    setBillModalOpen(false)
+                    Swal.fire(
+                    'Success',
+                    'Bill Generated Successfully',
+                    'success',
+                )
+                }).catch(err=>{
+                    console.log(err?.response)
+                    Swal.fire(
+                        'Bill Not Generated',
+                        'Invalid credentials or something went wrong',
+                        'success',
+                    )
+                })
+            }).catch(err=>{
+                console.log(err?.response)
+            })
+        })
+    }
+
+
+
     const verifySubs = async () => {
         const obj = {
             "Otp": otp,
@@ -301,7 +338,9 @@ export default function UserPackage() {
                     'Success',
                     'Subscribed Successfully',
                     'success',
-                )
+                ).then(()=>{
+                    setBillModalOpen(true)
+                })
             }).catch(err => {
                 setSubModalOpen(false)
                 setDisplayStyle("block")
@@ -539,6 +578,34 @@ export default function UserPackage() {
 
 
             </div>
+            <Modal
+                open={billmodalOpen}
+                aria-labelledby="modal-modal-title"
+                aria-describedby="modal-modal-description"
+            >
+
+                <Box sx={style}>
+                    <Box style={{ width: "100%", float: "right" }}>
+                        <Tooltip style={{ float: 'right', cursor: 'pointer' }} onClick={handleBillModalClose} title="Close">
+                            <IconButton><CloseIcon style={{ float: 'right', cursor: 'pointer' }} fontSize="medium" /></IconButton>
+                        </Tooltip>
+                    </Box>
+                    <Box style={{ width: "fit-content" }}>
+                        <Typography id="modal-modal-title" variant="h6" component="h3" align="center" sx={{ mb: 3 }}>
+                            Generate Bill For Subscription
+                        </Typography>
+                    </Box>
+                    {/* <form className={classes.form} noValidate> */}
+                    <Grid container spacing={2} alignItems="center" justify="center">
+                        <Grid item xs={12} align="center">
+                            <MDBBtn size='medium' style={{ backgroundColor: 'darkcyan' }} onClick={() => generateBill()}>Generate Bill</MDBBtn>
+                        </Grid>
+                    </Grid>
+                    {/* </form> */}
+
+
+                </Box>
+            </Modal>
             <Modal
                 open={submodalOpen}
                 aria-labelledby="modal-modal-title"

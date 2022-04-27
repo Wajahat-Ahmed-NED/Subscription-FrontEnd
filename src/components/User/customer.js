@@ -388,24 +388,22 @@ export default function UserCustomer() {
             {/* <button className='btn btn-primary' onClick={handleUpdate}>Bootstrap</button> */}
             <div className="container d-flex justify-content-between my-0">
                 <h2 className='text-center mb-3'> Customer Details</h2>
-                {/* {
-                    error && <Alert variant="danger" onClose={() => setError(false)} dismissible>
-                        <p className="text-center" style={{ fontWeight: 'bold' }}>{data}</p>
-                    </Alert>
-                } */}
-                {/* <Button className="ms-auto me-3 my-3" onClick={getData} size='small' style={{ backgroundColor: 'darkCyan' }} variant="contained">Get Data</Button> */}
-                <div>
+                <div style={{float:"right"}}>
                 <Grid container >
-                    <Grid item xs={8}>
+                    <Grid item xs={5}>
                         <input placeholder='Customer by Subscription ID' type='number' style={{ height: '33px', outline: 'none', width:"215px"}}
                             onChange={(e) => setSubsId(e.target.value)} />
                     </Grid>
-                    <Grid item xs={1}>
-                        <Button className=" mb-4 ms-3 " onClick={() => getData()} size='sm' style={{ backgroundColor: 'darkCyan', fontSize: "bolder" }} variant="contained">Search </Button>
+                    <Grid item xs={2}>
+                        <Button className="mb-4 me-3" onClick={() => getData()} size='sm' style={{ backgroundColor: 'darkCyan', fontSize: "bolder" }} variant="contained">Search </Button>
+
+                    </Grid>
+                    <Grid item xs={5} style={{maxWidth:'unset'}}>
+                    <Button className=" mb-3 ms-3 me-4" onClick={handleOpen} size='sm' style={{ backgroundColor: 'darkCyan', fontSize: "bolder",width:'max-content' }} variant="contained">Create Customer <AddIcon /></Button>
 
                     </Grid>
                 </Grid>
-                <Button className=" mb-3 me-3 " onClick={handleOpen} size='sm' style={{ backgroundColor: 'darkCyan', fontSize: "bolder", float:"right"  }} variant="contained">Create Customer <AddIcon /></Button>
+                
                 
                 </div>
                 
