@@ -41,6 +41,7 @@ import Tooltip from '@mui/material/Tooltip';
 import { addUser, deleteUser, getData, suspendUser, tempSuspendUser, getUser } from './api/userApi';
 import './assets/css/user.css'
 import { apiHandle } from './api/api'
+import Alert from 'react-bootstrap/Alert';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -75,9 +76,9 @@ const style = {
     left: '50%',
     transform: 'translate(-50%, -50%)',
     width: 500,
-    overflowX:'hidden', 
-    overflowY:'auto',
-    maxHeight:'500px',
+    overflowX: 'hidden',
+    overflowY: 'auto',
+    maxHeight: '500px',
     bgcolor: 'background.paper',
     border: '2px solid darkcyan',
     boxShadow: 24,
@@ -134,6 +135,8 @@ export default function ContactPage() {
     const handleModalOpen = () => setModalOpen(true);
     const handleModalClose = () => setModalOpen(false);
     const [nodata, setNodata] = useState(false)
+    const [errorMsg, setErrorMsg] = useState('')
+
     const handleClickOpen = () => {
         setOpen(true);
     };
@@ -144,6 +147,10 @@ export default function ContactPage() {
         setLname('')
         setEmail('')
         setPhone('')
+        setCnic('')
+        setPassword('')
+        setError(false)
+
     };
 
 
@@ -212,7 +219,8 @@ export default function ContactPage() {
         let adminToken = localStorage.getItem("admin")
         apiHandle(adminToken).then(() => {
             addUser(obj).then(function (response) {
-
+                setError(false)
+                setErrorMsg('')
                 Swal.fire(
                     'Success',
                     'User Created Successfully',
@@ -221,12 +229,13 @@ export default function ContactPage() {
 
                 fetchData();
             }).catch(err => {
+                setError(true)
+                setErrorMsg(err?.response?.data?.message[0])
                 Swal.fire({
                     icon: 'error',
                     title: 'Oops...',
                     text: 'Wrong Credentials or Something went wrong!',
-                })
-                setOpen(true);
+                }).then(() => { setOpen(true) })
             })
         })
     }
@@ -253,12 +262,10 @@ export default function ContactPage() {
         let adminToken = localStorage.getItem("admin")
         apiHandle(adminToken).then(() => {
             getData().then((json) => {
-                if(json.data.message[0] == "No users found" || json.data.data[0].length === 0)
-                {
+                if (json.data.message[0] == "No users found" || json.data.data[0].length === 0) {
                     setNodata(true)
                 }
-                else
-                {
+                else {
                     setNodata(false)
                     setData(json.data.data)
                 }
@@ -283,7 +290,7 @@ export default function ContactPage() {
     const [EditModal, setEditModal] = useState(false)
     const [suspend, setSuspend] = useState(0)
     const [tempSuspend, setTempSuspend] = useState(0)
-    const [disable, setDisable] = useState(false)
+    const [error, setError] = React.useState(false);
     const [id, setId] = useState('')
     const [filteredData, setFilteredData] = useState([])
     const [currentUser, setCurrentUser] = useState(null)
@@ -470,7 +477,7 @@ export default function ContactPage() {
                 <Button className=" mb-3 me-3 " onClick={handleOpen} size='sm' style={{ backgroundColor: 'darkCyan', fontSize: "bolder" }} variant="contained">Create user <AddIcon /></Button>
 
             </div>
-
+            
             <Modal
                 open={modalOpen}
                 // onClose={handleModalClose}
@@ -478,73 +485,73 @@ export default function ContactPage() {
                 aria-describedby="modal-modal-description"
             >
                 <Box sx={style}>
-                <Box  style={{width:"100%",float:"right"}}>
-                    <Tooltip onClick={handleModalClose}  style={{ float: 'right', cursor: 'pointer'}} title="Close">
-                            <IconButton><CloseIcon style={{ float: 'right', cursor: 'pointer'}} fontSize="medium" /></IconButton>
-                                </Tooltip>
+                    <Box style={{ width: "100%", float: "right" }}>
+                        <Tooltip onClick={handleModalClose} style={{ float: 'right', cursor: 'pointer' }} title="Close">
+                            <IconButton><CloseIcon style={{ float: 'right', cursor: 'pointer' }} fontSize="medium" /></IconButton>
+                        </Tooltip>
                     </Box>
-                    <Box  style={{width:"fit-content"}}>
-                    <Typography id="modal-modal-title" variant="h6" component="h3" align="center" sx={{ mb: 3 }}>
-                        User Detail
-                    </Typography>
+                    <Box style={{ width: "fit-content" }}>
+                        <Typography id="modal-modal-title" variant="h6" component="h3" align="center" sx={{ mb: 3 }}>
+                            User Detail
+                        </Typography>
                     </Box>
-                    
+
 
                     <Grid container spacing={2}>
 
                         {currentUser?.FirstName && <Grid item xs={5}>
-                        <Typography style={{ color: "darkcyan" }}>First Name</Typography>
+                            <Typography style={{ color: "darkcyan" }}>First Name</Typography>
                             <Typography style={{ color: "black" }}>{currentUser?.FirstName}</Typography>
-                          
+
                         </Grid>}
                         {currentUser?.LastName && <Grid item xs={5}>
-                        <Typography style={{ color: "darkcyan" }}>Last Name</Typography>
+                            <Typography style={{ color: "darkcyan" }}>Last Name</Typography>
                             <Typography style={{ color: "black" }}>{currentUser?.LastName}</Typography>
                         </Grid>}
 
                         {currentUser?.Username && <Grid item xs={5}>
-                        <Typography style={{ color: "darkcyan" }}>Username</Typography>
+                            <Typography style={{ color: "darkcyan" }}>Username</Typography>
                             <Typography style={{ color: "black" }}>{currentUser?.Username}</Typography>
-                            
+
                         </Grid>}
 
                         {currentUser?.Email && <Grid item xs={5}>
-                        <Typography style={{ color: "darkcyan" }}>Email Address</Typography>
+                            <Typography style={{ color: "darkcyan" }}>Email Address</Typography>
                             <Typography style={{ color: "black" }}>{currentUser?.Email}</Typography>
-                         
+
                         </Grid>}
 
 
 
                         {currentUser?.PhoneNumber && <Grid item xs={5}>
-                        <Typography style={{ color: "darkcyan" }}>Phone No</Typography>
+                            <Typography style={{ color: "darkcyan" }}>Phone No</Typography>
                             <Typography style={{ color: "black" }}>{currentUser?.PhoneNumber}</Typography>
-                          
+
                         </Grid>}
                         {currentUser?.CNIC && <Grid item xs={5}>
-                        <Typography style={{ color: "darkcyan" }}>CNIC No</Typography>
+                            <Typography style={{ color: "darkcyan" }}>CNIC No</Typography>
                             <Typography style={{ color: "black" }}>{currentUser?.CNIC}</Typography>
-                           
+
                         </Grid>}
 
                         {currentUser?.createdAt && <Grid item xs={5}>
-                        <Typography style={{ color: "darkcyan" }}>Creation Date</Typography>
+                            <Typography style={{ color: "darkcyan" }}>Creation Date</Typography>
                             <Typography style={{ color: "black" }}>{currentUser?.createdAt.split("T")[0]}</Typography>
-                           
+
                         </Grid>}
 
                         {currentUser?.updatedAt && <Grid item xs={5}>
-                        <Typography style={{ color: "darkcyan" }}>Updation Date</Typography>
+                            <Typography style={{ color: "darkcyan" }}>Updation Date</Typography>
                             <Typography style={{ color: "black" }}>{currentUser?.updatedAt.split("T")[0]}</Typography>
                         </Grid>}
 
                         {currentUser?.SuspendedDate && <Grid item xs={5}>
-                        <Typography style={{ color: "darkcyan" }}>Suspension Date</Typography>
+                            <Typography style={{ color: "darkcyan" }}>Suspension Date</Typography>
                             <Typography style={{ color: "black" }}>{currentUser?.SuspendedDate.split("T")[0]}</Typography>
                         </Grid>}
 
                         {currentUser?.TemporarySuspendedDate && <Grid item xs={5}>
-                        <Typography style={{ color: "darkcyan" }}>Temporary Suspension Date</Typography>
+                            <Typography style={{ color: "darkcyan" }}>Temporary Suspension Date</Typography>
                             <Typography style={{ color: "black" }}>{currentUser?.TemporarySuspendedDate.split("T")[0]}</Typography>
                         </Grid>}
                     </Grid>
@@ -561,6 +568,11 @@ export default function ContactPage() {
                             {!EditModal ? 'Create User' : 'Edit User Details'}
                         </DialogTitle>
                         <DialogContent dividers className='mx-3'>
+                        {
+                error && <Alert variant="danger" onClose={() => setError(false)} dismissible>
+                    <p className="text-center" style={{ fontWeight: 'bold' }}>{errorMsg}</p>
+                </Alert>
+            }
                             <form className={classes.form} noValidate>
                                 <Grid container spacing={2}>
 
@@ -700,51 +712,51 @@ export default function ContactPage() {
                             nodata ? <TableBody>
                                 <TableRow>
                                     <TableCell colSpan={7} align="center"><Typography> No data in table yet </Typography></TableCell>
-                                
+
                                 </TableRow>
-                                </TableBody> :
-<TableBody>
-                            {
+                            </TableBody> :
+                                <TableBody>
+                                    {
 
-                                data[0]?.map((e, i) => {
-                                    return (
-                                        <>
-                                            <TableRow hover={true}>
-                                                <TableCell>{e.PKUserId}</TableCell>
-                                                <TableCell>{e.Username}</TableCell>
-                                                <TableCell>{e.FirstName + " " + e.LastName}</TableCell>
-                                                <TableCell>{e.Email}</TableCell>
-                                                <TableCell>{e.PhoneNumber}</TableCell>
-                                                <TableCell>{e.CNIC}</TableCell>
-                                                <TableCell>
-                                                    <Button variant="outlined" onClick={() => getDetails(e)}>Details</Button>
-                                                </TableCell>
-                                                <TableCell style={{ textAlign: 'left' }}>
-                                                    <Tooltip title="Delete">
-                                                        <IconButton><DeleteOutlineIcon variant="contained" color="error" onClick={() => handleDelete(e.PKUserId)} fontSize="medium" />
-                                                        </IconButton></Tooltip>
-                                                </TableCell>
-                                                {
-                                                    e.IsSuspended ? <TableCell style={{ color: 'red' }}>
-                                                        <Typography>Suspended</Typography>
-                                                    </TableCell> : <> <TableCell> <Button color="success" variant="contained" onClick={() => handleSuspend(e)}>Suspend</Button></TableCell>
+                                        data[0]?.map((e, i) => {
+                                            return (
+                                                <>
+                                                    <TableRow hover={true}>
+                                                        <TableCell>{e.PKUserId}</TableCell>
+                                                        <TableCell>{e.Username}</TableCell>
+                                                        <TableCell>{e.FirstName + " " + e.LastName}</TableCell>
+                                                        <TableCell>{e.Email}</TableCell>
+                                                        <TableCell>{e.PhoneNumber}</TableCell>
+                                                        <TableCell>{e.CNIC}</TableCell>
+                                                        <TableCell>
+                                                            <Button variant="outlined" onClick={() => getDetails(e)}>Details</Button>
+                                                        </TableCell>
+                                                        <TableCell style={{ textAlign: 'left' }}>
+                                                            <Tooltip title="Delete">
+                                                                <IconButton><DeleteOutlineIcon variant="contained" color="error" onClick={() => handleDelete(e.PKUserId)} fontSize="medium" />
+                                                                </IconButton></Tooltip>
+                                                        </TableCell>
                                                         {
-                                                            e.IsTemporarySuspended ? <TableCell style={{ color: 'red' }}><Typography style={{ width: 'max-content' }}>Temporary Suspended </Typography></TableCell> :
-                                                                <TableCell><Button color="success" variant="contained" style={{ width: 'max-content' }} onClick={() => handleTempSuspend(e)}>Temp Suspend</Button>
+                                                            e.IsSuspended ? <TableCell style={{ color: 'red' }}>
+                                                                <Typography>Suspended</Typography>
+                                                            </TableCell> : <> <TableCell> <Button color="success" variant="contained" onClick={() => handleSuspend(e)}>Suspend</Button></TableCell>
+                                                                {
+                                                                    e.IsTemporarySuspended ? <TableCell style={{ color: 'red' }}><Typography style={{ width: 'max-content' }}>Temporary Suspended </Typography></TableCell> :
+                                                                        <TableCell><Button color="success" variant="contained" style={{ width: 'max-content' }} onClick={() => handleTempSuspend(e)}>Temp Suspend</Button>
 
-                                                                </TableCell>
-                                                        }</>
-                                                }
-                                            </TableRow>
+                                                                        </TableCell>
+                                                                }</>
+                                                        }
+                                                    </TableRow>
 
-                                        </>
-                                    )
-                                })
+                                                </>
+                                            )
+                                        })
 
-                            }
-                        </TableBody>
+                                    }
+                                </TableBody>
                         }
-                        
+
                     </Table>
                 </TableContainer>
                 <TablePagination

@@ -241,7 +241,7 @@ export default function UserPackage() {
         setDisplayStyle("none")
         let adminToken = localStorage.getItem("admin")
         apiHandle(adminToken).then(() => {
-                handleSubModalOpen()
+            handleSubModalOpen()
         })
     }
 
@@ -266,16 +266,14 @@ export default function UserPackage() {
                 setSubModalOpen(false)
                 setDisplayStyle("none")
                 console.log(err?.response)
-                if(err?.response?.data?.message?.[0] === "Subscription already exists")
-                {
+                if (err?.response?.data?.message?.[0] === "Subscription already exists") {
                     Swal.fire(
                         'Already Subscribed',
                         'Subscription Already Exists',
                         'error',
                     )
                 }
-                else
-                {
+                else {
                     Swal.fire(
                         'Cannot Send Otp',
                         'Invalid Phone Number or Something Went Wrong',
@@ -284,30 +282,30 @@ export default function UserPackage() {
                         setSubModalOpen(true)
                     })
                 }
-                
+
                 // setSubModalOpen(true)
             })
         })
     }
-    const generateBill = async () =>{
-        
+    const generateBill = async () => {
+
         let adminToken = localStorage.getItem("admin")
         apiHandle(adminToken).then(() => {
-            getSubscription().then((res)=>{
+            getSubscription().then((res) => {
                 // console.log(res?.data?.data?.[0]?.[(res?.data?.data?.[0]).length -1 ]?.PKSubscriptionId)
-                let subscriptionId = res?.data?.data?.[0]?.[(res?.data?.data?.[0]).length -1 ]?.PKSubscriptionId;
-                let obj ={
+                let subscriptionId = res?.data?.data?.[0]?.[(res?.data?.data?.[0]).length - 1]?.PKSubscriptionId;
+                let obj = {
                     "FKSubscriptionId": subscriptionId
                 }
-                billGeneration(obj).then((res)=>{
+                billGeneration(obj).then((res) => {
                     console.log(res)
                     setBillModalOpen(false)
                     Swal.fire(
-                    'Success',
-                    'Bill Generated Successfully',
-                    'success',
-                )
-                }).catch(err=>{
+                        'Success',
+                        'Bill Generated Successfully',
+                        'success',
+                    )
+                }).catch(err => {
                     console.log(err?.response)
                     Swal.fire(
                         'Bill Not Generated',
@@ -315,7 +313,7 @@ export default function UserPackage() {
                         'success',
                     )
                 })
-            }).catch(err=>{
+            }).catch(err => {
                 console.log(err?.response)
             })
         })
@@ -338,7 +336,7 @@ export default function UserPackage() {
                     'Success',
                     'Subscribed Successfully',
                     'success',
-                ).then(()=>{
+                ).then(() => {
                     setBillModalOpen(true)
                 })
             }).catch(err => {
@@ -422,7 +420,7 @@ export default function UserPackage() {
                 if (json.data.message[0] == "No packages of current user found" || json.data.data[0].length === 0) {
                     setNodata(true)
                 }
-                else{
+                else {
                     setNodata(false)
                     setData(json.data.data[0])
                 }
@@ -462,11 +460,19 @@ export default function UserPackage() {
     const handleEdit = async (e) => {
         setEditModal(e)
         setModalOpen(false)
-        setpackageName(e.PackageName)
-        setpackageCost(e.PackageCost)
-        setperiod(e.SubscriptionPeriod)
-        setOpen(true);
-        setId(e.PKPackageId)
+        let adminToken = localStorage.getItem("admin")
+        apiHandle(adminToken).then(() => {
+            getPackageById(e).then((res) => {
+                setpackageName(res?.data?.data?.[0].PackageName)
+                setpackageCost(res?.data?.data?.[0].PackageCost)
+                setperiod(res?.data?.data?.[0].SubscriptionPeriod)
+                setOpen(true);
+                setId(res?.data?.data?.[0].PKPackageId)
+            }).catch(err => {
+                console.log(err?.response)
+            })
+        })
+        
     }
 
     const handleDelete = async (e) => {

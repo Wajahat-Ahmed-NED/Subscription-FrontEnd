@@ -240,8 +240,8 @@ export default function UserSubscription() {
         let adminToken = localStorage.getItem('admin')
         apiHandle(adminToken).then(()=>{
             getSubscription().then(json => {
-                console.log(json?.data?.data)
-                if(json?.data?.data?.[0]?.length === 0)
+                console.log(json?.data?.data?.length)
+                if(json?.data?.data?.length === 0)
                 {
                     setNodata(true)
                 }
@@ -308,6 +308,7 @@ export default function UserSubscription() {
 
     const handleEdit = async (e) => {
         setEditModal(e)
+
         setPackageId(e.FKPackageId)
         setCustomerId(e.FKCustomerId)
         setOpen(true);
@@ -345,7 +346,7 @@ export default function UserSubscription() {
                         'success',
                     )
                 }
-                
+                getData();
             }).catch(err=>{
                 handleSubModalClose()
                 Swal.fire(
@@ -545,7 +546,7 @@ export default function UserSubscription() {
                         {
                             nodata ? <TableBody>
                             <TableRow>
-                                <TableCell colSpan={4} align="center"><Typography> No data in table yet </Typography></TableCell>
+                                <TableCell colSpan={5} align="center"><Typography> No data in table yet </Typography></TableCell>
                             
                             </TableRow>
                             </TableBody> :<TableBody>

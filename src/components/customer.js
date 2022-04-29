@@ -30,10 +30,11 @@ import Box from '@mui/material/Box';
 import { isJwtExpired } from 'jwt-check-expiration';
 import jwt from 'jsonwebtoken'
 import { useSelector } from 'react-redux';
+import Swal from 'sweetalert2';
 
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
-import { getCustomers, getCustomerById } from './api/customersApi';
+import { getCustomers, getCustomerById, getCustomerBySubscriptionId } from './api/customersApi';
 import {apiHandle} from './api/api'
 
 const style = {
@@ -110,7 +111,6 @@ const DialogActions = withStyles((theme) => ({
 export default function ContactPage() {
     const handleOpen = () => setOpen(true);
     const dataFromRedux = useSelector((a) => a)
-    console.log(dataFromRedux)
 
     const classes = useStyles();
 
@@ -123,7 +123,7 @@ export default function ContactPage() {
     const [rowsPerPage, setRowsPerPage] = React.useState(10);
     const [open, setOpen] = React.useState(false);
     const [accessToken, setAccessToken] = React.useState('');
-    const [refreshToken, setRefreshTokn] = React.useState('');
+    const [subsId, setSubsId] = React.useState(null);
     const history = useHistory();
     const handleClickOpen = () => {
         setOpen(true);
@@ -142,7 +142,6 @@ export default function ContactPage() {
 
     const { setToken } = useContext(UserContext);
 
-    console.log(rows, "get ALL orders");
 
     const handleEditRow = (idEdit, row) => {
         let filteredRow = rows.filter(({ id }) => {
@@ -158,6 +157,32 @@ export default function ContactPage() {
 
 
     const [data, setData] = useState([])
+
+    const getData = async () => {
+        let adminToken = localStorage.getItem('admin')
+        apiHandle(adminToken).then(() => {
+            getCustomerBySubscriptionId(subsId).then(json => {
+                if (json.data.message[0] == "Customer is not subscribed to this subscription" || json.data.data[0].length === 0) {
+                    setNodata(true)
+                }
+                else {
+                    setNodata(false)
+                    setData([json.data.data?.[0]?.["customer"]])
+                }
+            }).catch(err => {
+
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Oops...',
+                        text: 'Wrong Credentials or Something went wrong!',
+
+                    })
+                    console.log(err?.response)
+                })
+        })
+
+    }
+
     const fetchData = () => {
         let adminToken = localStorage.getItem("admin")
         apiHandle(adminToken).then(()=>{
@@ -169,7 +194,7 @@ export default function ContactPage() {
                 else
                 {
                     setNodata(false)
-                    setData(json.data.data)
+                    setData(json.data.data?.[0])
                 }
             }).catch((err) => console.log(err))
         })
@@ -182,7 +207,6 @@ export default function ContactPage() {
 
         fetchData()
     }, [])
-    console.log(accessToken)
     const [currentCustomer, setcurrentCustomer] = useState(null)
 
     const [fname, setFname] = useState('')
@@ -207,15 +231,12 @@ export default function ContactPage() {
 
     const handleTextField = (e) => {
         setId(e.target.value)
-        console.log(e.target.value)
 
     }
     const handleUserTextField = (e) => {
         setId2(e.target.value)
-        console.log(e.target.value)
 
     }
-    console.log(filteredData)
 
     const getDetails = async (e) =>{
         // handleModalOpen()
@@ -243,6 +264,20 @@ export default function ContactPage() {
 
             <div className="container d-flex justify-content-between my-0">
                 <h2 className='text-center mb-3'> Customers Details</h2>
+                <div style={{float:"right"}}>
+                <Grid container >
+                    <Grid item xs={8}>
+                        <input className="me-3" onChange={(e) => setSubsId(e.target.value)} placeholder='Customer by Subscription ID' type='number' style={{ height: '33px', outline: 'none', width:"215px"}}
+                             />
+                    </Grid>
+                    <Grid item xs={2}>
+                        <Button className="mb-4 ms-1" onClick={() => getData()} size='sm' style={{ backgroundColor: 'darkCyan', fontSize: "bolder" }} variant="contained">Search </Button>
+
+                    </Grid>
+                </Grid>
+                {/* 
+                  */}
+                </div>
             </div>
 
             <Modal
@@ -367,7 +402,7 @@ export default function ContactPage() {
                             </TableRow>
                             </TableBody> : <TableBody>
                             {
-                            data?.[0]?.map((e, i) => {
+                            data?.map((e, i) => {
                                     return (
                                         <>
                                             <TableRow hover={true}>

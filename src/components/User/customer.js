@@ -276,17 +276,25 @@ export default function UserCustomer() {
         // e.preventDefault()
 
         setEditModal(e)
-        setFname(e.FirstName)
-        setLname(e.LastName)
-        setEmail(e.Email)
-        setPhone(e.PhoneNumber)
-        setCnic(e.CNIC)
-        setAddress(e.Address)
-        setCountry(e.Country)
-        setCity(e.City)
-        setArea(e.Area)
-        setOpen(true);
-        setId(e.PKCustomerId)
+        let adminToken = localStorage.getItem('admin')
+        apiHandle(adminToken).then(() => {
+            getCustomerBySubscriptionId(subsId).then(json => {
+                setFname(json.data.data[0].FirstName)
+                setLname(json.data.data[0].LastName)
+                setEmail(json.data.data[0].Email)
+                setPhone(json.data.data[0].PhoneNumber)
+                setCnic(json.data.data[0].CNIC)
+                setAddress(json.data.data[0].Address)
+                setCountry(json.data.data[0].Country)
+                setCity(json.data.data[0].City)
+                setArea(json.data.data[0].Area)
+                setOpen(true);
+                setId(json.data.data[0].PKCustomerId)
+            }).catch(err=>{
+                console.log(err)
+            })
+        })
+        
     }
     const handleDelete = async (e) => {
         Swal.fire({

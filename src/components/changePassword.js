@@ -102,12 +102,16 @@ export default function ChangePassword({ onClick }) {
                                                 'Success',
                                                 'Changed Password Successfully',
                                                 'success',
-                                        )
+                                        ).then(()=>{
+                                                setData('')
+                                                setError(false)
+                                        })
                                 })
                                 .catch(function (error) {
                                         // alert("Email or Password is incorrect")
                                         setError(true)
-                                        console.log(error)
+                                        console.log(error?.response?.data?.message?.[0])
+                                        setData(error?.response?.data?.message?.[0])
                                         Swal.fire({
                                                 icon: 'error',
                                                 title: 'Oops...',
@@ -134,7 +138,7 @@ export default function ChangePassword({ onClick }) {
                                         <div className={classes.paper}>
                                                 {
                                                         error && <Alert variant="danger" onClose={() => setError(false)} dismissible>
-                                                                <p className="text-center" style={{ fontWeight: 'bold' }}>Session Expired</p>
+                                                                <p className="text-center" style={{ fontWeight: 'bold' }}>{data}</p>
                                                         </Alert>
                                                 }
                                                 <Avatar className={classes.avatar}>

@@ -25,3 +25,11 @@ export const getCustomerById = async (e) => {
         })
 }
 
+export const getCustomerBySubscriptionId = async (e) =>{
+    let adminToken = localStorage.getItem("admin")
+     return await axios.get(`${api}admin/getCustomerBySubscriptionId/${e}`, {
+            headers:{
+                'Authorization' : `Bearer ${JSON.parse(adminToken)?.data?.[0]?.accessToken}`
+            }
+        })
+}
