@@ -29,3 +29,13 @@ export const getSubscriptionByPkgId = async (id) =>
         }
     })
 }
+
+export const billUpdation = async (id,params) =>{
+    let adminToken = localStorage.getItem('admin')
+    return await axios.put(`${api}user/updateBill/${id}`,params,
+        {
+            headers: {
+                'Authorization': `Bearer ${JSON.parse(adminToken)?.data?.[0]?.accessToken}`,
+            }
+        })
+}

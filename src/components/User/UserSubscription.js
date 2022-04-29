@@ -12,6 +12,7 @@ import TableRow from '@material-ui/core/TableRow';
 // import Button from '@material-ui/core/Button';
 import Dialog from '@material-ui/core/Dialog';
 // import Typography from '@material-ui/core/Typography';
+import { MDBBtn } from 'mdb-react-ui-kit';
 import MuiDialogTitle from '@material-ui/core/DialogTitle';
 import MuiDialogContent from '@material-ui/core/DialogContent';
 import MuiDialogActions from '@material-ui/core/DialogActions';
@@ -50,7 +51,7 @@ import Tooltip from '@mui/material/Tooltip';
 import Alert  from 'react-bootstrap/Alert';
 
 import { apiHandle } from '../api/api';
-import { getSubscription, getSubscriptionByPkgId, updateSubscription } from '../api/user/userSubscriptionApi';
+import { billUpdation, getSubscription, getSubscriptionByPkgId, updateSubscription } from '../api/user/userSubscriptionApi';
 
 
 const style = {
@@ -62,7 +63,8 @@ const style = {
     bgcolor: 'background.paper',
     border: '2px solid #000',
     boxShadow: 24,
-    p: 4,
+    pb: 4,
+    pl: 4
 };
 
 const columns = [
@@ -187,15 +189,14 @@ export default function UserSubscription() {
 
     const [page, setPage] = React.useState(0);
     const [rows, setRow] = useState([]);
-    const [no, setNo] = useState(0);
+    const [subId, setSubId] = useState(0);
+    const [amount, setAmount] = useState(0);
     const [rowsPerPage, setRowsPerPage] = React.useState(10);
     const [open, setOpen] = React.useState(false);
     const [accessToken, setAccessToken] = React.useState('');
-    const [refreshToken, setRefreshTokn] = React.useState('');
-    const history = useHistory();
-    const handleClickOpen = () => {
-        setOpen(true);
-    };
+    const [submodalOpen, setSubModalOpen] = React.useState(false);
+    const handleSubModalOpen = () => setSubModalOpen(true);
+    const handleSubModalClose = () => setSubModalOpen(false);
     const handleClose = () => {
         setOpen(false);
         setEditModal(null)
@@ -234,11 +235,12 @@ export default function UserSubscription() {
 
 
     const [data, setData] = useState([])
+    const [billdata, setBillData] = useState([])
     const getData = async () => {
         let adminToken = localStorage.getItem('admin')
         apiHandle(adminToken).then(()=>{
             getSubscription().then(json => {
-                console.log(json?.data?.data?.[0])
+                console.log(json?.data?.data)
                 if(json?.data?.data?.[0]?.length === 0)
                 {
                     setNodata(true)
@@ -247,6 +249,7 @@ export default function UserSubscription() {
                 {
                     setNodata(false)
                     setData(json?.data?.data?.[0])
+                    setBillData(json?.data?.data?.[1])
                 }
 
             })
@@ -304,21 +307,58 @@ export default function UserSubscription() {
 
 
     const handleEdit = async (e) => {
-        // e.preventDefault()
-
         setEditModal(e)
         setPackageId(e.FKPackageId)
         setCustomerId(e.FKCustomerId)
-        // setCnic(e.Email)
-        // setUser(e.user)
-        // console.log(e)
         setOpen(true);
         setId(e.PKSubscriptionId)
-
-
-
-
     }
+
+    const updateBill = async (e) =>{
+        setSubId(e?.PKSubscriptionId);
+        setSubModalOpen(true);
+    }
+
+    const handleUpdateBill = async ()=>{
+        let obj = {
+            ReceivedAmount: parseInt(amount),
+        }
+        let adminToken = localStorage.getItem('admin')
+        apiHandle(adminToken).then(()=>{
+            billUpdation(subId,obj).then((res)=>{
+                setAmount(0)
+                console.log(res)
+                handleSubModalClose()
+                if(res?.data?.message)
+                {
+                    Swal.fire(
+                        'Success',
+                        res?.data?.message?.[0],
+                        'success',
+                    )
+                }
+                else
+                {
+                    Swal.fire(
+                        'Success',
+                        'Bill Updated Successfully',
+                        'success',
+                    )
+                }
+                
+            }).catch(err=>{
+                handleSubModalClose()
+                Swal.fire(
+                    'Opps',
+                    err?.response?.data?.message?.[0],
+                    'error',
+                ).then(()=>{
+                    handleSubModalOpen()
+                })
+            })
+        })
+    }
+
 
     const handleEditSubmit = async (e) => {
         let obj = {
@@ -379,6 +419,51 @@ export default function UserSubscription() {
                 </div>
 
             </div>
+
+            <Modal
+                open={submodalOpen}
+                aria-labelledby="modal-modal-title"
+                aria-describedby="modal-modal-description"
+            >
+
+                <Box sx={style}>
+                    <Box style={{ width: "100%", float: "right" }}>
+                        <Tooltip style={{ float: 'right', cursor: 'pointer' }} onClick={handleSubModalClose} title="Close">
+                            <IconButton><CloseIcon style={{ float: 'right', cursor: 'pointer' }} fontSize="medium" /></IconButton>
+                        </Tooltip>
+                    </Box>
+                    <Box style={{ width: "fit-content" }}>
+                        <Typography id="modal-modal-title" variant="h6" component="h3" align="center" sx={{ mb: 3 }}>
+                            Update Billing
+                        </Typography>
+                    </Box>
+                    {/* <form className={classes.form} noValidate> */}
+                    <Grid container spacing={2} alignItems="center" justify="center">
+
+                        <Grid item xs={6}>
+                            <TextField
+
+                                onChange={(e) => setAmount(e.target.value)}
+                                variant="standard"
+                                required
+                                fullWidth
+                                name="amount"
+                                label="Received Amount"
+                                type="number"
+                                id="amount"
+                                value={amount}
+                            />
+                        </Grid>
+                        <Grid item xs={5}>
+                            <MDBBtn size='medium' style={{ backgroundColor: 'darkcyan' }} onClick={() => handleUpdateBill()}>Update Bill</MDBBtn>
+                        </Grid>
+                    </Grid>
+                    {/* </form> */}
+
+
+                </Box>
+            </Modal>
+
             <Paper className={classes.root} style={{ maxWidth: '1100px' }} >
                 <Backdrop className={classes.backdrop} open={openNew}>
                     <CircularProgress color="inherit" />
@@ -450,7 +535,8 @@ export default function UserSubscription() {
                                 <TableCell align="center" style={{ backgroundColor: 'darkcyan', color: 'white', fontSize: '20px' }}>PKSubscriptionID</TableCell>
                                 <TableCell align="center" style={{ backgroundColor: 'darkcyan', color: 'white', fontSize: '20px' }}>FKCustomerID</TableCell>
                                 <TableCell align="center" style={{ backgroundColor: 'darkcyan', color: 'white', fontSize: '20px' }}>FKPackageID</TableCell>
-                                <TableCell align="center" cellSpan={2} style={{ backgroundColor: 'darkcyan', color: 'white', fontSize: '20px' }}>Action</TableCell>
+                                <TableCell align="center" style={{ backgroundColor: 'darkcyan', color: 'white', fontSize: '20px' }}>Status</TableCell>
+                                <TableCell align="center" colSpan={2} style={{ backgroundColor: 'darkcyan', color: 'white', fontSize: '20px' }}>Action</TableCell>
 
 
 
@@ -471,10 +557,14 @@ export default function UserSubscription() {
                                                 <TableCell>{e?.PKSubscriptionId}</TableCell>
                                                 <TableCell>{e?.FKCustomerId}</TableCell>
                                                 <TableCell>{e?.FKPackageId}</TableCell>
+                                                <TableCell>{billdata[i]?.PaymentStatus}</TableCell>
                                                 <TableCell style={{ textAlign: 'left' }}>
                                                     <Tooltip title="Edit" onClick={() => handleEdit(e)}>
                                                         <IconButton><EditIcon color="success" fontSize="medium" />
                                                         </IconButton></Tooltip>
+                                                </TableCell>
+                                                <TableCell>
+                                                    <Button variant="outlined" onClick={() => updateBill(e)}>Update Bill</Button>
                                                 </TableCell>
                                             </TableRow>
 
