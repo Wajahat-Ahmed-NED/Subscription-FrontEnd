@@ -161,8 +161,8 @@ export default function ContactPage() {
             }).catch((err) => 
             {
                 Swal.fire(
-                    "Can not found package",
-                    "User does not exist or Something went wrong",
+                    "Could Not Found Package",
+                    "User ID Does Not Exist!",
                     "error"
                 )
             }
@@ -317,7 +317,7 @@ export default function ContactPage() {
                     <CircularProgress color="inherit" />
                 </Backdrop>
 
-                <TableContainer className={classes.container} size='small' style={{ maxHeight: '670px', maxWidth: '1078px' }}>
+                <TableContainer className={classes.container} size='small' style={{ maxHeight: '670px' }}>
                     <Table stickyHeader aria-label="sticky table" size='small' >
                         <TableHead>
                             <TableRow>

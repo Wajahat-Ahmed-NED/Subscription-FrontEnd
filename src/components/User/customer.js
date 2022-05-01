@@ -161,6 +161,17 @@ export default function UserCustomer() {
 
     const handleSubmit = async (e) => {
         // e.preventDefault()
+        if(!fname || !lname || !email || !phone || !cnic || !address || !country ||!city ||!area)
+        {
+            setOpen(false);
+            return Swal.fire(
+                'Incomplete Details',
+                'Please Enter All Details',
+                'error'
+            ).then(()=>{
+                setOpen(true)
+            })
+        }
         let obj = {
             FirstName: fname,
             LastName: lname,
@@ -187,7 +198,7 @@ export default function UserCustomer() {
                 setErrorMsg(err?.response?.data?.message[0])
                 Swal.fire({
                     icon: 'error',
-                    title: 'Oops...',
+                    title: 'Could  not create customer',
                     text: 'Something went wrong!',
 
                 }).then((e) => {
@@ -233,8 +244,8 @@ export default function UserCustomer() {
                 .catch(err => {
                     Swal.fire({
                         icon: 'error',
-                        title: 'Oops...',
-                        text: 'Wrong Credentials or Something went wrong!',
+                        title: 'Could Not Found Customer',
+                        text: 'Subscription Id Does Not Exist!'
 
                     })
                     console.log(err)
@@ -323,7 +334,7 @@ export default function UserCustomer() {
                         console.log(err.response, "this error founnd")
                         Swal.fire({
                             icon: 'error',
-                            title: 'Oops...',
+                            title: 'Could Not Delete',
                             text: 'Something went wrong!',
 
                         })
@@ -380,7 +391,7 @@ export default function UserCustomer() {
                 setErrorMsg(err?.response?.data?.message[0])
                 Swal.fire({
                     icon: 'error',
-                    title: 'Oops...',
+                    title: 'Could Not Edit Customer',
                     text: 'Wrong Credentials or Something went wrong!',
 
                 }).then((e) => {
@@ -575,7 +586,7 @@ export default function UserCustomer() {
                         </DialogActions>
                     </Dialog>
                 </div>
-                <TableContainer className={classes.container} size='small' style={{ maxHeight: '670px', maxWidth: '1078px' }}>
+                <TableContainer className={classes.container} size='small' style={{ maxHeight: '670px' }}>
                     <Table stickyHeader aria-label="sticky table" size='small' >
                         <TableHead>
                             <TableRow>

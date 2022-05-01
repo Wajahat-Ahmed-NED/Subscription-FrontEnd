@@ -181,7 +181,7 @@ export default function ContactPage() {
                     }).catch(err => {
                         Swal.fire({
                             icon: 'error',
-                            title: 'Oops...',
+                            title: 'Could Not Delete User',
                             text: 'Something went wrong!',
 
                         })
@@ -204,8 +204,18 @@ export default function ContactPage() {
     }
 
     const handleSubmit = async (e) => {
-        e.preventDefault()
-
+        // e.preventDefault()
+        if(!email || !fname || !lname || !user || !password || !phone || !cnic)
+        {
+            setOpen(false);
+            return Swal.fire(
+                'Incomplete Details',
+                'Please Enter All Details',
+                'error'
+            ).then(()=>{
+                setOpen(true)
+            })
+        }
         setOpen(false);
         let obj = {
             Email: email,
@@ -233,8 +243,8 @@ export default function ContactPage() {
                 setErrorMsg(err?.response?.data?.message[0])
                 Swal.fire({
                     icon: 'error',
-                    title: 'Oops...',
-                    text: 'Wrong Credentials or Something went wrong!',
+                    title: 'Could Not Create User',
+                    text: 'Something went wrong!',
                 }).then(() => { setOpen(true) })
             })
         })
@@ -349,8 +359,8 @@ export default function ContactPage() {
                     }).catch(err => {
                         Swal.fire({
                             icon: 'error',
-                            title: 'Oops...',
-                            text: 'Wrong Credentials or Something went wrong!',
+                            title: 'Could Not Suspend User',
+                            text: 'Something went wrong!',
 
                         })
                     })
@@ -388,15 +398,15 @@ export default function ContactPage() {
                     tempSuspendUser(e).then((res) => {
                         Swal.fire(
                             'Success',
-                            'user Suspended Successfully',
+                            'User Suspended Temporarily',
                             'success',
                         )
                         fetchData();
                     }).catch(err => {
                         Swal.fire({
                             icon: 'error',
-                            title: 'Oops...',
-                            text: 'Wrong Credentials or Something went wrong!',
+                            title: 'Could Not Suspend User Temporarily',
+                            text: 'Something went wrong!',
 
                         })
                     })
@@ -440,7 +450,7 @@ export default function ContactPage() {
             setPhone('')
             Swal.fire(
                 'Success',
-                'user Edited Successfully',
+                'User Edited Successfully',
                 'success',
             ).then((e) => {
 
@@ -450,8 +460,8 @@ export default function ContactPage() {
             setOpen(false);
             Swal.fire({
                 icon: 'error',
-                title: 'Oops...',
-                text: 'Wrong Credentials or Something went wrong!',
+                title: 'Could Not Edit User',
+                text: 'Something went wrong!',
 
             }).then((e) => {
 
@@ -691,7 +701,7 @@ export default function ContactPage() {
                         </DialogActions>
                     </Dialog>
                 </div>
-                <TableContainer className={classes.container} style={{ maxHeight: '670px', maxWidth: '1078px' }}>
+                <TableContainer className={classes.container} style={{ maxHeight: '670px' }}>
                     <Table stickyHeader aria-label="sticky table" size='small' >
                         <TableHead >
                             <TableRow >

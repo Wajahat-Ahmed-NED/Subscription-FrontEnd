@@ -277,7 +277,8 @@ export default function UserSubscription() {
             })
             .catch(err => {
                 Swal.fire(
-                    "Can not search","Invalid ID or something went wrong","error"
+                    "Could Not Found Subscription",
+                    "Package ID Does Not Exist!","error"
                 )
                 console.log(err)
             })
@@ -321,6 +322,18 @@ export default function UserSubscription() {
     }
 
     const handleUpdateBill = async ()=>{
+        if(!amount)
+        {
+            handleSubModalClose()
+            return Swal.fire(
+                'Incomplete Details',
+                'Please Enter Amount',
+                'error'
+            ).then(()=>{
+                handleSubModalOpen()
+
+            })
+        }
         let obj = {
             ReceivedAmount: parseInt(amount),
         }
@@ -328,12 +341,11 @@ export default function UserSubscription() {
         apiHandle(adminToken).then(()=>{
             billUpdation(subId,obj).then((res)=>{
                 setAmount(0)
-                console.log(res)
                 handleSubModalClose()
                 if(res?.data?.message)
                 {
                     Swal.fire(
-                        'Success',
+                        'Already Paid',
                         res?.data?.message?.[0],
                         'success',
                     )
@@ -350,7 +362,7 @@ export default function UserSubscription() {
             }).catch(err=>{
                 handleSubModalClose()
                 Swal.fire(
-                    'Opps',
+                    'Could Not Update Bill',
                     err?.response?.data?.message?.[0],
                     'error',
                 ).then(()=>{
@@ -362,6 +374,17 @@ export default function UserSubscription() {
 
 
     const handleEditSubmit = async (e) => {
+        if(!PackageId)
+        {
+            setOpen(false);
+            return Swal.fire(
+                'Incomplete Details',
+                'Please Enter Package Id',
+                'error'
+            ).then(()=>{
+                setOpen(true)
+            })
+        }
         let obj = {
             FKPackageId: PackageId,
         }
@@ -385,8 +408,8 @@ export default function UserSubscription() {
                 setOpen(false);
                 Swal.fire({
                     icon: 'error',
-                    title: 'Oops...',
-                    text: 'Wrong Credentials or Something went wrong!',
+                    title: 'Could Not Edit Subscription',
+                    text: err?.response?.data?.message[0],
     
                 }).then((e) => {
     
@@ -528,7 +551,7 @@ export default function UserSubscription() {
                         </DialogActions>
                     </Dialog>
                 </div>
-                <TableContainer className={classes.container} size='small' style={{ maxHeight: '670px', maxWidth: '1078px' }}>
+                <TableContainer className={classes.container} size='small' style={{ maxHeight: '670px' }}>
                     <Table stickyHeader aria-label="sticky table" size='small' >
                         <TableHead>
                             <TableRow>

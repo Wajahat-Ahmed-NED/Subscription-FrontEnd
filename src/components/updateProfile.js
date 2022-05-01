@@ -74,6 +74,14 @@ export default function UpdateProfile({ onClick }) {
 
     async function updateProfile(e) {
         e.preventDefault()
+        if(!firstName || !lastName || !phone )
+        {
+            return Swal.fire(
+                'Incomplete Details',
+                'Please Enter All Details',
+                'error'
+            )
+        }
         const params = {
             // 'PKUserId': userid,
             'FirstName': firstName,
@@ -99,8 +107,8 @@ export default function UpdateProfile({ onClick }) {
                 setData(error?.response?.data?.message[0])
                 Swal.fire({
                     icon: 'error',
-                    title: 'Oops...',
-                    text: 'Wrong Credentials or Something went wrong!',
+                    title: 'Could Not Update Profile',
+                    text: 'Something went wrong!',
     
                 })
             });
@@ -133,12 +141,11 @@ export default function UpdateProfile({ onClick }) {
                         <Typography component="h1" variant="h5">
                             Update Admin Profile
                         </Typography>
-                        <form className={classes.form} onSubmit={updateProfile} >
+                        <form className={classes.form} >
                             <Grid container spacing={2}>
                                 <Grid item xs={12}>
                                     <TextField
                                         variant="filled"
-                                        required
                                         fullWidth
                                         id="firstName"
                                         type="text"
@@ -153,7 +160,6 @@ export default function UpdateProfile({ onClick }) {
                                 <Grid item xs={12}>
                                     <TextField
                                         variant="filled"
-                                        required
                                         fullWidth
                                         name="lastName"
                                         label="Last Name"
@@ -168,7 +174,6 @@ export default function UpdateProfile({ onClick }) {
                                 <Grid item xs={12}>
                                     <TextField
                                         variant="filled"
-                                        required
                                         fullWidth
                                         name="phone"
                                         label="Phone No (0300-XXXXXXX)"
@@ -186,7 +191,7 @@ export default function UpdateProfile({ onClick }) {
 
                                 <div className='d-grid gap-3 col-12 mx-auto my-3'>
 
-                                    <MDBBtn size='lg' style={{ backgroundColor: 'darkcyan' }} type="submit">Update Profile</MDBBtn>
+                                    <MDBBtn size='lg' style={{ backgroundColor: 'darkcyan' }} onClick={updateProfile} >Update Profile</MDBBtn>
                                 </div>
                             </Grid>
                         </form>

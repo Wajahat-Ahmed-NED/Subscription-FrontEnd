@@ -75,6 +75,22 @@ export default function UserChangePassword({ onClick }) {
 
     async function changePassword(e) {
         e.preventDefault()
+        if(!email || !password || !newpassword || !retypepassword )
+        {
+            return Swal.fire(
+                'Incomplete Details',
+                'Please Enter All Details',
+                'error'
+            )
+        }
+        if(newpassword !== retypepassword)
+        {
+            return Swal.fire(
+                'Password Mismatch',
+                'New Password and Retype Password Should Match',
+                'error'
+            )
+        }
         const params = {
             'PKUserId': email,
             'oldPassword': password,
@@ -96,12 +112,11 @@ export default function UserChangePassword({ onClick }) {
             })
             .catch(function (error) {
                 setError(true)
-                console.log(error?.response?.data?.message[0])
                 setData(error?.response?.data?.message[0])
                 Swal.fire({
                     icon: 'error',
-                    title: 'Oops...',
-                    text: 'Wrong Credentials or Something went wrong!',
+                    title: 'Could Not Change Password',
+                    text: 'Something went wrong!',
         
                 })
             });
@@ -134,7 +149,7 @@ export default function UserChangePassword({ onClick }) {
                         <Typography component="h1" variant="h5">
                             User Change Password
                         </Typography>
-                        <form className={classes.form} onSubmit={changePassword} >
+                        <form className={classes.form}>
                             <Grid container spacing={2}>
                                 <Grid item xs={12}>
                                     <TextField
@@ -202,7 +217,7 @@ export default function UserChangePassword({ onClick }) {
 
                                 <div className='d-grid gap-3 col-12 mx-auto my-3'>
 
-                                    <MDBBtn size='lg' style={{ backgroundColor: 'darkcyan' }} type="submit">Change Password</MDBBtn>
+                                    <MDBBtn size='lg' style={{ backgroundColor: 'darkcyan' }}  onClick={changePassword} >Change Password</MDBBtn>
                                 </div>
                             </Grid>
                         </form>

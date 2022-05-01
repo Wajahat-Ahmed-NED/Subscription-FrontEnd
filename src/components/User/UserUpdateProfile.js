@@ -78,6 +78,14 @@ export default function UserUpdateProfile({ onClick }) {
 
     async function updateProfile(e) {
         e.preventDefault()
+        if(!firstName || !lastName || !phone || !cnic)
+        {
+            return Swal.fire(
+                'Incomplete Details',
+                'Please Enter All Details',
+                'error'
+            )
+        }
         const params = {
             // 'PKUserId': userid,
             'FirstName': firstName,
@@ -104,8 +112,8 @@ export default function UserUpdateProfile({ onClick }) {
                 setData(error?.response?.data?.message[0])
                 Swal.fire({
                     icon: 'error',
-                    title: 'Oops...',
-                    text: 'Wrong Credentials or Something went wrong!',
+                    title: 'Could Not Update Profile',
+                    text: 'Something went wrong!',
     
                 })
             });
@@ -138,7 +146,7 @@ export default function UserUpdateProfile({ onClick }) {
                         <Typography component="h1" variant="h5">
                             Update User Profile
                         </Typography>
-                        <form className={classes.form} onSubmit={updateProfile} >
+                        <form className={classes.form}  >
                             <Grid container spacing={2}>
                                 <Grid item xs={12}>
                                     <TextField
@@ -205,7 +213,7 @@ export default function UserUpdateProfile({ onClick }) {
 
                                 <div className='d-grid gap-3 col-12 mx-auto my-3'>
 
-                                    <MDBBtn size='lg' style={{ backgroundColor: 'darkcyan' }} type="submit">Update Profile</MDBBtn>
+                                    <MDBBtn size='lg' style={{ backgroundColor: 'darkcyan' }} onClick={updateProfile}>Update Profile</MDBBtn>
                                 </div>
                             </Grid>
                         </form>
