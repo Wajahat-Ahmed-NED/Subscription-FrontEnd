@@ -59,6 +59,7 @@ import { getPackage } from '../api/user/userPackageApi';
 import { getSubscription } from '../api/user/userSubscriptionApi';
 import { apiHandle } from '../api/api';
 import { useDispatch } from 'react-redux';
+import { api } from '../api/user/api';
 
 const drawerWidth = 240;
 
@@ -191,7 +192,7 @@ function UserDashboard() {
     const history = useHistory();
 
     const logout = () => {
-        axios.post("http://localhost:5000/user/logout", { refreshToken: refreshToken },
+        axios.post(`${api}user/logout`, { refreshToken: refreshToken },
             {
                 headers: {
                     Authorization: `Bearer ${accessToken}`,
@@ -199,17 +200,15 @@ function UserDashboard() {
             }).then((res) => {
 
                 localStorage.clear();
-                history.push('/')
-                Swal.fire(
-                    'Success',
-                    'Logout Successfully',
-                    'success',
-                )
+                // history.push('/')
+                window.location.replace("/")
+
 
             }).catch((err) => {
                 console.log(err)
                 localStorage.clear();
-                history.push('/')
+                // history.push('/')
+                window.location.replace("/")
             })
     };
 
@@ -243,7 +242,8 @@ function UserDashboard() {
 
                 dispatch({
                     type: 'DATAFROMLOGIN',
-                    subscriptionData: json.data.data[0]
+                    subscriptionData: json.data.data[0],
+                    billingData: json.data.data[1]
                 })
 
             }).catch((err) => console.log(err))

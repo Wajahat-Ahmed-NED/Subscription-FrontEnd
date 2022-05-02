@@ -32,6 +32,9 @@ const reducer = (state = INITIAL_STATE, action) => {
 
         console.log('action in reducer', action)
         state.subscriptionData = action.subscriptionData;
+        if (action.billingData) {
+            state.billingData = action.billingData;
+        }
 
         console.log({ ...state, ...action })
         console.log("Now actual state is", state)

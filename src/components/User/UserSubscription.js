@@ -245,16 +245,19 @@ export default function UserSubscription() {
                     setNodata(true)
                     dispatch({
                         type: 'UPDATESUBSCRIPTIONDATA',
-                        subscriptionData: json.data.data?.[0]
+                        subscriptionData: json.data.data?.[0],
+                        billingData: json.data.data?.[1]
                     })
                 }
                 else {
                     setNodata(false)
                     setData(json?.data?.data?.[0])
                     setBillData(json?.data?.data?.[1])
+                    console.log(json.data.data[1])
                     dispatch({
                         type: 'UPDATESUBSCRIPTIONDATA',
-                        subscriptionData: json.data.data?.[0]
+                        subscriptionData: json.data.data?.[0],
+                        billingData: json.data.data?.[1],
                     })
                 }
 
@@ -307,6 +310,7 @@ export default function UserSubscription() {
         else {
             setNodata(false)
             setData(dataFromRedux.subscriptionData)
+            setBillData(dataFromRedux.billingData)
         }
     }, [])
     // console.log(accessToken)
@@ -596,7 +600,7 @@ export default function UserSubscription() {
                                                     <TableCell>{e?.PKSubscriptionId}</TableCell>
                                                     <TableCell>{e?.FKCustomerId}</TableCell>
                                                     <TableCell>{e?.FKPackageId}</TableCell>
-                                                    <TableCell>{billdata[i]?.PaymentStatus}</TableCell>
+                                                    <TableCell>{billdata[i]?.PaymentStatus === '' ? "not_paid" : billdata[i]?.PaymentStatus}</TableCell>
                                                     <TableCell style={{ textAlign: 'left' }}>
                                                         <Tooltip title="Edit" onClick={() => handleEdit(e)}>
                                                             <IconButton><EditIcon color="success" fontSize="medium" />

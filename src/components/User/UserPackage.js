@@ -246,15 +246,14 @@ export default function UserPackage() {
     }
 
     const getOtp = async () => {
-        if(!phone)
-        {
+        if (!phone) {
             setSubModalOpen(false)
 
             return Swal.fire(
                 'Incomplete Details',
                 'Please Enter Phone Number',
                 'error'
-            ).then(()=>{
+            ).then(() => {
                 setSubModalOpen(true)
 
             })
@@ -351,33 +350,55 @@ export default function UserPackage() {
                     'success',
                 ).then(() => {
                     setBillModalOpen(true)
+
                 })
-            }).catch(err => {
-                setSubModalOpen(false)
-                setDisplayStyle("block")
-                console.log(err?.response)
-                Swal.fire(
-                    'Cannot Verify Otp',
-                    err?.response?.data?.message?.[0],
-                    'error',
-                ).then(() => {
-                    setSubModalOpen(true)
+
+                getSubscription().then(json => {
+                    // console.log(json?.data?.data?.length)
+                    // if (json?.data?.data?.length === 0) {
+
+                    //     dispatch({
+                    //         type: 'UPDATESUBSCRIPTIONDATA',
+                    //         subscriptionData: json.data.data?.[0],
+                    //         billingData: json.data.data?.[1]
+                    //     })
+                    // }
+
+
+
+                    dispatch({
+                        type: 'UPDATESUBSCRIPTIONDATA',
+                        subscriptionData: json?.data?.data?.[0],
+                        billingData: json?.data?.data?.[1],
+                    })
+
                 })
-                // setSubModalOpen(true)
             })
+                .catch(err => {
+                    setSubModalOpen(false)
+                    setDisplayStyle("block")
+                    console.log(err?.response)
+                    Swal.fire(
+                        'Cannot Verify Otp',
+                        err?.response?.data?.message?.[0],
+                        'error',
+                    ).then(() => {
+                        setSubModalOpen(true)
+                    })
+                    // setSubModalOpen(true)
+                })
         })
     }
 
     const handleSubmit = async (e) => {
         e.preventDefault()
-        if(!packageName || !packageCost || !period)
-        {
+        if (!packageName || !packageCost || !period) {
             setOpen(false);
             return Swal.fire(
                 'Incomplete Details',
                 'Please Enter All Details',
                 'error'
-            ).then(()=>{
+            ).then(() => {
                 setOpen(true)
             })
         }
@@ -567,14 +588,13 @@ export default function UserPackage() {
 
     }
     const handleEditSubmit = async (e) => {
-        if(!packageName || !packageCost || !period)
-        {
+        if (!packageName || !packageCost || !period) {
             setOpen(false);
             return Swal.fire(
                 'Incomplete Details',
                 'Please Enter All Details',
                 'error'
-            ).then(()=>{
+            ).then(() => {
                 setOpen(true)
             })
         }

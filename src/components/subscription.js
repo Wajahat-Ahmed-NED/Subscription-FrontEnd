@@ -137,7 +137,7 @@ export default function ContactPage() {
     //   dispatch({ type: 'DATAFROMAPI', ...obj })
     //   console.log(dataFromRedux)
     // }
-    // console.log(dataFromRedux)
+    console.log(dataFromRedux)
 
     const classes = useStyles();
 

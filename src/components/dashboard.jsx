@@ -185,17 +185,11 @@ function Dashboard() {
         }
       }).then((res) => {
         localStorage.clear();
-        history.push('/')
-        Swal.fire(
-          'Success',
-          'Logout Successfully',
-          'success',
-        )
+        window.location.replace("/")
 
       }).catch((err) => {
         console.log(err)
         localStorage.clear();
-        history.push('/')
       })
   };
 
