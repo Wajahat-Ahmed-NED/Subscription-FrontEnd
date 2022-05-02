@@ -20,212 +20,227 @@ import Alert from 'react-bootstrap/Alert'
 import Swal from 'sweetalert2';
 import { isJwtExpired } from 'jwt-check-expiration';
 import jwt from 'jsonwebtoken'
-import {api} from './api/api';
+import { api } from './api/api';
 
 const useStyles = makeStyles((theme) => ({
-        paper: {
-                marginTop: theme.spacing(15),
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'center',
-                padding: "20px",
-                borderRadius: "8px"
-        },
-        avatar: {
-                margin: theme.spacing(1),
-                backgroundColor: 'darkcyan',
-        },
-        form: {
-                width: '100%', // Fix IE 11 issue.
-                marginTop: theme.spacing(3),
-        },
-        submit: {
-                margin: theme.spacing(3, 0, 2),
-        },
+    paper: {
+        marginTop: theme.spacing(15),
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        padding: "20px",
+        borderRadius: "8px"
+    },
+    avatar: {
+        margin: theme.spacing(1),
+        backgroundColor: 'darkcyan',
+    },
+    form: {
+        width: '100%', // Fix IE 11 issue.
+        marginTop: theme.spacing(3),
+    },
+    submit: {
+        margin: theme.spacing(3, 0, 2),
+    },
 }));
 
 export default function ChangePassword({ onClick }) {
 
-        const classes = useStyles();
-        const [email, setEmail] = useState('');
-        const [password, setPasword] = useState('');
-        const [newpassword, setnewPasword] = useState('');
-        const [retypepassword, setretypePasword] = useState('');
-        const [accessToken, setAccessToken] = useState('');
-        const [renewToken, setRenewToken] = useState('');
-        const [data, setData] = useState('');
-        const [error, setError] = useState(false);
-        const history = useHistory()
+    const classes = useStyles();
+    const [email, setEmail] = useState('');
+    const [password, setPasword] = useState('');
+    const [newpassword, setnewPasword] = useState('');
+    const [retypepassword, setretypePasword] = useState('');
+    const [accessToken, setAccessToken] = useState('');
+    const [renewToken, setRenewToken] = useState('');
+    const [data, setData] = useState('');
+    const [error, setError] = useState(false);
+    const history = useHistory()
 
 
-        useEffect(() => {
+    useEffect(() => {
 
-                var adminToken = localStorage.getItem("admin")
-                !adminToken && history.push("/")
-                adminToken && setAccessToken(JSON.parse(adminToken)?.data?.[0]?.accessToken)
-                adminToken && setRenewToken(JSON.parse(adminToken)?.data?.[0]?.refreshToken)
-        }, [])
-        accessToken && console.log(isJwtExpired(accessToken))
+        var adminToken = localStorage.getItem("admin")
+        !adminToken && history.push("/")
+        adminToken && setAccessToken(JSON.parse(adminToken)?.data?.[0]?.accessToken)
+        adminToken && setRenewToken(JSON.parse(adminToken)?.data?.[0]?.refreshToken)
+    }, [])
+    accessToken && console.log(isJwtExpired(accessToken))
 
 
-        async function logginIn(e) {
-                e.preventDefault()
-
-                const params = {
-                        'PKAdminId': email,
-                        'oldPassword': password,
-                        'newPassword': newpassword,
-                        'retypeNewPassword': retypepassword
-                };
-                if (isJwtExpired(accessToken)) {
-                        setError(true)
-                        setTimeout(() => {
-
-                                history.push("/")
-                        }, 2000);
-                }
-                else {
-
-                        await axios.post(`${api}admin/changePassword`, params,
-                                {
-                                        headers: {
-                                                Authorization: `Bearer ${accessToken}`,
-                                        }
-                                })
-                                .then(async function (response) {
-                                        // console.log(response, 'asdasdasdjashshdjkashkdhaskjhvcv');
-                                        // localStorage.setItem("admin", JSON.stringify(response.data));
-                                        // setData(response.data)
-                                        // history.push("/dashboard");
-                                        // alert("success")
-                                        Swal.fire(
-                                                'Success',
-                                                'Changed Password Successfully',
-                                                'success',
-                                        ).then(()=>{
-                                                setData('')
-                                                setError(false)
-                                        })
-                                })
-                                .catch(function (error) {
-                                        // alert("Email or Password is incorrect")
-                                        setError(true)
-                                        console.log(error?.response?.data?.message?.[0])
-                                        setData(error?.response?.data?.message?.[0])
-                                        Swal.fire({
-                                                icon: 'error',
-                                                title: 'Oops...',
-                                                text: 'Wrong Credentials or Something went wrong!',
-
-                                        })
-                                });
-                }
+    async function logginIn(e) {
+        e.preventDefault()
+        if(!email || !password || !newpassword || !retypepassword )
+        {
+            return Swal.fire(
+                'Incomplete Details',
+                'Please Enter All Details',
+                'error'
+            )
+        }
+        if(newpassword !== retypepassword)
+        {
+            return Swal.fire(
+                'Password Mismatch',
+                'New Password and Retype Password Should Match',
+                'error'
+            )
+        }
+        const params = {
+            'PKAdminId': email,
+            'oldPassword': password,
+            'newPassword': newpassword,
+            'retypeNewPassword': retypepassword
         };
-        console.log(data)
+        if (isJwtExpired(accessToken)) {
+            setError(true)
+            setTimeout(() => {
+
+                history.push("/")
+            }, 2000);
+        }
+        else {
+
+            await axios.post(`${api}admin/changePassword`, params,
+                {
+                    headers: {
+                        Authorization: `Bearer ${accessToken}`,
+                    }
+                })
+                .then(async function (response) {
+                    // console.log(response, 'asdasdasdjashshdjkashkdhaskjhvcv');
+                    // localStorage.setItem("admin", JSON.stringify(response.data));
+                    // setData(response.data)
+                    // history.push("/dashboard");
+                    // alert("success")
+                    Swal.fire(
+                        'Success',
+                        'Changed Password Successfully',
+                        'success',
+                    ).then(() => {
+                        setData('')
+                        setError(false)
+                    })
+                })
+                .catch(function (error) {
+                    // alert("Email or Password is incorrect")
+                    setError(true)
+                    console.log(error?.response?.data?.message?.[0])
+                    setData(error?.response?.data?.message?.[0])
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Could Not Change Passowrd',
+                        text: 'Something went wrong!',
+
+                    })
+                });
+        }
+    };
+    console.log(data)
 
 
-        return (
-                <>
-                        <Container component="main" maxWidth="xs"  >
-                                <CssBaseline />
+    return (
+        <>
+            <Container component="main" maxWidth="xs"  >
+                <CssBaseline />
 
-                                <Box
-                                        style={{ borderRadius: '20px', backgroundColor: "white" }}
-                                        boxShadow={15}
+                <Box
+                    style={{ borderRadius: '20px', backgroundColor: "white" }}
+                    boxShadow={15}
 
 
-                                >
-                                        <div className={classes.paper}>
-                                                {
-                                                        error && <Alert variant="danger" onClose={() => setError(false)} dismissible>
-                                                                <p className="text-center" style={{ fontWeight: 'bold' }}>{data}</p>
-                                                        </Alert>
-                                                }
-                                                <Avatar className={classes.avatar}>
-                                                        <LockOutlinedIcon color="success" />
-                                                        {/* <LockIcon color="success" /> */}
-                                                </Avatar>
-                                                <Typography component="h1" variant="h5">
-                                                        Admin Change Password
-                                                </Typography>
-                                                <form className={classes.form} onSubmit={logginIn} >
-                                                        <Grid container spacing={2}>
-                                                                <Grid item xs={12}>
-                                                                        <TextField
-                                                                                variant="filled"
-                                                                                required
-                                                                                fullWidth
-                                                                                id="email"
-                                                                                type="text"
-                                                                                value={email}
-                                                                                onChange={e => setEmail(e.target.value)}
-                                                                                label="Admin Id"
-                                                                                name="email"
-                                                                                autoComplete="email"
-                                                                                style={{ borderRadius: '20px' }}
-                                                                        />
-                                                                </Grid>
-                                                                <Grid item xs={12}>
-                                                                        <TextField
-                                                                                variant="filled"
-                                                                                required
-                                                                                fullWidth
-                                                                                name="password"
-                                                                                label="Old Password"
-                                                                                value={password}
-                                                                                onChange={e => setPasword(e.target.value)}
-                                                                                type="password"
-                                                                                id="password"
-                                                                                autoComplete="current-password"
-                                                                                style={{ borderRadius: '20px' }}
-                                                                        />
-                                                                </Grid>
-                                                                <Grid item xs={12} container justify="space-between">
-                                                                        <TextField
-                                                                                variant="filled"
-                                                                                required
-                                                                                fullWidth
-                                                                                name="password"
-                                                                                label="New Password"
-                                                                                value={newpassword}
-                                                                                onChange={e => setnewPasword(e.target.value)}
-                                                                                type="password"
-                                                                                id="password"
-                                                                                autoComplete="current-password"
-                                                                                style={{ borderRadius: '20px' }}
-                                                                        />
-                                                                </Grid>
+                >
+                    <div className={classes.paper}>
+                        {
+                            error && <Alert variant="danger" onClose={() => setError(false)} dismissible>
+                                <p className="text-center" style={{ fontWeight: 'bold' }}>{data}</p>
+                            </Alert>
+                        }
+                        <Avatar className={classes.avatar}>
+                            <LockOutlinedIcon color="success" />
+                            {/* <LockIcon color="success" /> */}
+                        </Avatar>
+                        <Typography component="h1" variant="h5">
+                            Admin Change Password
+                        </Typography>
+                        <form className={classes.form} >
+                            <Grid container spacing={2}>
+                                <Grid item xs={12}>
+                                    <TextField
+                                        variant="filled"
+                                        required
+                                        fullWidth
+                                        id="email"
+                                        type="text"
+                                        value={email}
+                                        onChange={e => setEmail(e.target.value)}
+                                        label="Admin Id"
+                                        name="email"
+                                        autoComplete="email"
+                                        style={{ borderRadius: '20px' }}
+                                    />
+                                </Grid>
+                                <Grid item xs={12}>
+                                    <TextField
+                                        variant="filled"
+                                        required
+                                        fullWidth
+                                        name="password"
+                                        label="Old Password"
+                                        value={password}
+                                        onChange={e => setPasword(e.target.value)}
+                                        type="password"
+                                        id="password"
+                                        autoComplete="current-password"
+                                        style={{ borderRadius: '20px' }}
+                                    />
+                                </Grid>
+                                <Grid item xs={12} container justify="space-between">
+                                    <TextField
+                                        variant="filled"
+                                        required
+                                        fullWidth
+                                        name="password"
+                                        label="New Password"
+                                        value={newpassword}
+                                        onChange={e => setnewPasword(e.target.value)}
+                                        type="password"
+                                        id="password"
+                                        autoComplete="current-password"
+                                        style={{ borderRadius: '20px' }}
+                                    />
+                                </Grid>
 
-                                                                <Grid item xs={12}>
-                                                                        <TextField
-                                                                                variant="filled"
-                                                                                required
-                                                                                fullWidth
-                                                                                name="password"
-                                                                                label="Retype New Password"
-                                                                                value={retypepassword}
-                                                                                onChange={e => setretypePasword(e.target.value)}
-                                                                                type="password"
-                                                                                id="password"
-                                                                                autoComplete="current-password"
-                                                                                style={{ borderRadius: '20px' }}
-                                                                        />
-                                                                </Grid>
-                                                        </Grid>
-                                                        <Grid container justify="center">
+                                <Grid item xs={12}>
+                                    <TextField
+                                        variant="filled"
+                                        required
+                                        fullWidth
+                                        name="password"
+                                        label="Retype New Password"
+                                        value={retypepassword}
+                                        onChange={e => setretypePasword(e.target.value)}
+                                        type="password"
+                                        id="password"
+                                        autoComplete="current-password"
+                                        style={{ borderRadius: '20px' }}
+                                    />
+                                </Grid>
+                            </Grid>
+                            <Grid container justify="center">
 
-                                                                <div className='d-grid gap-3 col-12 mx-auto my-3'>
+                                <div className='d-grid gap-3 col-12 mx-auto my-3'>
 
-                                                                        <MDBBtn size='lg' style={{ backgroundColor: 'darkcyan' }} type="submit">Change Password</MDBBtn>
-                                                                </div>
-                                                        </Grid>
-                                                </form>
-                                                <Grid item xs={12}>
-                                                        <Link to="/dashboard">Go Back</Link>
-                                                </Grid>
-                                        </div>
-                                </Box>
-                        </Container>
-                </>
-        );
+                                    <MDBBtn size='lg' style={{ backgroundColor: 'darkcyan' }} onClick={logginIn} >Change Password</MDBBtn>
+                                </div>
+                            </Grid>
+                        </form>
+                        <Grid item xs={12}>
+                            <Link to="/dashboard">Go Back</Link>
+                        </Grid>
+                    </div>
+                </Box>
+            </Container>
+        </>
+    );
 }

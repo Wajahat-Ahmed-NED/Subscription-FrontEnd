@@ -246,6 +246,19 @@ export default function UserPackage() {
     }
 
     const getOtp = async () => {
+        if(!phone)
+        {
+            setSubModalOpen(false)
+
+            return Swal.fire(
+                'Incomplete Details',
+                'Please Enter Phone Number',
+                'error'
+            ).then(()=>{
+                setSubModalOpen(true)
+
+            })
+        }
         const obj = {
             "PhoneNumber": phone,
             "FKPackageId": id
@@ -357,6 +370,17 @@ export default function UserPackage() {
 
     const handleSubmit = async (e) => {
         e.preventDefault()
+        if(!packageName || !packageCost || !period)
+        {
+            setOpen(false);
+            return Swal.fire(
+                'Incomplete Details',
+                'Please Enter All Details',
+                'error'
+            ).then(()=>{
+                setOpen(true)
+            })
+        }
         let obj = {
             PackageName: packageName,
             PackageCost: packageCost,
@@ -382,8 +406,8 @@ export default function UserPackage() {
                 setErrorMsg(err?.response?.data?.message[0])
                 Swal.fire({
                     icon: 'error',
-                    title: 'Oops...',
-                    text: 'Wrong Credentials or Something went wrong!',
+                    title: 'Could Not Create Package',
+                    text: 'Something went wrong!',
 
                 }).then((e) => {
                     setOpen(true);
@@ -521,7 +545,7 @@ export default function UserPackage() {
                         console.log(err?.response?.data?.message?.[0])
                         Swal.fire({
                             icon: 'error',
-                            title: 'Oops...',
+                            title: 'Could Not Delete Package',
                             text: 'Something went wrong!',
 
                         })
@@ -543,6 +567,17 @@ export default function UserPackage() {
 
     }
     const handleEditSubmit = async (e) => {
+        if(!packageName || !packageCost || !period)
+        {
+            setOpen(false);
+            return Swal.fire(
+                'Incomplete Details',
+                'Please Enter All Details',
+                'error'
+            ).then(()=>{
+                setOpen(true)
+            })
+        }
         let obj = {
             SubscriptionPeriod: period,
             PackageName: packageName,
@@ -575,8 +610,8 @@ export default function UserPackage() {
                 console.log(err?.response)
                 Swal.fire({
                     icon: 'error',
-                    title: 'Oops...',
-                    text: 'Wrong Credentials or Something went wrong!',
+                    title: 'Could Not Edit Package',
+                    text: 'Something went wrong!',
 
                 }).then((e) => {
 
@@ -812,7 +847,7 @@ export default function UserPackage() {
                         </DialogActions>
                     </Dialog>
                 </div>
-                <TableContainer className={classes.container} size='small' style={{ maxHeight: '670px', maxWidth: '1078px' }}>
+                <TableContainer className={classes.container} size='small' style={{ maxHeight: '670px' }}>
                     <Table stickyHeader aria-label="sticky table" size='small' >
                         <TableHead>
                             <TableRow>

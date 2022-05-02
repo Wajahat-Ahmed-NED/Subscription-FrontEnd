@@ -73,8 +73,8 @@ export default function ContactUs({ onClick }) {
                     setData(error?.response?.data?.message)
                     Swal.fire({
                         icon: 'error',
-                        title: 'Oops...',
-                        text: 'Wrong Credentials or Something went wrong!',
+                        title: 'Could Not Send Message',
+                        text: 'Something went wrong!',
 
                     })
                 });
