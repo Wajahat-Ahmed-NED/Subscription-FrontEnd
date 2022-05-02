@@ -38,7 +38,12 @@ import Subscription from './subscription';
 import Customer from './customer';
 import Swal from 'sweetalert2';
 // import {api} from './api/api';
-import {api} from "./api/api"
+import { api, apiHandle } from "./api/api"
+import { useDispatch, useSelector } from 'react-redux';
+import { getData } from './api/userApi';
+import { getSubscriptions } from './api/subscriptionApi';
+import { getCustomers } from './api/customersApi';
+import { getPackages } from './api/packageApi';
 
 const drawerWidth = 240;
 
@@ -168,6 +173,10 @@ function Dashboard() {
   const [accessToken, setAccessToken] = React.useState('');
   const history = useHistory();
 
+  const dataFromRedux = useSelector(a => a)
+  console.log(dataFromRedux)
+
+
   const logout = () => {
     axios.post(`${api}admin/logout`, { refreshToken: refreshToken },
       {
@@ -195,7 +204,9 @@ function Dashboard() {
   }
   const updateProfile = () => {
     history.push("/updateProfile")
-}
+  }
+
+  const dispatch = useDispatch()
   React.useEffect(() => {
 
     var adminToken = localStorage.getItem("admin")
@@ -203,7 +214,53 @@ function Dashboard() {
     adminToken && setRefreshToken(JSON.parse(adminToken)?.data?.[0]?.refreshToken)
     adminToken && setAccessToken(JSON.parse(adminToken)?.data?.[0]?.accessToken)
 
+
+    apiHandle(adminToken).then(() => {
+
+      getData().then((json) => {
+
+        dispatch({
+          type: 'DATAFROMLOGIN',
+          userData: json.data.data
+        })
+
+      }).catch((err) => console.log(err))
+
+
+      getPackages().then((json) => {
+
+        dispatch({
+          type: 'DATAFROMLOGIN',
+          packageData: json.data.data[0]
+        })
+
+      }).catch((err) => console.log(err))
+
+
+      getSubscriptions().then((json) => {
+
+        dispatch({
+          type: 'DATAFROMLOGIN',
+          subscriptionData: json.data.data
+        })
+
+      }).catch((err) => console.log(err))
+
+
+
+      getCustomers().then((json) => {
+
+        dispatch({
+          type: 'DATAFROMLOGIN',
+          customerData: json.data.data?.[0]
+        })
+
+      }).catch((err) => console.log(err))
+
+    })
+
   }, [])
+  console.log(dataFromRedux)
 
   const handleDrawerOpen = () => {
     setOpen(true);
@@ -244,6 +301,7 @@ function Dashboard() {
             <Button onClick={updateProfile} color="inherit">Update Profile</Button>
             <Button onClick={changePassword} color="inherit">Change Password</Button>
             <Button onClick={logout} color="inherit">Logout</Button>
+
           </Toolbar>
         </AppBar>
         <Drawer

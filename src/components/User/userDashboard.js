@@ -55,6 +55,10 @@ import Swal from 'sweetalert2';
 import UserCustomer from './customer';
 import UserSubscription from './UserSubscription';
 import UserPackage from './UserPackage';
+import { getPackage } from '../api/user/userPackageApi';
+import { getSubscription } from '../api/user/userSubscriptionApi';
+import { apiHandle } from '../api/api';
+import { useDispatch } from 'react-redux';
 
 const drawerWidth = 240;
 
@@ -215,12 +219,35 @@ function UserDashboard() {
     const updateProfile = () => {
         history.push("/userUpdateProfile")
     }
+
+    const dispatch = useDispatch()
     React.useEffect(() => {
 
         var adminToken = localStorage.getItem("admin")
         !adminToken && history.push("/")
         adminToken && setRefreshToken(JSON.parse(adminToken)?.tokens?.refreshToken)
         adminToken && setAccessToken(JSON.parse(adminToken)?.tokens?.accessToken)
+
+        apiHandle(adminToken).then(() => {
+
+            getPackage().then((json) => {
+
+                dispatch({
+                    type: 'DATAFROMLOGIN',
+                    packageData: json.data.data[0]
+                })
+
+            }).catch((err) => console.log(err))
+
+            getSubscription().then((json) => {
+
+                dispatch({
+                    type: 'DATAFROMLOGIN',
+                    subscriptionData: json.data.data[0]
+                })
+
+            }).catch((err) => console.log(err))
+        })
 
     }, [])
     console.log(refreshToken)
@@ -260,7 +287,7 @@ function UserDashboard() {
                         <Typography className={classes.title} variant="h5" noWrap>
                             User Panel
                         </Typography>
-            <Button onClick={updateProfile} color="inherit">Update Profile</Button>
+                        <Button onClick={updateProfile} color="inherit">Update Profile</Button>
                         <Button onClick={changePassword} color="inherit">Change Password</Button>
                         <Button onClick={logout} color="inherit">Logout</Button>
                     </Toolbar>

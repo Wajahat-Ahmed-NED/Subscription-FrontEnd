@@ -29,13 +29,13 @@ import Modal from '@mui/material/Modal';
 import Box from '@mui/material/Box';
 import { isJwtExpired } from 'jwt-check-expiration';
 import jwt from 'jsonwebtoken'
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import Swal from 'sweetalert2';
 
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
 import { getCustomers, getCustomerById, getCustomerBySubscriptionId } from './api/customersApi';
-import {apiHandle} from './api/api'
+import { apiHandle } from './api/api'
 
 const style = {
     position: 'absolute',
@@ -43,10 +43,10 @@ const style = {
     left: '50%',
     transform: 'translate(-50%, -50%)',
     width: 450,
-    overflowX:'hidden', 
-    overflowY:'auto',
-    maxHeight:'500px',
-    display:'block',
+    overflowX: 'hidden',
+    overflowY: 'auto',
+    maxHeight: '500px',
+    display: 'block',
     bgcolor: 'background.paper',
     border: '2px solid darkcyan',
     boxShadow: 24,
@@ -111,7 +111,7 @@ const DialogActions = withStyles((theme) => ({
 export default function ContactPage() {
     const handleOpen = () => setOpen(true);
     const dataFromRedux = useSelector((a) => a)
-
+    const dispatch = useDispatch()
     const classes = useStyles();
 
     const [modalOpen, setModalOpen] = React.useState(false);
@@ -171,41 +171,53 @@ export default function ContactPage() {
                 }
             }).catch(err => {
 
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Oops...',
-                        text: 'Wrong Credentials or Something went wrong!',
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Oops...',
+                    text: 'Wrong Credentials or Something went wrong!',
 
-                    })
-                    console.log(err?.response)
                 })
+                console.log(err?.response)
+            })
         })
 
     }
 
     const fetchData = () => {
         let adminToken = localStorage.getItem("admin")
-        apiHandle(adminToken).then(()=>{
+        apiHandle(adminToken).then(() => {
             getCustomers().then((json) => {
-                if(json.data.message[0] == "No customers found" || json.data.data[0].length === 0)
-                {
+                if (json.data.message[0] == "No customers found" || json.data.data[0].length === 0) {
                     setNodata(true)
+                    dispatch({
+                        type: "UPDATECUSTOMERDATA",
+                        customerData: json.data.data?.[0]
+                    })
                 }
-                else
-                {
+                else {
                     setNodata(false)
                     setData(json.data.data?.[0])
+                    dispatch({
+                        type: "UPDATECUSTOMERDATA",
+                        customerData: json.data.data?.[0]
+                    })
                 }
             }).catch((err) => console.log(err))
         })
-        
+
     }
 
     useEffect(() => {
         let adminToken = localStorage.getItem("admin")
         !adminToken && history.push("/")
 
-        fetchData()
+        if (dataFromRedux.customerData.length === 0) {
+            setNodata(true)
+        }
+        else {
+            setNodata(false)
+            setData(dataFromRedux.customerData)
+        }
     }, [])
     const [currentCustomer, setcurrentCustomer] = useState(null)
 
@@ -238,25 +250,25 @@ export default function ContactPage() {
 
     }
 
-    const getDetails = async (e) =>{
+    const getDetails = async (e) => {
         // handleModalOpen()
         let adminToken = localStorage.getItem("admin")
-        apiHandle(adminToken).then(()=>{
-        getCustomerById(e).then((res) => {
-            handleModalOpen()
-            setcurrentCustomer(res?.data?.data?.[0])
-        }).catch(err => {
+        apiHandle(adminToken).then(() => {
+            getCustomerById(e).then((res) => {
+                handleModalOpen()
+                setcurrentCustomer(res?.data?.data?.[0])
+            }).catch(err => {
 
 
-            console.log(err, "this error founnd")
-            // Swal.fire({
-            //     icon: 'error',
-            //     title: 'Oops...',
-            //     text: 'Wrong Credentials or Something went wrong!',
+                console.log(err, "this error founnd")
+                // Swal.fire({
+                //     icon: 'error',
+                //     title: 'Oops...',
+                //     text: 'Wrong Credentials or Something went wrong!',
 
-            // })
+                // })
+            })
         })
-    })
     }
 
     return (
@@ -264,18 +276,18 @@ export default function ContactPage() {
 
             <div className="container d-flex justify-content-between my-0">
                 <h2 className='text-center mb-3'> Customers Details</h2>
-                <div style={{float:"right"}}>
-                <Grid container >
-                    <Grid item xs={8}>
-                        <input className="me-3" onChange={(e) => setSubsId(e.target.value)} placeholder='Customer by Subscription ID' type='number' style={{ height: '33px', outline: 'none', width:"215px"}}
-                             />
-                    </Grid>
-                    <Grid item xs={2}>
-                        <Button className="mb-4 ms-1" onClick={() => getData()} size='sm' style={{ backgroundColor: 'darkCyan', fontSize: "bolder" }} variant="contained">Search </Button>
+                <div style={{ float: "right" }}>
+                    <Grid container >
+                        <Grid item xs={8}>
+                            <input className="me-3" onChange={(e) => setSubsId(e.target.value)} placeholder='Customer by Subscription ID' type='number' style={{ height: '33px', outline: 'none', width: "215px" }}
+                            />
+                        </Grid>
+                        <Grid item xs={2}>
+                            <Button className="mb-4 ms-1" onClick={() => getData()} size='sm' style={{ backgroundColor: 'darkCyan', fontSize: "bolder" }} variant="contained">Search </Button>
 
+                        </Grid>
                     </Grid>
-                </Grid>
-                {/* 
+                    {/* 
                   */}
                 </div>
             </div>
@@ -286,83 +298,83 @@ export default function ContactPage() {
                 aria-describedby="modal-modal-description"
             >
                 <Box sx={style}>
-                <Box  style={{width:"100%",float:"right"}}>
-                    <Tooltip style={{ float: 'right', cursor: 'pointer'}} onClick={handleModalClose}  title="Close">
-                            <IconButton><CloseIcon style={{ float: 'right', cursor: 'pointer'}} fontSize="medium" /></IconButton>
-                                </Tooltip>
+                    <Box style={{ width: "100%", float: "right" }}>
+                        <Tooltip style={{ float: 'right', cursor: 'pointer' }} onClick={handleModalClose} title="Close">
+                            <IconButton><CloseIcon style={{ float: 'right', cursor: 'pointer' }} fontSize="medium" /></IconButton>
+                        </Tooltip>
                     </Box>
-                    <Box  style={{width:"fit-content"}}>
-                    <Typography id="modal-modal-title" variant="h6" component="h3" align="center" sx={{mb:3}}>
-                        Customer Detail
-                    </Typography>
+                    <Box style={{ width: "fit-content" }}>
+                        <Typography id="modal-modal-title" variant="h6" component="h3" align="center" sx={{ mb: 3 }}>
+                            Customer Detail
+                        </Typography>
                     </Box>
-                    
+
 
                     <Grid container spacing={2}>
 
                         {currentCustomer?.FirstName && <Grid item xs={5}>
-                        <Typography style={{ color: "darkcyan" }}>First Name</Typography>
+                            <Typography style={{ color: "darkcyan" }}>First Name</Typography>
                             <Typography style={{ color: "black" }}>{currentCustomer?.FirstName}</Typography>
                         </Grid>}
                         {currentCustomer?.LastName && <Grid item xs={5}>
-                        <Typography style={{ color: "darkcyan" }}>Last Name</Typography>
+                            <Typography style={{ color: "darkcyan" }}>Last Name</Typography>
                             <Typography style={{ color: "black" }}>{currentCustomer?.LastName}</Typography>
-                            
+
                         </Grid>}
 
                         {currentCustomer?.Email && <Grid item xs={5}>
-                        <Typography style={{ color: "darkcyan" }}>Email Address</Typography>
+                            <Typography style={{ color: "darkcyan" }}>Email Address</Typography>
                             <Typography style={{ color: "black" }}>{currentCustomer?.Email}</Typography>
-                          
+
                         </Grid>}
-                        
-                        
+
+
 
                         {currentCustomer?.PhoneNumber && <Grid item xs={5}>
-                        <Typography style={{ color: "darkcyan" }}>Phone No</Typography>
+                            <Typography style={{ color: "darkcyan" }}>Phone No</Typography>
                             <Typography style={{ color: "black" }}>{currentCustomer?.PhoneNumber}</Typography>
                         </Grid>}
 
                         {currentCustomer?.CNIC && <Grid item xs={5}>
-                        <Typography style={{ color: "darkcyan" }}>CNIC No</Typography>
+                            <Typography style={{ color: "darkcyan" }}>CNIC No</Typography>
                             <Typography style={{ color: "black" }}>{currentCustomer?.CNIC}</Typography>
-                            
+
                         </Grid>}
 
-                        
+
 
                         {currentCustomer?.Country && <Grid item xs={5}>
-                        <Typography style={{ color: "darkcyan" }}>Country</Typography>
+                            <Typography style={{ color: "darkcyan" }}>Country</Typography>
                             <Typography style={{ color: "black" }}>{currentCustomer?.Country}</Typography>
-                        
+
                         </Grid>}
 
                         {currentCustomer?.City && <Grid item xs={5}>
-                        <Typography style={{ color: "darkcyan" }}>City</Typography>
+                            <Typography style={{ color: "darkcyan" }}>City</Typography>
                             <Typography style={{ color: "black" }}>{currentCustomer?.City}</Typography>
-                          
+
                         </Grid>}
 
                         {currentCustomer?.Area && <Grid item xs={5}>
-                        <Typography style={{ color: "darkcyan" }}>Area</Typography>
+                            <Typography style={{ color: "darkcyan" }}>Area</Typography>
                             <Typography style={{ color: "black" }}>{currentCustomer?.Area}</Typography>
-                        
+
                         </Grid>}
 
                         {currentCustomer?.Address && <Grid item xs={12}>
-                        <Typography style={{ color: "darkcyan" }}>Address</Typography>
+                            <Typography style={{ color: "darkcyan" }}>Address</Typography>
                             <Typography style={{ color: "black" }}>{currentCustomer?.Address}</Typography>
-                          
+
                         </Grid>}
 
 
                         {currentCustomer?.createdAt && <Grid item xs={5}>
-                        <Typography style={{ color: "darkcyan" }}>Creation Date</Typography>
+                            <Typography style={{ color: "darkcyan" }}>Creation Date</Typography>
                             <Typography style={{ color: "black" }}>{currentCustomer?.createdAt.split("T")[0]}</Typography>
                         </Grid>}
 
                         {currentCustomer?.updatedAt && <Grid item xs={5}>
-                        <Typography style={{ color: "darkcyan" }}>Updation Date</Typography>
+                            <Typography style={{ color: "darkcyan" }}>Updation Date</Typography>
                             <Typography style={{ color: "black" }}>{currentCustomer?.updatedAt.split("T")[0]}</Typography>
                         </Grid>}
                     </Grid>
@@ -396,39 +408,39 @@ export default function ContactPage() {
                         </TableHead>
                         {
                             nodata ? <TableBody>
-                            <TableRow>
-                                <TableCell colSpan={10} align="center"><Typography> No data in table yet </Typography></TableCell>
-                            
-                            </TableRow>
+                                <TableRow>
+                                    <TableCell colSpan={10} align="center"><Typography> No data in table yet </Typography></TableCell>
+
+                                </TableRow>
                             </TableBody> : <TableBody>
-                            {
-                            data?.map((e, i) => {
-                                    return (
-                                        <>
-                                            <TableRow hover={true}>
-                                                <TableCell>{e.PKCustomerId}</TableCell>
-                                                <TableCell>{e.FirstName + " " + e.LastName}</TableCell>
-                                                <TableCell>{e.Email}</TableCell>
-                                                <TableCell>{e.PhoneNumber}</TableCell>
-                                                <TableCell>{e.CNIC}</TableCell>
-                                                <TableCell>{e.Address}</TableCell>
-                                                <TableCell>{e.Country}</TableCell>
-                                                <TableCell>{e.City}</TableCell>
-                                                <TableCell>{e.Area}</TableCell>
-                                                <TableCell><Button variant="outlined" onClick={()=>getDetails(e)}>Details</Button></TableCell>
+                                {
+                                    data?.map((e, i) => {
+                                        return (
+                                            <>
+                                                <TableRow hover={true}>
+                                                    <TableCell>{e.PKCustomerId}</TableCell>
+                                                    <TableCell>{e.FirstName + " " + e.LastName}</TableCell>
+                                                    <TableCell>{e.Email}</TableCell>
+                                                    <TableCell>{e.PhoneNumber}</TableCell>
+                                                    <TableCell>{e.CNIC}</TableCell>
+                                                    <TableCell>{e.Address}</TableCell>
+                                                    <TableCell>{e.Country}</TableCell>
+                                                    <TableCell>{e.City}</TableCell>
+                                                    <TableCell>{e.Area}</TableCell>
+                                                    <TableCell><Button variant="outlined" onClick={() => getDetails(e)}>Details</Button></TableCell>
 
-                                            </TableRow>
+                                                </TableRow>
 
-                                        </>
-                                    )
-                                })
+                                            </>
+                                        )
+                                    })
 
 
 
-                            }
-                        </TableBody>
+                                }
+                            </TableBody>
                         }
-                        
+
                     </Table>
 
                 </TableContainer>
@@ -444,7 +456,7 @@ export default function ContactPage() {
             </Paper>
 
 
-            
+
 
 
 

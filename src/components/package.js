@@ -28,7 +28,7 @@ import Swal from 'sweetalert2';
 
 import { isJwtExpired } from 'jwt-check-expiration';
 import jwt from 'jsonwebtoken'
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
@@ -42,8 +42,8 @@ const style = {
     left: '50%',
     transform: 'translate(-50%, -50%)',
     width: '450',
-    overflowX:'hidden', 
-    overflowY:'auto',
+    overflowX: 'hidden',
+    overflowY: 'auto',
     maxHeight: '500px',
     display: 'block',
     bgcolor: 'background.paper',
@@ -145,7 +145,7 @@ export default function ContactPage() {
             }).catch((err) => console.log(err))
         })
     }
-
+    const dispatch = useDispatch()
     const getDataByUser = () => {
         let adminToken = localStorage.getItem("admin")
         apiHandle(adminToken).then(() => {
@@ -153,13 +153,20 @@ export default function ContactPage() {
                 console.log(json)
                 if (json.data.data[0].length === 0) {
                     setNodata(true)
+                    dispatch({
+                        type: 'UPDATEPACKAGEDATA',
+                        packageData: json.data.data[0]
+                    })
                 }
                 else {
                     setNodata(false)
                     setData(json.data.data[0])
+                    dispatch({
+                        type: 'UPDATEPACKAGEDATA',
+                        packageData: json.data.data[0]
+                    })
                 }
-            }).catch((err) => 
-            {
+            }).catch((err) => {
                 Swal.fire(
                     "Can not found package",
                     "User does not exist or Something went wrong",
@@ -174,7 +181,13 @@ export default function ContactPage() {
         let adminToken = localStorage.getItem("admin")
         !adminToken && history.push("/")
 
-        fetchData()
+        if (dataFromRedux.packageData.length === 0) {
+            setNodata(true)
+        }
+        else {
+            setNodata(false)
+            setData(dataFromRedux.packageData)
+        }
     }, [])
 
     const [fname, setFname] = useState('')
@@ -251,8 +264,8 @@ export default function ContactPage() {
                 aria-describedby="modal-modal-description"
             >
                 <Box sx={style}>
-                    <Box style={{ width:"100%",float: "right" }}>
-                        <Tooltip style={{float:"right",cursor: 'pointer' }} onClick={handleModalClose} title="Close">
+                    <Box style={{ width: "100%", float: "right" }}>
+                        <Tooltip style={{ float: "right", cursor: 'pointer' }} onClick={handleModalClose} title="Close">
                             <IconButton><CloseIcon style={{ float: 'right', cursor: 'pointer' }} fontSize="medium" /></IconButton>
                         </Tooltip>
                     </Box>

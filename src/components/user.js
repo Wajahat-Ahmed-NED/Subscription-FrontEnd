@@ -29,7 +29,7 @@ import Box from '@mui/material/Box';
 
 import { isJwtExpired } from 'jwt-check-expiration';
 import jwt from 'jsonwebtoken'
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import axios from 'axios';
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
@@ -257,17 +257,25 @@ export default function ContactPage() {
 
 
     const [data, setData] = useState([])
-
+    const dispatch = useDispatch()
     const fetchData = () => {
         let adminToken = localStorage.getItem("admin")
         apiHandle(adminToken).then(() => {
             getData().then((json) => {
                 if (json.data.message[0] == "No users found" || json.data.data[0].length === 0) {
                     setNodata(true)
+                    dispatch({
+                        type: 'UPDATEUSERDATA',
+                        userData: json.data.data
+                    })
                 }
                 else {
                     setNodata(false)
                     setData(json.data.data)
+                    dispatch({
+                        type: 'UPDATEUSERDATA',
+                        userData: json.data.data
+                    })
                 }
             }).catch((err) => console.log(err))
         })
@@ -277,7 +285,13 @@ export default function ContactPage() {
         let adminToken = localStorage.getItem("admin")
         !adminToken && history.push("/")
 
-        fetchData()
+        if (dataFromRedux.userData.length === 0) {
+            setNodata(true)
+        }
+        else {
+            setNodata(false)
+            setData(dataFromRedux.userData)
+        }
     }, [])
 
     const [fname, setFname] = useState('')
@@ -477,7 +491,7 @@ export default function ContactPage() {
                 <Button className=" mb-3 me-3 " onClick={handleOpen} size='sm' style={{ backgroundColor: 'darkCyan', fontSize: "bolder" }} variant="contained">Create user <AddIcon /></Button>
 
             </div>
-            
+
             <Modal
                 open={modalOpen}
                 // onClose={handleModalClose}
@@ -568,11 +582,11 @@ export default function ContactPage() {
                             {!EditModal ? 'Create User' : 'Edit User Details'}
                         </DialogTitle>
                         <DialogContent dividers className='mx-3'>
-                        {
-                error && <Alert variant="danger" onClose={() => setError(false)} dismissible>
-                    <p className="text-center" style={{ fontWeight: 'bold' }}>{errorMsg}</p>
-                </Alert>
-            }
+                            {
+                                error && <Alert variant="danger" onClose={() => setError(false)} dismissible>
+                                    <p className="text-center" style={{ fontWeight: 'bold' }}>{errorMsg}</p>
+                                </Alert>
+                            }
                             <form className={classes.form} noValidate>
                                 <Grid container spacing={2}>
 

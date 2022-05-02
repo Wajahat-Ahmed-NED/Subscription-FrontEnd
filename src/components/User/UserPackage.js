@@ -419,10 +419,18 @@ export default function UserPackage() {
             getPackage().then(json => {
                 if (json.data.message[0] == "No packages of current user found" || json.data.data[0].length === 0) {
                     setNodata(true)
+                    dispatch({
+                        type: 'UPDATEPACKAGEDATA',
+                        packageData: json.data.data[0]
+                    })
                 }
                 else {
                     setNodata(false)
                     setData(json.data.data[0])
+                    dispatch({
+                        type: 'UPDATEPACKAGEDATA',
+                        packageData: json.data.data[0]
+                    })
                 }
             })
                 .catch(err => {
@@ -431,11 +439,19 @@ export default function UserPackage() {
         })
 
     }
+    const dispatch = useDispatch()
 
     useEffect(() => {
-        getData()
+
         var adminToken = localStorage.getItem("admin")
         adminToken && setAccessToken(JSON.parse(adminToken)?.data?.data?.[0]?.accessToken)
+        if (dataFromRedux.packageData.length === 0) {
+            setNodata(true)
+        }
+        else {
+            setNodata(false)
+            setData(dataFromRedux.packageData)
+        }
     }, [])
     // console.log(accessToken)
 
@@ -472,7 +488,7 @@ export default function UserPackage() {
                 console.log(err?.response)
             })
         })
-        
+
     }
 
     const handleDelete = async (e) => {

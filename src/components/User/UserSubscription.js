@@ -48,7 +48,7 @@ import EditIcon from '@mui/icons-material/Edit';
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
 // import IconButton from '@mui/material/IconButton';
 import Tooltip from '@mui/material/Tooltip';
-import Alert  from 'react-bootstrap/Alert';
+import Alert from 'react-bootstrap/Alert';
 
 import { apiHandle } from '../api/api';
 import { billUpdation, getSubscription, getSubscriptionByPkgId, updateSubscription } from '../api/user/userSubscriptionApi';
@@ -233,61 +233,74 @@ export default function UserSubscription() {
         setPage(newPage);
     };
 
-
+    const dispatch = useDispatch()
     const [data, setData] = useState([])
     const [billdata, setBillData] = useState([])
     const getData = async () => {
         let adminToken = localStorage.getItem('admin')
-        apiHandle(adminToken).then(()=>{
+        apiHandle(adminToken).then(() => {
             getSubscription().then(json => {
                 console.log(json?.data?.data?.length)
-                if(json?.data?.data?.length === 0)
-                {
+                if (json?.data?.data?.length === 0) {
                     setNodata(true)
+                    dispatch({
+                        type: 'UPDATESUBSCRIPTIONDATA',
+                        subscriptionData: json.data.data?.[0]
+                    })
                 }
-                else
-                {
+                else {
                     setNodata(false)
                     setData(json?.data?.data?.[0])
                     setBillData(json?.data?.data?.[1])
+                    dispatch({
+                        type: 'UPDATESUBSCRIPTIONDATA',
+                        subscriptionData: json.data.data?.[0]
+                    })
                 }
 
             })
-            .catch(err => {
-                console.log(err)
-            })
+                .catch(err => {
+                    console.log(err)
+                })
         })
-            
+
     }
     const getDataByPkg = async () => {
         let adminToken = localStorage.getItem('admin')
-        apiHandle(adminToken).then(()=>{
+        apiHandle(adminToken).then(() => {
             getSubscriptionByPkgId(pkgId).then(json => {
                 console.log(json.data.message[0])
-                if(json.data.message[0] == "No subscriptions of current package id found" || json?.data?.data?.length === 0)
-                {
+                if (json.data.message[0] == "No subscriptions of current package id found" || json?.data?.data?.length === 0) {
                     setNodata(true)
+
                 }
-                else
-                {
+                else {
                     setNodata(false)
                     setData(json?.data?.data?.[0])
+
                 }
-                
+
             })
-            .catch(err => {
-                Swal.fire(
-                    "Can not search","Invalid ID or something went wrong","error"
-                )
-                console.log(err)
-            })
+                .catch(err => {
+                    Swal.fire(
+                        "Can not search", "Invalid ID or something went wrong", "error"
+                    )
+                    console.log(err)
+                })
         })
-            
+
     }
     useEffect(() => {
-        getData()
+
         var adminToken = localStorage.getItem("admin")
         adminToken && setAccessToken(JSON.parse(adminToken)?.data?.data?.[0]?.accessToken)
+        if (dataFromRedux.subscriptionData.length === 0) {
+            setNodata(true)
+        }
+        else {
+            setNodata(false)
+            setData(dataFromRedux.subscriptionData)
+        }
     }, [])
     // console.log(accessToken)
     const [errorMsg, setErrorMsg] = useState('')
@@ -315,31 +328,29 @@ export default function UserSubscription() {
         setId(e.PKSubscriptionId)
     }
 
-    const updateBill = async (e) =>{
+    const updateBill = async (e) => {
         setSubId(e?.PKSubscriptionId);
         setSubModalOpen(true);
     }
 
-    const handleUpdateBill = async ()=>{
+    const handleUpdateBill = async () => {
         let obj = {
             ReceivedAmount: parseInt(amount),
         }
         let adminToken = localStorage.getItem('admin')
-        apiHandle(adminToken).then(()=>{
-            billUpdation(subId,obj).then((res)=>{
+        apiHandle(adminToken).then(() => {
+            billUpdation(subId, obj).then((res) => {
                 setAmount(0)
                 console.log(res)
                 handleSubModalClose()
-                if(res?.data?.message)
-                {
+                if (res?.data?.message) {
                     Swal.fire(
                         'Success',
                         res?.data?.message?.[0],
                         'success',
                     )
                 }
-                else
-                {
+                else {
                     Swal.fire(
                         'Success',
                         'Bill Updated Successfully',
@@ -347,13 +358,13 @@ export default function UserSubscription() {
                     )
                 }
                 getData();
-            }).catch(err=>{
+            }).catch(err => {
                 handleSubModalClose()
                 Swal.fire(
                     'Opps',
                     err?.response?.data?.message?.[0],
                     'error',
-                ).then(()=>{
+                ).then(() => {
                     handleSubModalOpen()
                 })
             })
@@ -366,8 +377,8 @@ export default function UserSubscription() {
             FKPackageId: PackageId,
         }
         let adminToken = localStorage.getItem('admin')
-        apiHandle(adminToken).then(()=>{
-            updateSubscription(id,obj).then(function (response) {
+        apiHandle(adminToken).then(() => {
+            updateSubscription(id, obj).then(function (response) {
 
                 setOpen(false);
                 setError(false)
@@ -387,16 +398,16 @@ export default function UserSubscription() {
                     icon: 'error',
                     title: 'Oops...',
                     text: 'Wrong Credentials or Something went wrong!',
-    
+
                 }).then((e) => {
-    
+
                     setOpen(true);
-    
+
                 })
             })
-    
+
         })
-        
+
 
 
 
@@ -407,16 +418,16 @@ export default function UserSubscription() {
             <div className="container d-flex justify-content-between my-0 me-0">
                 <h2 className='text-center mb-3'> Subscription Details</h2>
                 <div>
-                <Grid container >
-                     <Grid item xs={7}>
-                        <input  className="me-2" placeholder='Subscription by Package ID' type='number' style={{ height: '33px', outline: 'none', width:"215px" }}
-                            onChange={(e) => setPkgId(e.target.value)} />
-                    </Grid>
-                    <Grid item xs={5}>
-                        <Button  className="ms-4 me-0"  onClick={() => getDataByPkg()} size='sm' style={{ backgroundColor: 'darkCyan', fontSize: "bolder" }} variant="contained">Search </Button>
+                    <Grid container >
+                        <Grid item xs={7}>
+                            <input className="me-2" placeholder='Subscription by Package ID' type='number' style={{ height: '33px', outline: 'none', width: "215px" }}
+                                onChange={(e) => setPkgId(e.target.value)} />
+                        </Grid>
+                        <Grid item xs={5}>
+                            <Button className="ms-4 me-0" onClick={() => getDataByPkg()} size='sm' style={{ backgroundColor: 'darkCyan', fontSize: "bolder" }} variant="contained">Search </Button>
 
+                        </Grid>
                     </Grid>
-                </Grid>
                 </div>
 
             </div>
@@ -475,15 +486,15 @@ export default function UserSubscription() {
                             {!EditModal ? 'Create Subscription' : 'Edit Subscription Details'}
                         </DialogTitle>
                         <DialogContent dividers className='mx-3'>
-                        {
-                    error && <Alert variant="danger" onClose={() => setError(false)} dismissible>
-                        <p className="text-center" style={{ fontWeight: 'bold' }}>{errorMsg}</p>
-                    </Alert>
-                }
+                            {
+                                error && <Alert variant="danger" onClose={() => setError(false)} dismissible>
+                                    <p className="text-center" style={{ fontWeight: 'bold' }}>{errorMsg}</p>
+                                </Alert>
+                            }
                             <form className={classes.form} noValidate>
                                 <Grid container spacing={2}>
 
-                                    
+
                                     <Grid item xs={12} className="ms-auto">
                                         <TextField
                                             onChange={(e) => setCustomerId(e.target.value)}
@@ -514,7 +525,7 @@ export default function UserSubscription() {
                                             value={PackageId}
                                         />
                                     </Grid>
-                                    
+
                                 </Grid>
                             </form>
                         </DialogContent>
@@ -545,37 +556,37 @@ export default function UserSubscription() {
                         </TableHead>
                         {
                             nodata ? <TableBody>
-                            <TableRow>
-                                <TableCell colSpan={5} align="center"><Typography> No data in table yet </Typography></TableCell>
-                            
-                            </TableRow>
-                            </TableBody> :<TableBody>
-                            {
-                                data?.map((e, i) => {
-                                    return (
-                                        <>
-                                            <TableRow hover={true}>
-                                                <TableCell>{e?.PKSubscriptionId}</TableCell>
-                                                <TableCell>{e?.FKCustomerId}</TableCell>
-                                                <TableCell>{e?.FKPackageId}</TableCell>
-                                                <TableCell>{billdata[i]?.PaymentStatus}</TableCell>
-                                                <TableCell style={{ textAlign: 'left' }}>
-                                                    <Tooltip title="Edit" onClick={() => handleEdit(e)}>
-                                                        <IconButton><EditIcon color="success" fontSize="medium" />
-                                                        </IconButton></Tooltip>
-                                                </TableCell>
-                                                <TableCell>
-                                                    <Button variant="outlined" onClick={() => updateBill(e)}>Update Bill</Button>
-                                                </TableCell>
-                                            </TableRow>
+                                <TableRow>
+                                    <TableCell colSpan={5} align="center"><Typography> No data in table yet </Typography></TableCell>
 
-                                        </>
-                                    )
-                                })
-                            }
-                        </TableBody>
+                                </TableRow>
+                            </TableBody> : <TableBody>
+                                {
+                                    data?.map((e, i) => {
+                                        return (
+                                            <>
+                                                <TableRow hover={true}>
+                                                    <TableCell>{e?.PKSubscriptionId}</TableCell>
+                                                    <TableCell>{e?.FKCustomerId}</TableCell>
+                                                    <TableCell>{e?.FKPackageId}</TableCell>
+                                                    <TableCell>{billdata[i]?.PaymentStatus}</TableCell>
+                                                    <TableCell style={{ textAlign: 'left' }}>
+                                                        <Tooltip title="Edit" onClick={() => handleEdit(e)}>
+                                                            <IconButton><EditIcon color="success" fontSize="medium" />
+                                                            </IconButton></Tooltip>
+                                                    </TableCell>
+                                                    <TableCell>
+                                                        <Button variant="outlined" onClick={() => updateBill(e)}>Update Bill</Button>
+                                                    </TableCell>
+                                                </TableRow>
+
+                                            </>
+                                        )
+                                    })
+                                }
+                            </TableBody>
                         }
-                        
+
                     </Table>
                 </TableContainer>
                 <TablePagination

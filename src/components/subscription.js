@@ -45,7 +45,7 @@ import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
 // import IconButton from '@mui/material/IconButton';
 import Tooltip from '@mui/material/Tooltip';
 import { getSubscriptions, getSubscriptionById } from './api/subscriptionApi';
-import {apiHandle} from './api/api'
+import { apiHandle } from './api/api'
 
 
 
@@ -55,10 +55,10 @@ const style = {
     left: '50%',
     transform: 'translate(-50%, -50%)',
     width: 450,
-    overflowX:'hidden', 
-    overflowY:'auto',
-    maxHeight:'500px',
-    display:'block',
+    overflowX: 'hidden',
+    overflowY: 'auto',
+    maxHeight: '500px',
+    display: 'block',
     bgcolor: 'background.paper',
     border: '2px solid darkcyan',
     boxShadow: 24,
@@ -174,30 +174,42 @@ export default function ContactPage() {
         setPage(newPage);
     };
 
-
+    const dispatch = useDispatch()
     const [data, setData] = useState([])
     const fetchData = () => {
         let adminToken = localStorage.getItem("admin")
-        apiHandle(adminToken).then(()=>{
-        getSubscriptions().then((json) => {
-            if(json.data.message[0] == "No subscriptions found" || json.data.data[0].length === 0)
-                {
+        apiHandle(adminToken).then(() => {
+            getSubscriptions().then((json) => {
+                if (json.data.message[0] == "No subscriptions found" || json.data.data[0].length === 0) {
                     setNodata(true)
+                    dispatch({
+                        type: 'UPDATESUBSCRIPTIONDATA',
+                        subscriptionData: json.data.data
+                    })
                 }
-                else
-                {
+                else {
                     setNodata(false)
                     setData(json.data.data)
+                    dispatch({
+                        type: 'UPDATESUBSCRIPTIONDATA',
+                        subscriptionData: json.data.data
+                    })
                 }
-        }).catch((err) => console.log(err))
-    })
+            }).catch((err) => console.log(err))
+        })
     }
 
     useEffect(() => {
         let adminToken = localStorage.getItem("admin")
         !adminToken && history.push("/")
 
-        fetchData()
+        if (dataFromRedux.subscriptionData.length === 0) {
+            setNodata(true)
+        }
+        else {
+            setNodata(false)
+            setData(dataFromRedux.subscriptionData)
+        }
     }, [])
 
     const [fname, setFname] = useState('')
@@ -223,23 +235,23 @@ export default function ContactPage() {
 
 
 
-    const getDetails = async (e) =>{
+    const getDetails = async (e) => {
         // handleModalOpen()
         let adminToken = localStorage.getItem("admin")
-        apiHandle(adminToken).then(()=>{
-        getSubscriptionById(e).then((res) => {
-            
-            
-            handleModalOpen()
-            setcurrentSubscription(res)
-            
-            // console.log(currentSubscription)
-        }).catch(err => {
+        apiHandle(adminToken).then(() => {
+            getSubscriptionById(e).then((res) => {
 
 
-            console.log(err, "this error founnd")
+                handleModalOpen()
+                setcurrentSubscription(res)
+
+                // console.log(currentSubscription)
+            }).catch(err => {
+
+
+                console.log(err, "this error founnd")
+            })
         })
-    })
     }
 
     return (
@@ -260,38 +272,38 @@ export default function ContactPage() {
                 aria-describedby="modal-modal-description"
             >
                 <Box sx={style}>
-                <Box  style={{width:"100%",float:"right"}}>
-                    <Tooltip style={{ float: 'right', cursor: 'pointer'}} onClick={handleModalClose} title="Close">
-                            <IconButton><CloseIcon style={{ float: 'right', cursor: 'pointer'}} fontSize="medium" /></IconButton>
-                                </Tooltip>
+                    <Box style={{ width: "100%", float: "right" }}>
+                        <Tooltip style={{ float: 'right', cursor: 'pointer' }} onClick={handleModalClose} title="Close">
+                            <IconButton><CloseIcon style={{ float: 'right', cursor: 'pointer' }} fontSize="medium" /></IconButton>
+                        </Tooltip>
                     </Box>
-                    <Box  style={{width:"fit-content"}}>
-                    <Typography id="modal-modal-title" variant="h6" component="h3" align="center" sx={{mb:3}}>
-                    Subscription Detail
-                    </Typography>
+                    <Box style={{ width: "fit-content" }}>
+                        <Typography id="modal-modal-title" variant="h6" component="h3" align="center" sx={{ mb: 3 }}>
+                            Subscription Detail
+                        </Typography>
                     </Box>
-                    
+
 
                     <Grid container spacing={2}>
 
                         {currentSubscription?.FKCustomerName && <Grid item xs={5}>
-                        <Typography style={{ color: "darkcyan" }}>Customer Name</Typography>
+                            <Typography style={{ color: "darkcyan" }}>Customer Name</Typography>
                             <Typography style={{ color: "black" }}>{currentSubscription?.FKCustomerName}</Typography>
                         </Grid>}
 
                         {currentSubscription?.FKPackageName && <Grid item xs={5}>
-                        <Typography style={{ color: "darkcyan" }}>Package Name</Typography>
+                            <Typography style={{ color: "darkcyan" }}>Package Name</Typography>
                             <Typography style={{ color: "black" }}>{currentSubscription?.FKPackageName}</Typography>
                         </Grid>}
 
-                        
+
                         {currentSubscription?.createdAt && <Grid item xs={5}>
-                        <Typography style={{ color: "darkcyan" }}>Creation Date</Typography>
+                            <Typography style={{ color: "darkcyan" }}>Creation Date</Typography>
                             <Typography style={{ color: "black" }}>{currentSubscription?.createdAt.split("T")[0]}</Typography>
                         </Grid>}
 
                         {currentSubscription?.updatedAt && <Grid item xs={5}>
-                        <Typography style={{ color: "darkcyan" }}>Updation Date</Typography>
+                            <Typography style={{ color: "darkcyan" }}>Updation Date</Typography>
                             <Typography style={{ color: "black" }}>{currentSubscription?.updatedAt.split("T")[0]}</Typography>
                         </Grid>}
                     </Grid>
@@ -319,31 +331,31 @@ export default function ContactPage() {
                         </TableHead>
                         {
                             nodata ? <TableBody>
-                            <TableRow>
-                                <TableCell colSpan={7} align="center"><Typography> No data in table yet </Typography></TableCell>
-                            
-                            </TableRow>
+                                <TableRow>
+                                    <TableCell colSpan={7} align="center"><Typography> No data in table yet </Typography></TableCell>
+
+                                </TableRow>
                             </TableBody> : <TableBody>
-                            {
+                                {
 
-                                data?.[0]?.map((e, i) => {
-                                    return (
-                                        <>
-                                            <TableRow hover={true}>
-                                                <TableCell>{e.PKSubscriptionId}</TableCell>
-                                                <TableCell>{e.FKCustomerId}</TableCell>
-                                                <TableCell>{e.FKPackageId}</TableCell>
-                                                <TableCell><Button variant="outlined" onClick={()=>getDetails(e)}>Details</Button></TableCell>
-                                            </TableRow>
+                                    data?.[0]?.map((e, i) => {
+                                        return (
+                                            <>
+                                                <TableRow hover={true}>
+                                                    <TableCell>{e.PKSubscriptionId}</TableCell>
+                                                    <TableCell>{e.FKCustomerId}</TableCell>
+                                                    <TableCell>{e.FKPackageId}</TableCell>
+                                                    <TableCell><Button variant="outlined" onClick={() => getDetails(e)}>Details</Button></TableCell>
+                                                </TableRow>
 
-                                        </>
-                                    )
-                                })
+                                            </>
+                                        )
+                                    })
 
-                            }
-                        </TableBody>
+                                }
+                            </TableBody>
                         }
-                        
+
                     </Table>
                 </TableContainer>
                 <TablePagination
