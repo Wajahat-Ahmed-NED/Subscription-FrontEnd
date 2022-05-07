@@ -9,9 +9,7 @@ import TableContainer from '@material-ui/core/TableContainer';
 import TableHead from '@material-ui/core/TableHead';
 import TablePagination from '@material-ui/core/TablePagination';
 import TableRow from '@material-ui/core/TableRow';
-// import Button from '@material-ui/core/Button';
 import Dialog from '@material-ui/core/Dialog';
-// import Typography from '@material-ui/core/Typography';
 import MuiDialogTitle from '@material-ui/core/DialogTitle';
 import MuiDialogContent from '@material-ui/core/DialogContent';
 import MuiDialogActions from '@material-ui/core/DialogActions';
@@ -22,21 +20,10 @@ import Grid from '@material-ui/core/Grid';
 import TextField from '@material-ui/core/TextField';
 import { Link, useHistory } from "react-router-dom";
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
-// import { isJwtExpired } from 'jwt-check-expiration';
-// import jwt from 'jsonwebtoken'
-// import Button from '@mui/material/Button';
-// import Button from '@mui/material/Button';
-// import { logout } from './dashboard';
-// import { UserContext } from '../userContext';
-// import Modal from './modal';
-// import Newmodal from './newmodal';
-// import Modall from './modal';
-// import { WebEdit } from './webeditor';
 import { isJwtExpired } from 'jwt-check-expiration';
 import jwt from 'jsonwebtoken'
 import { useDispatch, useSelector } from 'react-redux';
 import axios, { Axios } from 'axios';
-// import { UserContext } from '../userContext';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
@@ -45,7 +32,6 @@ import AddIcon from '@mui/icons-material/Add';
 import Swal from 'sweetalert2';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
-// import IconButton from '@mui/material/IconButton';
 import Tooltip from '@mui/material/Tooltip';
 import Alert from 'react-bootstrap/Alert';
 import { apiHandle } from "../api/user/api"
@@ -106,23 +92,10 @@ const DialogActions = withStyles((theme) => ({
 }))(MuiDialogActions);
 
 export default function UserCustomer() {
-    // const [open, setOpen] = React.useState(false);
-    const handleOpen = () => setOpen(true);
-    // const handleClose = () => setOpen(false);
-    const dataFromRedux = useSelector((a) => a)
-    // const dispatch = useDispatch()
 
-    // const handleUpdate = () => {
-    //   const obj = {
-    //     name: 'ali',
-    //     age: 12,
-    //     apiData: [1, 2, 3, 4],
-    //   }
-    //   console.log(obj)
-    //   dispatch({ type: 'DATAFROMAPI', ...obj })
-    //   console.log(dataFromRedux)
-    // }
-    // console.log(dataFromRedux)
+    const handleOpen = () => setOpen(true);
+
+    const dataFromRedux = useSelector((a) => a)
 
     const classes = useStyles();
 
@@ -154,21 +127,18 @@ export default function UserCustomer() {
         setErrorMsg('')
     };
 
-    // const accessToken = '';
-    // const refreshToken;
+
 
 
 
     const handleSubmit = async (e) => {
-        // e.preventDefault()
-        if(!fname || !lname || !email || !phone || !cnic || !address || !country ||!city ||!area)
-        {
+        if (!fname || !lname || !email || !phone || !cnic || !address || !country || !city || !area) {
             setOpen(false);
             return Swal.fire(
                 'Incomplete Details',
                 'Please Enter All Details',
                 'error'
-            ).then(()=>{
+            ).then(() => {
                 setOpen(true)
             })
         }
@@ -229,6 +199,7 @@ export default function UserCustomer() {
     const [errorMsg, setErrorMsg] = useState('')
 
     const [data, setData] = useState([])
+
     const getData = async () => {
         let adminToken = localStorage.getItem('admin')
         apiHandle(adminToken).then(() => {
@@ -258,14 +229,12 @@ export default function UserCustomer() {
         adminToken && setAccessToken(JSON.parse(adminToken)?.data?.[0]?.accessToken)
 
     }, [])
-    // console.log(accessToken)
+
     const [nodata, setNodata] = useState(true)
 
     const [fname, setFname] = useState('')
     const [lname, setLname] = useState('')
     const [email, setEmail] = useState('')
-    const [user, setUser] = useState('')
-    const [password, setPassword] = useState('')
     const [phone, setPhone] = useState('')
     const [cnic, setCnic] = useState('')
     const [address, setAddress] = useState('')
@@ -274,7 +243,6 @@ export default function UserCustomer() {
     const [area, setArea] = useState('')
     const [EditModal, setEditModal] = useState(false)
     const [id, setId] = useState(null)
-    const [disable, setDisable] = useState(false)
 
     const handleChangeRowsPerPage = (event) => {
         setRowsPerPage(+event.target.value);
@@ -284,7 +252,7 @@ export default function UserCustomer() {
 
 
     const handleEdit = async (e) => {
-        // e.preventDefault()
+
 
         setEditModal(e)
         let adminToken = localStorage.getItem('admin')
@@ -301,11 +269,11 @@ export default function UserCustomer() {
                 setArea(json.data.data[0].Area)
                 setOpen(true);
                 setId(json.data.data[0].PKCustomerId)
-            }).catch(err=>{
+            }).catch(err => {
                 console.log(err)
             })
         })
-        
+
     }
     const handleDelete = async (e) => {
         Swal.fire({
@@ -404,28 +372,27 @@ export default function UserCustomer() {
     }
     return (
         <>
-            {/* <button className='btn btn-primary' onClick={handleUpdate}>Bootstrap</button> */}
             <div className="container d-flex justify-content-between my-0">
                 <h2 className='text-center mb-3'> Customer Details</h2>
-                <div style={{float:"right"}}>
-                <Grid container >
-                    <Grid item xs={5}>
-                        <input placeholder='Customer by Subscription ID' type='number' style={{ height: '33px', outline: 'none', width:"215px"}}
-                            onChange={(e) => setSubsId(e.target.value)} />
-                    </Grid>
-                    <Grid item xs={2}>
-                        <Button className="mb-4 me-3" onClick={() => getData()} size='sm' style={{ backgroundColor: 'darkCyan', fontSize: "bolder" }} variant="contained">Search </Button>
+                <div style={{ float: "right" }}>
+                    <Grid container >
+                        <Grid item xs={5}>
+                            <input placeholder='Customer by Subscription ID' type='number' style={{ height: '33px', outline: 'none', width: "215px" }}
+                                onChange={(e) => setSubsId(e.target.value)} />
+                        </Grid>
+                        <Grid item xs={2}>
+                            <Button className="mb-4 me-3" onClick={() => getData()} size='sm' style={{ backgroundColor: 'darkCyan', fontSize: "bolder" }} variant="contained">Search </Button>
 
-                    </Grid>
-                    <Grid item xs={5} style={{maxWidth:'unset'}}>
-                    <Button className=" mb-3 ms-3 me-4" onClick={handleOpen} size='sm' style={{ backgroundColor: 'darkCyan', fontSize: "bolder",width:'max-content' }} variant="contained">Create Customer <AddIcon /></Button>
+                        </Grid>
+                        <Grid item xs={5} style={{ maxWidth: 'unset' }}>
+                            <Button className=" mb-3 ms-3 me-4" onClick={handleOpen} size='sm' style={{ backgroundColor: 'darkCyan', fontSize: "bolder", width: 'max-content' }} variant="contained">Create Customer <AddIcon /></Button>
 
+                        </Grid>
                     </Grid>
-                </Grid>
-                
-                
+
+
                 </div>
-                
+
 
             </div>
 
@@ -602,7 +569,7 @@ export default function UserCustomer() {
                         {
                             nodata ? <TableBody>
                                 <TableRow>
-                                    <TableCell colSpan={5} align="center"><Typography> No data in table yet </Typography></TableCell>
+                                    <TableCell colSpan={5} align="center"><Typography> No data in table yet  ( Search Above to get Data ) </Typography></TableCell>
 
                                 </TableRow>
                             </TableBody> : <TableBody>
@@ -645,9 +612,6 @@ export default function UserCustomer() {
                     onPageChange={handleChangePage}
                     onRowsPerPageChange={handleChangeRowsPerPage}
                 />
-                {/* <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
-</div> */}
-                {/* <!-- Button trigger modal --> */}
 
             </Paper>
         </>

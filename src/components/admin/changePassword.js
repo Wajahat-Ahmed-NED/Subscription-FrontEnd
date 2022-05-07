@@ -2,8 +2,6 @@ import React, { useState, useEffect } from 'react';
 import Avatar from '@material-ui/core/Avatar';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import TextField from '@material-ui/core/TextField';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
-import Checkbox from '@material-ui/core/Checkbox';
 import Grid from '@material-ui/core/Grid';
 import Box from '@material-ui/core/Box';
 import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
@@ -11,16 +9,13 @@ import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
 import Container from '@material-ui/core/Container';
 import axios from "axios";
-import './login.css'
+import './css/login.css'
 import { MDBBtn } from 'mdb-react-ui-kit';
-import RadioGroup from '@mui/material/RadioGroup';
-import Radio from '@mui/material/Radio';
 import { Link, useHistory } from "react-router-dom";
 import Alert from 'react-bootstrap/Alert'
 import Swal from 'sweetalert2';
 import { isJwtExpired } from 'jwt-check-expiration';
-import jwt from 'jsonwebtoken'
-import { api } from './api/api';
+import { api } from '../api/api';
 
 const useStyles = makeStyles((theme) => ({
     paper: {
@@ -70,16 +65,14 @@ export default function ChangePassword({ onClick }) {
 
     async function logginIn(e) {
         e.preventDefault()
-        if(!email || !password || !newpassword || !retypepassword )
-        {
+        if (!email || !password || !newpassword || !retypepassword) {
             return Swal.fire(
                 'Incomplete Details',
                 'Please Enter All Details',
                 'error'
             )
         }
-        if(newpassword !== retypepassword)
-        {
+        if (newpassword !== retypepassword) {
             return Swal.fire(
                 'Password Mismatch',
                 'New Password and Retype Password Should Match',
@@ -108,11 +101,7 @@ export default function ChangePassword({ onClick }) {
                     }
                 })
                 .then(async function (response) {
-                    // console.log(response, 'asdasdasdjashshdjkashkdhaskjhvcv');
-                    // localStorage.setItem("admin", JSON.stringify(response.data));
-                    // setData(response.data)
-                    // history.push("/dashboard");
-                    // alert("success")
+
                     Swal.fire(
                         'Success',
                         'Changed Password Successfully',
@@ -123,7 +112,7 @@ export default function ChangePassword({ onClick }) {
                     })
                 })
                 .catch(function (error) {
-                    // alert("Email or Password is incorrect")
+
                     setError(true)
                     console.log(error?.response?.data?.message?.[0])
                     setData(error?.response?.data?.message?.[0])
@@ -136,7 +125,7 @@ export default function ChangePassword({ onClick }) {
                 });
         }
     };
-    console.log(data)
+
 
 
     return (
@@ -158,7 +147,7 @@ export default function ChangePassword({ onClick }) {
                         }
                         <Avatar className={classes.avatar}>
                             <LockOutlinedIcon color="success" />
-                            {/* <LockIcon color="success" /> */}
+
                         </Avatar>
                         <Typography component="h1" variant="h5">
                             Admin Change Password

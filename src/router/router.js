@@ -5,22 +5,25 @@ import {
     Route,
     Link
 } from "react-router-dom";
-import ChangePassword from "../components/changePassword";
-import Dashboard from "../components/dashboard";
-import Login from "../components/login";
+import ChangePassword from "../components/admin/changePassword";
+import Dashboard from "../components/admin/dashboard";
+import User from "../components/admin/user";
+import Package from "../components/admin/package";
+import Customer from "../components/admin/customer";
+import Subscription from "../components/admin/subscription";
+import Login from "../components/admin/login";
 import UserDashboard from "../components/User/userDashboard";
 import UserUpdateProfile from "../components/User/UserUpdateProfile";
 import UserChangePassword from "../components/User/UserChangePassword";
-import UpdateProfile from "../components/updateProfile";
-import ContactUs from "../components/ContactUs";
+import UpdateProfile from "../components/admin/updateProfile";
+import ContactUs from "../components/admin/ContactUs";
+import NotFound404 from "../components/admin/404";
 
 export default function AppRouter() {
     return (
         <Router>
             <div>
 
-                {/* A <Switch> looks through its children <Route>s and
-            renders the first one that matches the current URL. */}
                 <Switch>
                     <Route exact path="/" component={Login} />
                     <Route exact path="/contact" component={ContactUs} />
@@ -30,8 +33,7 @@ export default function AppRouter() {
                     <Route exact path="/updateProfile" component={UpdateProfile} />
                     <Route path="/dashboard" component={Dashboard} />
                     <Route path="/userDashboard" component={UserDashboard} />
-                    {/* <Route path="/webedit" component={s} /> */}
-
+                    <Route path="*" component={NotFound404} />
 
                 </Switch>
             </div>

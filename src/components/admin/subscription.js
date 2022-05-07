@@ -1,8 +1,7 @@
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { makeStyles, withStyles } from '@material-ui/core/styles';
 import Backdrop from '@material-ui/core/Backdrop';
 import Paper from '@material-ui/core/Paper';
-import SearchIcon from '@mui/icons-material/Search';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
@@ -17,35 +16,15 @@ import IconButton from '@material-ui/core/IconButton';
 import CloseIcon from '@material-ui/icons/Close';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import Grid from '@material-ui/core/Grid';
-import TextField from '@material-ui/core/TextField';
-import { Link, useHistory } from "react-router-dom";
-import CheckCircleIcon from '@mui/icons-material/CheckCircle';
-import MenuItem from '@mui/material/MenuItem';
-import FormControl from '@mui/material/FormControl';
-import InputLabel from '@mui/material/InputLabel';
-import Select from '@mui/material/Select';
-// import Button from '@mui/material/Button';
-// import Button from '@mui/material/Button';
-// import { logout } from './dashboard';
-import { UserContext } from '../userContext';
-
-import { isJwtExpired } from 'jwt-check-expiration';
-import jwt from 'jsonwebtoken'
+import { useHistory } from "react-router-dom";
 import { useDispatch, useSelector } from 'react-redux';
-import axios, { Axios } from 'axios';
-// import { UserContext } from '../userContext';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
 import Modal from '@mui/material/Modal';
-import AddIcon from '@mui/icons-material/Add';
-import Swal from 'sweetalert2';
-import EditIcon from '@mui/icons-material/Edit';
-import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
-// import IconButton from '@mui/material/IconButton';
 import Tooltip from '@mui/material/Tooltip';
-import { getSubscriptions, getSubscriptionById } from './api/subscriptionApi';
-import { apiHandle } from './api/api'
+import { getSubscriptions, getSubscriptionById } from '../api/subscriptionApi';
+import { apiHandle } from '../api/api'
 
 
 
@@ -60,7 +39,6 @@ const style = {
     maxHeight: '500px',
     display: 'block',
     bgcolor: 'background.paper',
-    border: '2px solid darkcyan',
     boxShadow: 24,
     pb: 4,
     pl: 4
@@ -77,7 +55,7 @@ const useStyles = makeStyles((theme) => ({
     },
     container: {
         maxHeight: 500,
-        // borderRadius: 20,
+
     },
 }));
 const styles = (theme) => ({
@@ -121,22 +99,11 @@ const DialogActions = withStyles((theme) => ({
 }))(MuiDialogActions);
 
 export default function ContactPage() {
-    // const [open, setOpen] = React.useState(false);
-    const handleOpen = () => setOpen(true);
-    // const handleClose = () => setOpen(false);
-    const dataFromRedux = useSelector((a) => a)
-    // const dispatch = useDispatch()
 
-    // const handleUpdate = () => {
-    //   const obj = {
-    //     name: 'ali',
-    //     age: 12,
-    //     apiData: [1, 2, 3, 4],
-    //   }
-    //   console.log(obj)
-    //   dispatch({ type: 'DATAFROMAPI', ...obj })
-    //   console.log(dataFromRedux)
-    // }
+    const handleOpen = () => setOpen(true);
+
+    const dataFromRedux = useSelector((a) => a)
+
     console.log(dataFromRedux)
 
     const classes = useStyles();
@@ -147,20 +114,12 @@ export default function ContactPage() {
     const [currentSubscription, setcurrentSubscription] = useState(null)
     const [page, setPage] = React.useState(0);
     const [rows, setRow] = useState([]);
-    const [no, setNo] = useState(0);
     const [rowsPerPage, setRowsPerPage] = React.useState(10);
     const [open, setOpen] = React.useState(false);
-    const [accessToken, setAccessToken] = React.useState('');
-    const [refreshToken, setRefreshTokn] = React.useState('');
     const history = useHistory();
     const [nodata, setNodata] = useState(false)
-
-
     const [openNew, setOpenNew] = React.useState(false);
 
-    const { setToken } = useContext(UserContext);
-    // here useeffect will be implemented
-    // console.log(rows, "get ALL orders");
 
     const handleEditRow = (idEdit, row) => {
         let filteredRow = rows.filter(({ id }) => {
@@ -212,21 +171,6 @@ export default function ContactPage() {
         }
     }, [])
 
-    const [fname, setFname] = useState('')
-    const [lname, setLname] = useState('')
-    const [email, setEmail] = useState('')
-    const [user, setUser] = useState('')
-    const [password, setPassword] = useState('')
-    const [phone, setPhone] = useState('')
-    const [cnic, setCnic] = useState('')
-    const [EditModal, setEditModal] = useState(false)
-    // const [id, setId] = useState(0)
-    const [suspend, setSuspend] = useState(0)
-    const [tempSuspend, setTempSuspend] = useState(0)
-    const [disable, setDisable] = useState(false)
-    const [id, setId] = useState('')
-    const [filteredData, setFilteredData] = useState([])
-
 
     const handleChangeRowsPerPage = (event) => {
         setRowsPerPage(+event.target.value);
@@ -236,7 +180,7 @@ export default function ContactPage() {
 
 
     const getDetails = async (e) => {
-        // handleModalOpen()
+
         let adminToken = localStorage.getItem("admin")
         apiHandle(adminToken).then(() => {
             getSubscriptionById(e).then((res) => {
@@ -245,7 +189,7 @@ export default function ContactPage() {
                 handleModalOpen()
                 setcurrentSubscription(res)
 
-                // console.log(currentSubscription)
+
             }).catch(err => {
 
 
@@ -256,18 +200,15 @@ export default function ContactPage() {
 
     return (
         <>
-            {/* <button className='btn btn-primary' onClick={handleUpdate}>Bootstrap</button> */}
+
             <div className="container d-flex justify-content-between my-0">
                 <h2 className='text-center mb-3'> Subscriptions Details</h2>
-                {/* <Button className="ms-auto me-3 my-3" onClick={fetchData} size='small' style={{ backgroundColor: 'darkCyan' }} variant="contained">Get Data</Button> */}
-                {/* <Button className=" mb-5 me-3 " onClick={handleOpen} size='sm' style={{ backgroundColor: 'darkCyan', fontSize: "bolder" }} variant="contained">Create user <AddIcon /></Button> */}
-
 
             </div>
 
             <Modal
                 open={modalOpen}
-                // onClose={handleModalClose}
+
                 aria-labelledby="modal-modal-title"
                 aria-describedby="modal-modal-description"
             >
@@ -310,7 +251,6 @@ export default function ContactPage() {
                 </Box>
             </Modal>
 
-            {/* <TextField type="number" id="standard-basic" label="Search By User Id" variant="standard" className='mx-3 mb-5' onChange={(e) => handleTextField(e)} /> */}
             <Paper className={classes.root} style={{ maxWidth: '1100px' }} >
                 <Backdrop className={classes.backdrop} open={openNew}>
                     <CircularProgress color="inherit" />

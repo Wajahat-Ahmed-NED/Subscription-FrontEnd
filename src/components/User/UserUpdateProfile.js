@@ -2,25 +2,17 @@ import React, { useState, useEffect } from 'react';
 import Avatar from '@material-ui/core/Avatar';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import TextField from '@material-ui/core/TextField';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
-import Checkbox from '@material-ui/core/Checkbox';
 import Grid from '@material-ui/core/Grid';
 import Box from '@material-ui/core/Box';
 import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
 import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
 import Container from '@material-ui/core/Container';
-import axios from "axios";
-import '../login.css'
+import '../admin/css/login.css'
 import { MDBBtn } from 'mdb-react-ui-kit';
-import RadioGroup from '@mui/material/RadioGroup';
-import Radio from '@mui/material/Radio';
 import { Link, useHistory } from "react-router-dom";
 import Alert from 'react-bootstrap/Alert'
 import Swal from 'sweetalert2';
-import { isJwtExpired } from 'jwt-check-expiration';
-import jwt from 'jsonwebtoken'
-import { CallToActionSharp } from '@material-ui/icons';
 import { apiHandle } from '../api/user/api';
 import { profileUpdate } from '../api/user/updateUserApi';
 
@@ -38,7 +30,7 @@ const useStyles = makeStyles((theme) => ({
         backgroundColor: 'darkcyan',
     },
     form: {
-        width: '100%', // Fix IE 11 issue.
+        width: '100%',
         marginTop: theme.spacing(3),
     },
     submit: {
@@ -53,9 +45,6 @@ export default function UserUpdateProfile({ onClick }) {
     const [lastName, setLname] = useState('');
     const [phone, setPhone] = useState('');
     const [cnic, setCnic] = useState('');
-    // const [password, setPasword] = useState('');
-    // const [newpassword, setnewPasword] = useState('');
-    // const [retypepassword, setretypePasword] = useState('');
     const [accessToken, setAccessToken] = useState('');
     const [renewToken, setRenewToken] = useState('');
     const [adminToken, setadminToken] = useState('');
@@ -74,12 +63,11 @@ export default function UserUpdateProfile({ onClick }) {
         console.log(accessToken)
     }, [adminToken])
 
-    
+
 
     async function updateProfile(e) {
         e.preventDefault()
-        if(!firstName || !lastName || !phone || !cnic)
-        {
+        if (!firstName || !lastName || !phone || !cnic) {
             return Swal.fire(
                 'Incomplete Details',
                 'Please Enter All Details',
@@ -87,38 +75,37 @@ export default function UserUpdateProfile({ onClick }) {
             )
         }
         const params = {
-            // 'PKUserId': userid,
+
             'FirstName': firstName,
             'LastName': lastName,
             'PhoneNumber': phone,
             'CNIC': cnic
-            // 'newPassword': newpassword,
-            // 'retypeNewPassword': retypepassword
+
         };
-        apiHandle(adminToken).then(()=>{
+        apiHandle(adminToken).then(() => {
             profileUpdate(params).then(async function (response) {
 
                 setError(false)
                 setData('')
-    
+
                 Swal.fire(
                     'Success',
                     'Profile Updated Successfully',
                     'success',
                 )
             })
-            .catch(function (error) {
-                setError(true)
-                setData(error?.response?.data?.message[0])
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Could Not Update Profile',
-                    text: 'Something went wrong!',
-    
-                })
-            });
+                .catch(function (error) {
+                    setError(true)
+                    setData(error?.response?.data?.message[0])
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Could Not Update Profile',
+                        text: 'Something went wrong!',
+
+                    })
+                });
         })
-        
+
     };
 
 
@@ -141,7 +128,7 @@ export default function UserUpdateProfile({ onClick }) {
                         }
                         <Avatar className={classes.avatar}>
                             <LockOutlinedIcon color="success" />
-                            {/* <LockIcon color="success" /> */}
+
                         </Avatar>
                         <Typography component="h1" variant="h5">
                             Update User Profile

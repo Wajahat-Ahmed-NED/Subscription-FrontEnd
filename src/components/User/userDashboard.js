@@ -1,11 +1,9 @@
-import React, { useContext } from 'react';
+import React from 'react';
 import clsx from 'clsx';
 import { makeStyles, useTheme, alpha } from '@material-ui/core/styles';
-import AdminPanelSettingsIcon from '@mui/icons-material/AdminPanelSettings';
 import Drawer from '@material-ui/core/Drawer';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
-import InputBase from '@material-ui/core/InputBase';
 import List from '@material-ui/core/List';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import Typography from '@material-ui/core/Typography';
@@ -21,20 +19,7 @@ import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
-import SearchIcon from '@material-ui/icons/Search';
-import PeopleIcon from '@mui/icons-material/People';
-// import Inbox from './inbox';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faHouseUser } from '@fortawesome/free-solid-svg-icons';
-import { faPhoneAlt } from '@fortawesome/free-solid-svg-icons';
-import { faFolderOpen } from '@fortawesome/free-solid-svg-icons';
-import { faClone } from '@fortawesome/free-solid-svg-icons';
-// import Contact from './allorders';
-// import Report from './report';
-// import ItemCategories from './itemCategories';
-// import Items from './items';
 import { useHistory } from "react-router-dom";
-// import { UserContext } from '../userContext';
 import axios from 'axios';
 import {
     BrowserRouter as Router,
@@ -43,15 +28,7 @@ import {
     Link
 } from "react-router-dom";
 import '../assets/css/style.css';
-// import Allcustomers from './allcustomers';
-// import Alllabs from './alllabs';
-// import AllCategories from './allcategories';
-// import Allindividuals from './allindividuals';
-import Login from '../login';
-// import Package from './package';
-// import Subscription from './subscription';
-// import Customer from './customer';
-import Swal from 'sweetalert2';
+import Login from '../admin/login';
 import UserCustomer from './customer';
 import UserSubscription from './UserSubscription';
 import UserPackage from './UserPackage';
@@ -200,7 +177,7 @@ function UserDashboard() {
             }).then((res) => {
 
                 localStorage.clear();
-                // history.push('/')
+
                 window.location.replace("/")
 
 

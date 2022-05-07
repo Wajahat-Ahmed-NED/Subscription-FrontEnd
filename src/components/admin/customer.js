@@ -24,18 +24,17 @@ import TextField from '@material-ui/core/TextField';
 import CloseIcon from '@material-ui/icons/Close';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import { useHistory } from "react-router-dom";
-import { UserContext } from '../userContext';
+
 import Modal from '@mui/material/Modal';
 import Box from '@mui/material/Box';
 import { isJwtExpired } from 'jwt-check-expiration';
 import jwt from 'jsonwebtoken'
 import { useDispatch, useSelector } from 'react-redux';
 import Swal from 'sweetalert2';
-
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
-import { getCustomers, getCustomerById, getCustomerBySubscriptionId } from './api/customersApi';
-import { apiHandle } from './api/api'
+import { getCustomers, getCustomerById, getCustomerBySubscriptionId } from '../api/customersApi';
+import { apiHandle } from '../api/api'
 
 const style = {
     position: 'absolute',
@@ -48,7 +47,7 @@ const style = {
     maxHeight: '500px',
     display: 'block',
     bgcolor: 'background.paper',
-    border: '2px solid darkcyan',
+
     boxShadow: 24,
     pb: 4,
     pl: 4
@@ -65,7 +64,7 @@ const useStyles = makeStyles((theme) => ({
     },
     container: {
         maxHeight: 500,
-        // borderRadius: 20,
+
     },
 }));
 const styles = (theme) => ({
@@ -119,10 +118,8 @@ export default function ContactPage() {
     const handleModalClose = () => setModalOpen(false);
     const [page, setPage] = React.useState(0);
     const [rows, setRow] = useState([]);
-    const [no, setNo] = useState(0);
     const [rowsPerPage, setRowsPerPage] = React.useState(10);
     const [open, setOpen] = React.useState(false);
-    const [accessToken, setAccessToken] = React.useState('');
     const [subsId, setSubsId] = React.useState(null);
     const history = useHistory();
     const handleClickOpen = () => {
@@ -139,8 +136,6 @@ export default function ContactPage() {
 
 
     const [openNew, setOpenNew] = React.useState(false);
-
-    const { setToken } = useContext(UserContext);
 
 
     const handleEditRow = (idEdit, row) => {
@@ -219,20 +214,16 @@ export default function ContactPage() {
             setData(dataFromRedux.customerData)
         }
     }, [])
+
     const [currentCustomer, setcurrentCustomer] = useState(null)
 
     const [fname, setFname] = useState('')
     const [lname, setLname] = useState('')
     const [email, setEmail] = useState('')
-    const [user, setUser] = useState('')
-    const [password, setPassword] = useState('')
     const [phone, setPhone] = useState('')
-    const [cnic, setCnic] = useState('')
     const [EditModal, setEditModal] = useState(false)
     const [id, setId] = useState('')
     const [id2, setId2] = useState('')
-    const [filteredData, setFilteredData] = useState([])
-    const [filteredData2, setFilteredData2] = useState([])
     const [nodata, setNodata] = useState(false)
 
     const handleChangeRowsPerPage = (event) => {
@@ -251,7 +242,7 @@ export default function ContactPage() {
     }
 
     const getDetails = async (e) => {
-        // handleModalOpen()
+
         let adminToken = localStorage.getItem("admin")
         apiHandle(adminToken).then(() => {
             getCustomerById(e).then((res) => {
@@ -260,13 +251,8 @@ export default function ContactPage() {
             }).catch(err => {
 
 
-                console.log(err, "this error founnd")
-                // Swal.fire({
-                //     icon: 'error',
-                //     title: 'Oops...',
-                //     text: 'Wrong Credentials or Something went wrong!',
+                console.log(err, "this error found")
 
-                // })
             })
         })
     }
@@ -287,8 +273,7 @@ export default function ContactPage() {
 
                         </Grid>
                     </Grid>
-                    {/* 
-                  */}
+
                 </div>
             </div>
 
@@ -454,11 +439,6 @@ export default function ContactPage() {
                     onRowsPerPageChange={handleChangeRowsPerPage}
                 />
             </Paper>
-
-
-
-
-
 
         </>
     );

@@ -1,7 +1,6 @@
-import React, { useContext, useEffect, useState } from 'react';
-import { makeStyles, withStyles } from '@material-ui/core/styles';
+import React, { useEffect, useState } from 'react';
+import { makeStyles } from '@material-ui/core/styles';
 import Backdrop from '@material-ui/core/Backdrop';
-import SearchIcon from '@mui/icons-material/Search';
 import Paper from '@material-ui/core/Paper';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
@@ -10,30 +9,20 @@ import TableContainer from '@material-ui/core/TableContainer';
 import TableHead from '@material-ui/core/TableHead';
 import TablePagination from '@material-ui/core/TablePagination';
 import TableRow from '@material-ui/core/TableRow';
-import MenuItem from '@mui/material/MenuItem';
-import FormControl from '@mui/material/FormControl';
-import InputLabel from '@mui/material/InputLabel';
-import Select from '@mui/material/Select';
 import Modal from '@mui/material/Modal';
 import CloseIcon from '@material-ui/icons/Close';
 import Tooltip from '@mui/material/Tooltip';
 import IconButton from '@material-ui/core/IconButton';
 import Box from '@mui/material/Box';
 import Grid from '@material-ui/core/Grid';
-import TextField from '@material-ui/core/TextField';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import { useHistory } from "react-router-dom";
-import { UserContext } from '../userContext';
 import Swal from 'sweetalert2';
-
-import { isJwtExpired } from 'jwt-check-expiration';
-import jwt from 'jsonwebtoken'
 import { useDispatch, useSelector } from 'react-redux';
-
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
-import { getPackages, getPackageById, getPackageByUserId } from './api/packageApi';
-import { apiHandle } from './api/api'
+import { getPackages, getPackageById, getPackageByUserId } from '../api/packageApi';
+import { apiHandle } from '../api/api'
 
 
 const style = {
@@ -47,7 +36,6 @@ const style = {
     maxHeight: '500px',
     display: 'block',
     bgcolor: 'background.paper',
-    border: '2px solid darkcyan',
     boxShadow: 24,
     pb: 4,
     pl: 4
@@ -199,7 +187,7 @@ export default function ContactPage() {
     const [id2, setId2] = useState('')
     const [userId, setUserId] = React.useState(null);
 
-    const [filteredData2, setFilteredData2] = useState([])
+
 
     const handleChangeRowsPerPage = (event) => {
         setRowsPerPage(+event.target.value);
@@ -207,7 +195,7 @@ export default function ContactPage() {
     };
 
     const getDetails = async (e) => {
-        // handleModalOpen()
+
         let adminToken = localStorage.getItem("admin")
         apiHandle(adminToken).then(() => {
             getPackageById(e).then((res) => {
@@ -259,7 +247,7 @@ export default function ContactPage() {
 
             <Modal
                 open={modalOpen}
-                // onClose={handleModalClose}
+
                 aria-labelledby="modal-modal-title"
                 aria-describedby="modal-modal-description"
             >
@@ -309,21 +297,7 @@ export default function ContactPage() {
             </Modal>
 
 
-            {/* <div className="container mb-4">
-                <h4 style={{ display: 'inline' }}>Search Package By UserID</h4>
-                <div style={{ float: 'right' }}>
-                    <Grid container  >
-                        <Grid item xs={7}>
-                            <input placeholder='Enter User ID' onChange={(e) => setUserId(e.target.value)} type='number' style={{ height: '33px', outline: 'none' }}
-                            />
-                        </Grid>
-                        <Grid item xs={1}>
-                            <Button className="ms-3 " onClick={() => getDataByUser()} size='sm' style={{ backgroundColor: 'darkCyan', fontSize: "bolder" }} variant="contained">Search </Button>
 
-                        </Grid>
-                    </Grid>
-                </div>
-            </div> */}
 
             <Paper className={classes.root} style={{ maxWidth: '1100px' }} >
                 <Backdrop className={classes.backdrop} open={openNew}>
@@ -390,9 +364,6 @@ export default function ContactPage() {
                     onPageChange={handleChangePage}
                     onRowsPerPageChange={handleChangeRowsPerPage}
                 />
-                {/* <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
-</div> */}
-                {/* <!-- Button trigger modal --> */}
 
             </Paper>
         </>

@@ -6,7 +6,6 @@ const reducer = (state = INITIAL_STATE, action) => {
     console.log(action);
 
     if (action.type === "DATAFROMLOGIN") {
-        // state.apiData = action.apiData;
         console.log(state)
         return { ...action, ...state };
     }

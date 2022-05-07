@@ -1,7 +1,6 @@
 import React from 'react';
 import clsx from 'clsx';
 import { makeStyles, useTheme, alpha } from '@material-ui/core/styles';
-import AdminPanelSettingsIcon from '@mui/icons-material/AdminPanelSettings';
 import Drawer from '@material-ui/core/Drawer';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
@@ -21,7 +20,6 @@ import ListItem from '@material-ui/core/ListItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
 import PeopleIcon from '@mui/icons-material/People';
-import Admin from './admin';
 import { useHistory } from "react-router-dom";
 import axios from 'axios';
 import {
@@ -30,20 +28,18 @@ import {
   Route,
   Link
 } from "react-router-dom";
-import './assets/css/style.css';
+import '../assets/css/style.css';
 import User from './user';
 import Login from './login';
 import Package from './package';
 import Subscription from './subscription';
 import Customer from './customer';
-import Swal from 'sweetalert2';
-// import {api} from './api/api';
-import { api, apiHandle } from "./api/api"
+import { api, apiHandle } from "../api/api"
 import { useDispatch, useSelector } from 'react-redux';
-import { getData } from './api/userApi';
-import { getSubscriptions } from './api/subscriptionApi';
-import { getCustomers } from './api/customersApi';
-import { getPackages } from './api/packageApi';
+import { getData } from '../api/userApi';
+import { getSubscriptions } from '../api/subscriptionApi';
+import { getCustomers } from '../api/customersApi';
+import { getPackages } from '../api/packageApi';
 
 const drawerWidth = 240;
 
@@ -254,7 +250,7 @@ function Dashboard() {
     })
 
   }, [])
-  console.log(dataFromRedux)
+
 
   const handleDrawerOpen = () => {
     setOpen(true);
@@ -325,7 +321,7 @@ function Dashboard() {
           <Divider />
           <List className='my-5 ' >
 
-            <Link style={linkTextColor} to="/user">
+            <Link style={linkTextColor} to="/dashboard/user">
               <ListItem button>
                 <ListItemIcon>
                   <PeopleIcon />
@@ -333,7 +329,7 @@ function Dashboard() {
                 <ListItemText primary="Users Details" />
               </ListItem>
             </Link>
-            <Link style={linkTextColor} to="/package">
+            <Link style={linkTextColor} to="/dashboard/package">
               <ListItem button>
                 <ListItemIcon>
                   <InventoryIcon />
@@ -342,7 +338,7 @@ function Dashboard() {
                 <ListItemText primary="Package Details" />
               </ListItem>
             </Link>
-            <Link style={linkTextColor} to="/subscription">
+            <Link style={linkTextColor} to="/dashboard/subscription">
               <ListItem button>
                 <ListItemIcon>
                   <SubscriptionsIcon />
@@ -350,7 +346,7 @@ function Dashboard() {
                 <ListItemText primary="Subscription Details" />
               </ListItem>
             </Link>
-            <Link style={linkTextColor} to="/customer">
+            <Link style={linkTextColor} to="/dashboard/customer">
               <ListItem button>
                 <ListItemIcon>
                   <AccountCircleIcon />
@@ -363,10 +359,10 @@ function Dashboard() {
         <main className={classes.content}>
           <div className={classes.toolbar} />
           <Switch>
-            <Route path='/user' component={User}></Route>
-            <Route path='/package' component={Package}></Route>
-            <Route path='/subscription' component={Subscription}></Route>
-            <Route path='/customer' component={Customer}></Route>
+            <Route path='/dashboard/user' component={User}></Route>
+            <Route path='/dashboard/package' component={Package}></Route>
+            <Route path='/dashboard/subscription' component={Subscription}></Route>
+            <Route path='/dashboard/customer' component={Customer}></Route>
             <Route path='/login' component={Login}></Route>
           </Switch>
 

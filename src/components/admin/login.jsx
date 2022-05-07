@@ -10,14 +10,14 @@ import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
 import Container from '@material-ui/core/Container';
 import axios from "axios";
-import './login.css'
+import './css/login.css'
 import { MDBBtn } from 'mdb-react-ui-kit';
 import RadioGroup from '@mui/material/RadioGroup';
 import Radio from '@mui/material/Radio';
 import { useHistory, Link } from "react-router-dom";
 import Alert from 'react-bootstrap/Alert'
 import Swal from 'sweetalert2';
-import {api} from './api/api';
+import { api } from '../api/api';
 
 const useStyles = makeStyles((theme) => ({
   paper: {
@@ -103,7 +103,7 @@ export default function Login() {
 
         })
         .catch(function (error) {
-          // alert("Email or Password is incorrect")
+
           setData("Username or Password is incorrect")
           setError(true)
         });
@@ -189,7 +189,7 @@ export default function Login() {
 
                   <MDBBtn size='lg' style={{ backgroundColor: 'darkcyan' }} type="submit">Sign In</MDBBtn>
                 </div>
-                <div className='d-grid gap-3 col-12 mx-auto my-3' style={{textAlign:"center"}}>
+                <div className='d-grid gap-3 col-12 mx-auto my-3' style={{ textAlign: "center" }}>
 
                   <Link to="/contact">Contact Us</Link>
                 </div>

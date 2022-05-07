@@ -1,5 +1,5 @@
 import axios from "axios"
-import {api} from "./api"
+import { api } from "./api"
 
 
 export const getSubscriptions = async () => {
@@ -15,7 +15,7 @@ export const getSubscriptions = async () => {
 
 export const getSubscriptionById = async (e) => {
     let adminToken = localStorage.getItem("admin")
-    console.log("is is ",e.PKSubscriptionId)
+
     const res = await axios.get(`${api}admin/getSubscriptionById/${e.PKSubscriptionId}`,
         {
             headers: {
@@ -29,10 +29,10 @@ export const getSubscriptionById = async (e) => {
             headers: {
                 'Authorization': `Bearer ${JSON.parse(adminToken)?.data?.[0]?.accessToken}`,
             }
-        }).then((customer)=>{
+        }).then((customer) => {
 
-            data.FKCustomerName=customer?.data?.data?.[0].FirstName +" "+ customer?.data?.data?.[0]?.LastName
-        }).catch(err=>{
+            data.FKCustomerName = customer?.data?.data?.[0].FirstName + " " + customer?.data?.data?.[0]?.LastName
+        }).catch(err => {
             data.FKCustomerName = data.FKCustomerId
         })
 
@@ -41,13 +41,13 @@ export const getSubscriptionById = async (e) => {
             headers: {
                 'Authorization': `Bearer ${JSON.parse(adminToken)?.data?.[0]?.accessToken}`,
             }
-        }).then((packageData)=>{
-            data.FKPackageName=packageData?.data?.data?.[0].PackageName
-        }).catch(err=>{
+        }).then((packageData) => {
+            data.FKPackageName = packageData?.data?.data?.[0].PackageName
+        }).catch(err => {
             data.FKPackageName = data.FKPackageId
         })
 
-        
-    
+
+
     return data;
 }

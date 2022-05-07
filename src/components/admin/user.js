@@ -38,9 +38,9 @@ import Swal from 'sweetalert2';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
 import Tooltip from '@mui/material/Tooltip';
-import { addUser, deleteUser, getData, suspendUser, tempSuspendUser, getUser } from './api/userApi';
-import './assets/css/user.css'
-import { apiHandle } from './api/api'
+import { addUser, deleteUser, getData, suspendUser, tempSuspendUser, getUser } from '../api/userApi';
+import '../assets/css/user.css'
+import { apiHandle } from '../api/api'
 import Alert from 'react-bootstrap/Alert';
 
 const useStyles = makeStyles((theme) => ({
@@ -80,7 +80,6 @@ const style = {
     overflowY: 'auto',
     maxHeight: '500px',
     bgcolor: 'background.paper',
-    border: '2px solid darkcyan',
     boxShadow: 24,
     pb: 4,
     pl: 4
@@ -204,15 +203,14 @@ export default function ContactPage() {
     }
 
     const handleSubmit = async (e) => {
-        // e.preventDefault()
-        if(!email || !fname || !lname || !user || !password || !phone || !cnic)
-        {
+
+        if (!email || !fname || !lname || !user || !password || !phone || !cnic) {
             setOpen(false);
             return Swal.fire(
                 'Incomplete Details',
                 'Please Enter All Details',
                 'error'
-            ).then(()=>{
+            ).then(() => {
                 setOpen(true)
             })
         }
@@ -316,7 +314,6 @@ export default function ContactPage() {
     const [tempSuspend, setTempSuspend] = useState(0)
     const [error, setError] = React.useState(false);
     const [id, setId] = useState('')
-    const [filteredData, setFilteredData] = useState([])
     const [currentUser, setCurrentUser] = useState(null)
 
     const handleChangeRowsPerPage = (event) => {
@@ -336,7 +333,7 @@ export default function ContactPage() {
         setId(e.PKUserId)
     }
     const getDetails = async (e) => {
-        // handleModalOpen()
+
         let adminToken = localStorage.getItem("admin")
         apiHandle(adminToken).then(() => {
             getUser(e).then((res) => {
@@ -392,7 +389,7 @@ export default function ContactPage() {
         }
         )
 
-        // setTempSuspend(e.IsTemporarySuspended ? false : true)
+
     }
     const handleTempSuspend = async (e) => {
         setTempSuspend(e.IsTemporarySuspended ? false : true)
@@ -504,7 +501,7 @@ export default function ContactPage() {
 
             <Modal
                 open={modalOpen}
-                // onClose={handleModalClose}
+
                 aria-labelledby="modal-modal-title"
                 aria-describedby="modal-modal-description"
             >
@@ -653,7 +650,7 @@ export default function ContactPage() {
                                             id="password"
 
                                             value={EditModal ? EditModal.Username : user}
-                                        // {user.length>0 && disabled}
+
                                         />
                                     </Grid>
                                     {

@@ -1,15 +1,8 @@
-
-
-
 import axios from 'axios'
 import { isJwtExpired } from 'jwt-check-expiration'
-// import { displayErrorToast } from '../helper/toast_notification_function'
-// import { saveTokens, userState } from '../redux/actions/userActions'
-
-// const apiUrl = process.env.REACT_APP_MAIN_URL
 
 export const api = "http://localhost:5000/"
-// export const api
+
 const apiUrl = api
 
 export const axiosHandle = token => {
@@ -26,11 +19,11 @@ export const axiosHandle = token => {
 
 
 export const apiHandle = async (adminToken, navigate) => {
-    let refreshToken=JSON.parse(adminToken)?.data?.[0]?.refreshToken;
-    let token=JSON.parse(adminToken)?.data?.[0]?.accessToken;
+    let refreshToken = JSON.parse(adminToken)?.data?.[0]?.refreshToken;
+    let token = JSON.parse(adminToken)?.data?.[0]?.accessToken;
     if (isJwtExpired(token) === false) {
         return axiosHandle(token)
-    } 
+    }
     else if (isJwtExpired(token) === true) {
         if (isJwtExpired(refreshToken) === false) {
             await axiosHandle(token)
@@ -51,9 +44,7 @@ export const apiHandle = async (adminToken, navigate) => {
             //   userState(dispatch, false)
             navigate('/')
         }
-    } 
+    }
     else {
     }
 }
-
-// export const {axiosHandle}

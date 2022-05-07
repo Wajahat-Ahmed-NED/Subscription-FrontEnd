@@ -11,7 +11,7 @@ import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
 import Container from '@material-ui/core/Container';
 import axios from "axios";
-import '../login.css'
+import '../admin/css/login.css'
 import { MDBBtn } from 'mdb-react-ui-kit';
 import RadioGroup from '@mui/material/RadioGroup';
 import Radio from '@mui/material/Radio';
@@ -71,20 +71,18 @@ export default function UserChangePassword({ onClick }) {
         console.log(accessToken)
     }, [adminToken])
 
-    
+
 
     async function changePassword(e) {
         e.preventDefault()
-        if(!email || !password || !newpassword || !retypepassword )
-        {
+        if (!email || !password || !newpassword || !retypepassword) {
             return Swal.fire(
                 'Incomplete Details',
                 'Please Enter All Details',
                 'error'
             )
         }
-        if(newpassword !== retypepassword)
-        {
+        if (newpassword !== retypepassword) {
             return Swal.fire(
                 'Password Mismatch',
                 'New Password and Retype Password Should Match',
@@ -98,30 +96,30 @@ export default function UserChangePassword({ onClick }) {
             'retypeNewPassword': retypepassword
         };
         let adminToken = localStorage.getItem("admin")
-        apiHandle(adminToken).then(()=>{
-            passwordChange(params) .then(async function (response) {
+        apiHandle(adminToken).then(() => {
+            passwordChange(params).then(async function (response) {
 
                 setError(false)
                 setData('')
-        
+
                 Swal.fire(
                     'Success',
                     'Changed Password Successfully',
                     'success',
                 )
             })
-            .catch(function (error) {
-                setError(true)
-                setData(error?.response?.data?.message[0])
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Could Not Change Password',
-                    text: 'Something went wrong!',
-        
-                })
-            });
+                .catch(function (error) {
+                    setError(true)
+                    setData(error?.response?.data?.message[0])
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Could Not Change Password',
+                        text: 'Something went wrong!',
+
+                    })
+                });
         })
-       
+
     };
 
 
@@ -217,7 +215,7 @@ export default function UserChangePassword({ onClick }) {
 
                                 <div className='d-grid gap-3 col-12 mx-auto my-3'>
 
-                                    <MDBBtn size='lg' style={{ backgroundColor: 'darkcyan' }}  onClick={changePassword} >Change Password</MDBBtn>
+                                    <MDBBtn size='lg' style={{ backgroundColor: 'darkcyan' }} onClick={changePassword} >Change Password</MDBBtn>
                                 </div>
                             </Grid>
                         </form>

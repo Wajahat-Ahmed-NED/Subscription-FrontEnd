@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Avatar from '@material-ui/core/Avatar';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import TextField from '@material-ui/core/TextField';
@@ -8,13 +8,13 @@ import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
 import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
 import Container from '@material-ui/core/Container';
-import axios from "axios";
-import './login.css'
+import './css/login.css'
 import { MDBBtn } from 'mdb-react-ui-kit';
-import { Link } from "react-router-dom";
+import { Link, useHistory } from "react-router-dom";
 import Alert from 'react-bootstrap/Alert'
 import Swal from 'sweetalert2';
-import { api } from './api/api';
+import { apiHandle } from '../api/api';
+import { profileUpdate } from '../api/adminApi';
 
 const useStyles = makeStyles((theme) => ({
     paper: {
@@ -38,49 +38,72 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-export default function ContactUs({ onClick }) {
+export default function UpdateProfile({ onClick }) {
 
     const classes = useStyles();
-    const [email, setEmail] = useState('');
-    const [name, setName] = useState('');
+    const [firstName, setFname] = useState('');
+    const [lastName, setLname] = useState('');
     const [phone, setPhone] = useState('');
-    const [message, setMessage] = useState('');
+    const [accessToken, setAccessToken] = useState('');
+    const [renewToken, setRenewToken] = useState('');
+    const [adminToken, setadminToken] = useState('');
     const [data, setData] = useState('');
     const [error, setError] = useState(false);
+    const history = useHistory()
 
 
-    async function sendMessage(e) {
+    useEffect(() => {
+
+        var adminToken = localStorage.getItem("admin")
+        !adminToken && history.push("/")
+        adminToken && setadminToken(adminToken)
+        adminToken && setAccessToken(JSON.parse(adminToken)?.data[0]?.accessToken)
+        adminToken && setRenewToken(JSON.parse(adminToken)?.data[0]?.refreshToken)
+        console.log(accessToken)
+    }, [adminToken])
+
+
+
+    async function updateProfile(e) {
         e.preventDefault()
-
+        if (!firstName || !lastName || !phone) {
+            return Swal.fire(
+                'Incomplete Details',
+                'Please Enter All Details',
+                'error'
+            )
+        }
         const params = {
-            'Email': email,
-            'Name': name,
-            'PhoneNumber': phone,
-            'Message': message
+
+            'FirstName': firstName,
+            'LastName': lastName,
+            'PhoneNumber': phone
         };
-            await axios.post(`${api}public/contactUs`, params)
-                .then(async function (response) {
-                    setError(false)
-                    setData('')
-                    Swal.fire(
-                        'Success',
-                        'Message Sent Successfully',
-                        'success',
-                    )
-                })
+        apiHandle(adminToken).then(() => {
+            profileUpdate(params).then(async function (response) {
+
+                setError(false)
+                setData('')
+
+                Swal.fire(
+                    'Success',
+                    'Profile Updated Successfully',
+                    'success',
+                )
+            })
                 .catch(function (error) {
                     setError(true)
-                    setData(error?.response?.data?.message)
+                    setData(error?.response?.data?.message[0])
                     Swal.fire({
                         icon: 'error',
-                        title: 'Could Not Send Message',
+                        title: 'Could Not Update Profile',
                         text: 'Something went wrong!',
 
                     })
                 });
-        
+        })
+
     };
-    console.log(data)
 
 
     return (
@@ -95,93 +118,74 @@ export default function ContactUs({ onClick }) {
 
                 >
                     <div className={classes.paper}>
-                        <Avatar className={classes.avatar}>
-                            <LockOutlinedIcon color="success" />
-                            {/* <LockIcon color="success" /> */}
-                        </Avatar>
-                        <Typography component="h1" variant="h5">
-                            Contact Us
-                        </Typography>
                         {
                             error && <Alert variant="danger" onClose={() => setError(false)} dismissible>
                                 <p className="text-center" style={{ fontWeight: 'bold' }}>{data}</p>
                             </Alert>
                         }
-                        <form className={classes.form} onSubmit={sendMessage} >
-                            <Grid container spacing={2}>
-                            <Grid item xs={12}>
-                                    <TextField
-                                        variant="filled"
-                                        required
-                                        fullWidth
-                                        name="name"
-                                        label="Name"
-                                        value={name}
-                                        onChange={e => setName(e.target.value)}
-                                        type="text"
-                                        id="name"
-                                        autoComplete="current-name"
-                                        style={{ borderRadius: '20px' }}
-                                    />
-                                </Grid>
+                        <Avatar className={classes.avatar}>
+                            <LockOutlinedIcon color="success" />
 
+                        </Avatar>
+                        <Typography component="h1" variant="h5">
+                            Update Admin Profile
+                        </Typography>
+                        <form className={classes.form} >
+                            <Grid container spacing={2}>
                                 <Grid item xs={12}>
                                     <TextField
                                         variant="filled"
-                                        required
                                         fullWidth
-                                        id="email"
+                                        id="firstName"
                                         type="text"
-                                        value={email}
-                                        onChange={e => setEmail(e.target.value)}
-                                        label="Email Address"
-                                        name="email"
-                                        autoComplete="email"
+                                        value={firstName}
+                                        onChange={e => setFname(e.target.value)}
+                                        label="First Name"
+                                        name="firstName"
+                                        autoComplete="text"
                                         style={{ borderRadius: '20px' }}
                                     />
                                 </Grid>
-                                
-                                <Grid item xs={12} container justify="space-between">
+                                <Grid item xs={12}>
                                     <TextField
                                         variant="filled"
-                                        required
+                                        fullWidth
+                                        name="lastName"
+                                        label="Last Name"
+                                        value={lastName}
+                                        onChange={e => setLname(e.target.value)}
+                                        type="text"
+                                        id="lastName"
+                                        autoComplete="text"
+                                        style={{ borderRadius: '20px' }}
+                                    />
+                                </Grid>
+                                <Grid item xs={12}>
+                                    <TextField
+                                        variant="filled"
                                         fullWidth
                                         name="phone"
-                                        label="Phone Number"
+                                        label="Phone No (0300-XXXXXXX)"
                                         value={phone}
                                         onChange={e => setPhone(e.target.value)}
-                                        type="text"
+                                        type="number"
                                         id="phone"
-                                        autoComplete="phone"
+                                        autoComplete="phoneNumber"
                                         style={{ borderRadius: '20px' }}
                                     />
                                 </Grid>
 
-                                <Grid item xs={12}>
-                                    <TextField
-                                        variant="filled"
-                                        required
-                                        fullWidth
-                                        name="message"
-                                        label="Message"
-                                        value={message}
-                                        onChange={e => setMessage(e.target.value)}
-                                        type="text"
-                                        id="message"
-                                        style={{ borderRadius: '20px' }}
-                                    />
-                                </Grid>
                             </Grid>
-                            <Grid container justify="center">
+                            <Grid container justifyContent="center">
 
                                 <div className='d-grid gap-3 col-12 mx-auto my-3'>
 
-                                    <MDBBtn size='lg' style={{ backgroundColor: 'darkcyan' }} type="submit">Send Message</MDBBtn>
+                                    <MDBBtn size='lg' style={{ backgroundColor: 'darkcyan' }} onClick={updateProfile} >Update Profile</MDBBtn>
                                 </div>
                             </Grid>
                         </form>
                         <Grid item xs={12}>
-                            <Link to="/">Go Back</Link>
+                            <Link to="/dashboard">Go Back</Link>
                         </Grid>
                     </div>
                 </Box>

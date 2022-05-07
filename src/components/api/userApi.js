@@ -1,5 +1,5 @@
 import axios from "axios"
-import {api} from "./api"
+import { api } from "./api"
 
 
 export const getData = async () => {
@@ -13,7 +13,6 @@ export const getData = async () => {
 
 }
 
-
 export const addUser = async (obj) => {
     let adminToken = localStorage.getItem("admin")
     return await axios.post(`${api}admin/addUser`, obj,
@@ -26,10 +25,9 @@ export const addUser = async (obj) => {
 
 }
 
-
 export const deleteUser = async (e) => {
     let adminToken = localStorage.getItem("admin")
-    return await axios.put(`${api}admin/deleteUser/${e}`, {},{
+    return await axios.put(`${api}admin/deleteUser/${e}`, {}, {
         headers: {
             Authorization: `Bearer ${JSON.parse(adminToken)?.data?.[0]?.accessToken}`,
         }
@@ -40,7 +38,7 @@ export const deleteUser = async (e) => {
 
 export const suspendUser = async (e) => {
     let adminToken = localStorage.getItem("admin")
-    return await axios.put(`${api}admin/suspendUser/${e.PKUserId}`,{},
+    return await axios.put(`${api}admin/suspendUser/${e.PKUserId}`, {},
         {
             headers: {
                 'Authorization': `Bearer ${JSON.parse(adminToken)?.data?.[0]?.accessToken}`,
@@ -58,11 +56,9 @@ export const getUser = async (e) => {
         })
 }
 
-
-
 export const tempSuspendUser = async (e) => {
     let adminToken = localStorage.getItem("admin")
-    return await axios.put(`${api}admin/temporarySuspendUser/${e.PKUserId}`,{},
+    return await axios.put(`${api}admin/temporarySuspendUser/${e.PKUserId}`, {},
         {
             headers: {
                 Authorization: `Bearer ${JSON.parse(adminToken)?.data?.[0]?.accessToken}`,

@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { makeStyles, withStyles } from '@material-ui/core/styles';
 import Backdrop from '@material-ui/core/Backdrop';
 import Paper from '@material-ui/core/Paper';
@@ -9,9 +9,7 @@ import TableContainer from '@material-ui/core/TableContainer';
 import TableHead from '@material-ui/core/TableHead';
 import TablePagination from '@material-ui/core/TablePagination';
 import TableRow from '@material-ui/core/TableRow';
-// import Button from '@material-ui/core/Button';
 import Dialog from '@material-ui/core/Dialog';
-// import Typography from '@material-ui/core/Typography';
 import MuiDialogTitle from '@material-ui/core/DialogTitle';
 import MuiDialogContent from '@material-ui/core/DialogContent';
 import MuiDialogActions from '@material-ui/core/DialogActions';
@@ -20,24 +18,9 @@ import CloseIcon from '@material-ui/icons/Close';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import Grid from '@material-ui/core/Grid';
 import TextField from '@material-ui/core/TextField';
-import { Link, useHistory } from "react-router-dom";
-import CheckCircleIcon from '@mui/icons-material/CheckCircle';
-// import { isJwtExpired } from 'jwt-check-expiration';
-// import jwt from 'jsonwebtoken'
-// import Button from '@mui/material/Button';
-// import Button from '@mui/material/Button';
-// import { logout } from './dashboard';
-// import { UserContext } from '../userContext';
-// import Modal from './modal';
-// import Newmodal from './newmodal';
-// import Modall from './modal';
-// import { WebEdit } from './webeditor';
-import { isJwtExpired } from 'jwt-check-expiration';
-import jwt, { verify } from 'jsonwebtoken'
+import { useHistory } from "react-router-dom";
 import { useDispatch, useSelector } from 'react-redux';
-import axios, { Axios } from 'axios';
 import { MDBBtn } from 'mdb-react-ui-kit';
-
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
@@ -46,12 +29,11 @@ import AddIcon from '@mui/icons-material/Add';
 import Swal from 'sweetalert2';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
-// import IconButton from '@mui/material/IconButton';
 import Tooltip from '@mui/material/Tooltip';
 import Alert from 'react-bootstrap/Alert';
 import { apiHandle } from '../api/user/api'
 import { addPackage, getPackage, deletePackage, editPackage, getPackageById, sendOtp, verifySubscription, billGeneration } from '../api/user/userPackageApi';
-import { getSubscription, getSubscriptionByPkgId } from '../api/user/userSubscriptionApi'
+import { getSubscription } from '../api/user/userSubscriptionApi'
 
 const style = {
     position: 'absolute',
@@ -63,54 +45,10 @@ const style = {
     overflowY: 'auto',
     maxHeight: '500px',
     bgcolor: 'background.paper',
-    border: '2px solid darkcyan',
     boxShadow: 24,
     pb: 4,
     pl: 4
 };
-
-const columns = [
-    {
-        id: 'PKOrderID',
-        label: 'OrderID',
-        minWidth: 60,
-    },
-    // { id: 'FKCustomerID', label: 'FKCustomerID', minWidth: 100 },
-    // {
-    //   id: 'FKLabBranchID',
-    //   label: 'FKLabBranchID',
-    //   minWidth: 100,
-    // },
-    {
-        id: 'Notes',
-        label: 'Notes',
-        minWidth: 60,
-    },
-
-    {
-        id: 'Total',
-        label: 'Total',
-        minWidth: 60,
-    },
-
-    {
-        id: 'CreatedDateTime',
-        label: 'Created Date',
-        minWidth: 60
-    }, {
-        label: 'Description',
-        minWidth: 100
-    },
-    {
-        label: 'Action',
-        minWidth: 60
-    },
-    {
-        id: 'Status',
-        label: 'Status',
-        minWidth: 50,
-    }
-];
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -167,23 +105,11 @@ const DialogActions = withStyles((theme) => ({
 }))(MuiDialogActions);
 
 export default function UserPackage() {
-    // const [open, setOpen] = React.useState(false);
-    const handleOpen = () => setOpen(true);
-    // const handleClose = () => setOpen(false);
-    const dataFromRedux = useSelector((a) => a)
-    // const dispatch = useDispatch()
 
-    // const handleUpdate = () => {
-    //   const obj = {
-    //     name: 'ali',
-    //     age: 12,
-    //     apiData: [1, 2, 3, 4],
-    //   }
-    //   console.log(obj)
-    //   dispatch({ type: 'DATAFROMAPI', ...obj })
-    //   console.log(dataFromRedux)
-    // }
-    // console.log(dataFromRedux)
+    const handleOpen = () => setOpen(true);
+
+    const dataFromRedux = useSelector((a) => a)
+
     const [nodata, setNodata] = useState(false)
 
     const classes = useStyles();
@@ -205,8 +131,6 @@ export default function UserPackage() {
     const [open, setOpen] = React.useState(false);
     const [accessToken, setAccessToken] = React.useState('');
 
-
-    const [refreshToken, setRefreshTokn] = React.useState('');
     const history = useHistory();
     const handleClickOpen = () => {
         setOpen(true);
@@ -304,7 +228,6 @@ export default function UserPackage() {
         let adminToken = localStorage.getItem("admin")
         apiHandle(adminToken).then(() => {
             getSubscription().then((res) => {
-                // console.log(res?.data?.data?.[0]?.[(res?.data?.data?.[0]).length -1 ]?.PKSubscriptionId)
                 let subscriptionId = res?.data?.data?.[0]?.[(res?.data?.data?.[0]).length - 1]?.PKSubscriptionId;
                 let obj = {
                     "FKSubscriptionId": subscriptionId
@@ -441,8 +364,6 @@ export default function UserPackage() {
     const [openNew, setOpenNew] = React.useState(false);
     const [error, setError] = React.useState(false);
 
-    // const { setToken } = useContext(UserContext);
-    // here useeffect will be implemented
 
     const handleEditRow = (idEdit, row) => {
         let filteredRow = rows.filter(({ id }) => {
@@ -498,7 +419,6 @@ export default function UserPackage() {
             setData(dataFromRedux.packageData)
         }
     }, [])
-    // console.log(accessToken)
 
     const [packageName, setpackageName] = useState('')
     const [packageCost, setpackageCost] = useState('')
@@ -672,13 +592,12 @@ export default function UserPackage() {
                             Generate Bill For Subscription
                         </Typography>
                     </Box>
-                    {/* <form className={classes.form} noValidate> */}
                     <Grid container spacing={2} alignItems="center" justify="center">
                         <Grid item xs={12} align="center">
                             <MDBBtn size='medium' style={{ backgroundColor: 'darkcyan' }} onClick={() => generateBill()}>Generate Bill</MDBBtn>
                         </Grid>
                     </Grid>
-                    {/* </form> */}
+
 
 
                 </Box>
@@ -700,7 +619,6 @@ export default function UserPackage() {
                             Subscribe to this package
                         </Typography>
                     </Box>
-                    {/* <form className={classes.form} noValidate> */}
                     <Grid container spacing={2} alignItems="center" justify="center">
 
                         <Grid item xs={6}>
@@ -736,7 +654,6 @@ export default function UserPackage() {
                             <MDBBtn size='medium' style={{ backgroundColor: 'darkcyan' }} onClick={() => verifySubs()}>Verify Subscription</MDBBtn>
                         </Grid>
                     </Grid>
-                    {/* </form> */}
 
 
                 </Box>
@@ -931,9 +848,6 @@ export default function UserPackage() {
                     onPageChange={handleChangePage}
                     onRowsPerPageChange={handleChangeRowsPerPage}
                 />
-                {/* <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
-</div> */}
-                {/* <!-- Button trigger modal --> */}
 
             </Paper>
         </>
