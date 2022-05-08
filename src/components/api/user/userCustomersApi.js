@@ -43,3 +43,14 @@ export const deleteCustomer = async (e) => {
             }
         })
 }
+
+export const verifyPhoneNumber = async (params) =>{
+    let adminToken = localStorage.getItem("admin")
+    return await axios.post(`${api}user/verifyCustomerPhoneNumber`, params,
+        {
+            headers: {
+                Authorization: `Bearer ${JSON.parse(adminToken)?.data?.[0]?.accessToken}`,
+            }
+        }
+    )
+}

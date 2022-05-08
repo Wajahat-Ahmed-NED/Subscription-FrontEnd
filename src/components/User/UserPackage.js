@@ -246,7 +246,8 @@ export default function UserPackage() {
         let adminToken = localStorage.getItem("admin")
         apiHandle(adminToken).then(() => {
             getSubscription().then((res) => {
-                let subscriptionId = res?.data?.data?.[0]?.[(res?.data?.data?.[0]).length - 1]?.PKSubscriptionId;
+                console.log(res?.data?.data?.[0])
+                let subscriptionId = Math.max(...res?.data?.data?.[0].map(o => o.PKSubscriptionId));
                 let obj = {
                     "FKSubscriptionId": subscriptionId
                 }
@@ -259,6 +260,14 @@ export default function UserPackage() {
                         'Bill Generated Successfully',
                         'success',
                     )
+                    getSubscription().then(json => {
+                        dispatch({
+                            type: 'UPDATESUBSCRIPTIONDATA',
+                            subscriptionData: json?.data?.data[0],
+                            billingData: json?.data?.data[1][0]
+                        })
+    
+                    })
                 }).catch(err => {
                     console.log(err?.response)
                     Swal.fire(

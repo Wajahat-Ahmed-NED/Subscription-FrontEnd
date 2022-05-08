@@ -33,10 +33,28 @@ import Swal from 'sweetalert2';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
 import Tooltip from '@mui/material/Tooltip';
+import { MDBBtn } from 'mdb-react-ui-kit';
 import Alert from 'react-bootstrap/Alert';
 import { apiHandle } from "../api/user/api"
-import { addCustomer, editCustomer, deleteCustomer, getCustomerBySubscriptionId } from '../api/user/userCustomersApi';
+import { addCustomer, editCustomer, deleteCustomer, getCustomerBySubscriptionId, verifyPhoneNumber } from '../api/user/userCustomersApi';
 
+
+const style = {
+    position: 'absolute',
+    top: '50%',
+    left: '50%',
+    transform: 'translate(-50%, -50%)',
+    width: 450,
+    overflowX: 'hidden',
+    overflowY: 'auto',
+    maxHeight: '500px',
+    bgcolor: 'background.paper',
+    boxShadow: 24,
+    pb: 4,
+    pt: 2,
+    pl: 2,
+    pr: 2
+};
 const useStyles = makeStyles((theme) => ({
     root: {
         position: "relative",
@@ -106,11 +124,9 @@ export default function UserCustomer() {
     const [rowsPerPage, setRowsPerPage] = React.useState(10);
     const [open, setOpen] = React.useState(false);
     const [accessToken, setAccessToken] = React.useState('');
-    const [refreshToken, setRefreshTokn] = React.useState('');
-    const history = useHistory();
-    const handleClickOpen = () => {
-        setOpen(true);
-    };
+    const [phonemodalOpen, setPhoneModalOpen] = React.useState(false);
+    const handlePhoneModalOpen = () => setPhoneModalOpen(true);
+    const handlePhoneModalClose = () => setPhoneModalOpen(false);
     const handleClose = () => {
         setOpen(false);
         setEditModal(null)
@@ -128,7 +144,36 @@ export default function UserCustomer() {
     };
 
 
-
+    const verifyPhone = async () => {
+        if (!phone) {
+            setError(true)
+            setErrorMsg('Please Enter Phone Number')
+            return
+        }
+        if (phone.length != 11) {
+            setError(true)
+            setErrorMsg('Phone number must be 11 character long')
+            return
+        }
+        let obj = {
+            PhoneNumber: phone
+        }
+        let adminToken = localStorage.getItem("admin")
+        apiHandle(adminToken).then(() => {
+            verifyPhoneNumber(obj).then(function (response) {
+                // console.log(response)
+                setError(false)
+                setErrorMsg('')
+                handleOpen();
+                handlePhoneModalClose();
+            }).catch(err => {
+                // console.log(err?.response)
+                setError(true)
+                setErrorMsg(err?.response?.data?.message[0])
+                return
+            })
+        })
+    }
 
 
     const handleSubmit = async (e) => {
@@ -342,7 +387,7 @@ export default function UserCustomer() {
             setErrorMsg('Phone number must be 11 character long')
             return
         }
-        if (cnic.length != 13) {
+        if (String(cnic).length != 13) {
             setError(true)
             setErrorMsg('Cnic must be 13 character long')
             return
@@ -410,7 +455,7 @@ export default function UserCustomer() {
 
                         </Grid>
                         <Grid item xs={5} style={{ maxWidth: 'unset' }}>
-                            <Button className=" mb-3 ms-3 me-4" onClick={handleOpen} size='sm' style={{ backgroundColor: 'darkCyan', fontSize: "bolder", width: 'max-content' }} variant="contained">Create Customer <AddIcon /></Button>
+                            <Button className=" mb-3 ms-3 me-4" onClick={handlePhoneModalOpen} size='sm' style={{ backgroundColor: 'darkCyan', fontSize: "bolder", width: 'max-content' }} variant="contained">Create Customer <AddIcon /></Button>
 
                         </Grid>
                     </Grid>
@@ -420,7 +465,53 @@ export default function UserCustomer() {
 
 
             </div>
+            <Modal
+                open={phonemodalOpen}
+                aria-labelledby="modal-modal-title"
+                aria-describedby="modal-modal-description"
+            >
 
+                <Box sx={style}>
+                    {
+                        error && <Alert variant="danger" onClose={() => setError(false)} dismissible>
+                            <p className="text-center" style={{ fontWeight: 'bold' }}>{errorMsg}</p>
+                        </Alert>
+                    }
+                    <Box style={{ float: "right" }}>
+                        <Tooltip style={{ float: 'right', cursor: 'pointer' }} onClick={handlePhoneModalClose} title="Close">
+                            <IconButton><CloseIcon style={{ float: 'right', cursor: 'pointer' }} fontSize="medium" /></IconButton>
+                        </Tooltip>
+                    </Box>
+                    <Box style={{ width: "fit-content" }}>
+                        <Typography id="modal-modal-title" variant="h6" component="h3" align="center" sx={{ mb: 3 }}>
+                            Verify Phone Number
+                        </Typography>
+                    </Box>
+                    <Grid container spacing={2} alignItems="center" justify="center">
+
+                        <Grid item xs={6}>
+                            <TextField
+
+                                onChange={(e) => setPhone(e.target.value)}
+                                variant="standard"
+                                required
+                                fullWidth
+                                name="phone"
+                                label="Phone No"
+                                type="text"
+                                id="phone"
+                                value={phone}
+                            />
+                        </Grid>
+                        <Grid item xs={5}>
+                            <MDBBtn size='medium' style={{ backgroundColor: 'darkcyan' }} onClick={() => verifyPhone()} >Verify Phone</MDBBtn>
+                        </Grid>
+                    </Grid>
+
+
+
+                </Box>
+            </Modal>
 
             <Paper className={classes.root} style={{ maxWidth: '1100px' }} >
                 <Backdrop className={classes.backdrop} open={openNew}>
@@ -430,14 +521,14 @@ export default function UserCustomer() {
                     <Dialog className="px-5" aria-labelledby="customized-dialog-title" open={open}>
 
                         <DialogTitle id="customized-dialog-title" className="mx-3" onClose={handleClose}>
-                            
+
                             {!EditModal ? 'Create Customer' : 'Edit Customer Details'}
                         </DialogTitle>
                         {
-                                error && <Alert variant="danger" onClose={() => setError(false)} dismissible>
-                                    <p className="text-center" style={{ fontWeight: 'bold' }}>{errorMsg}</p>
-                                </Alert>
-                            }
+                            error && <Alert variant="danger" onClose={() => setError(false)} dismissible>
+                                <p className="text-center" style={{ fontWeight: 'bold' }}>{errorMsg}</p>
+                            </Alert>
+                        }
                         <DialogContent dividers className='mx-3'>
 
 
