@@ -133,14 +133,19 @@ export default function UserCustomer() {
 
     const handleSubmit = async (e) => {
         if (!fname || !lname || !email || !phone || !cnic || !address || !country || !city || !area) {
-            setOpen(false);
-            return Swal.fire(
-                'Incomplete Details',
-                'Please Enter All Details',
-                'error'
-            ).then(() => {
-                setOpen(true)
-            })
+            setError(true)
+            setErrorMsg('Please Enter All Details')
+            return
+        }
+        if (phone.length != 11) {
+            setError(true)
+            setErrorMsg('Phone number must be 11 character long')
+            return
+        }
+        if (cnic.length != 13) {
+            setError(true)
+            setErrorMsg('Cnic must be 13 character long')
+            return
         }
         let obj = {
             FirstName: fname,
@@ -157,23 +162,25 @@ export default function UserCustomer() {
         apiHandle(adminToken).then(() => {
             addCustomer(obj).then(function (response) {
                 setOpen(false);
+                setError(false)
+
                 Swal.fire(
                     'Success',
                     'Customer Created Successfully',
                     'success',
                 )
             }).catch(err => {
-                setOpen(false);
+                // setOpen(false);
                 setError(true)
                 setErrorMsg(err?.response?.data?.message[0])
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Could  not create customer',
-                    text: 'Something went wrong!',
+                // Swal.fire({
+                //     icon: 'error',
+                //     title: 'Could  not create customer',
+                //     text: 'Something went wrong!',
 
-                }).then((e) => {
-                    setOpen(true);
-                })
+                // }).then((e) => {
+                //     setOpen(true);
+                // })
             })
         })
 
@@ -210,6 +217,7 @@ export default function UserCustomer() {
                 else {
                     setNodata(false)
                     setData(json.data.data)
+                    setNo(subsId)
                 }
             })
                 .catch(err => {
@@ -252,12 +260,10 @@ export default function UserCustomer() {
 
 
     const handleEdit = async (e) => {
-
-
         setEditModal(e)
         let adminToken = localStorage.getItem('admin')
         apiHandle(adminToken).then(() => {
-            getCustomerBySubscriptionId(subsId).then(json => {
+            getCustomerBySubscriptionId(no).then(json => {
                 setFname(json.data.data[0].FirstName)
                 setLname(json.data.data[0].LastName)
                 setEmail(json.data.data[0].Email)
@@ -291,6 +297,7 @@ export default function UserCustomer() {
                 let adminToken = localStorage.getItem("admin")
                 apiHandle(adminToken).then(() => {
                     deleteCustomer(e).then(function (response) {
+                        setError(false)
 
                         Swal.fire(
                             'Success',
@@ -325,6 +332,21 @@ export default function UserCustomer() {
     }
 
     const handleEditSubmit = async () => {
+        if (!fname || !lname || !email || !phone || !cnic || !address || !country || !city || !area) {
+            setError(true)
+            setErrorMsg('Please Enter All Details')
+            return
+        }
+        if (phone.length != 11) {
+            setError(true)
+            setErrorMsg('Phone number must be 11 character long')
+            return
+        }
+        if (cnic.length != 13) {
+            setError(true)
+            setErrorMsg('Cnic must be 13 character long')
+            return
+        }
         let obj = {
             FirstName: fname,
             LastName: lname,
@@ -347,26 +369,29 @@ export default function UserCustomer() {
                 setLname('')
                 setEmail('')
                 setPhone('')
+                setError(false)
+
                 Swal.fire(
                     'Success',
                     'Customer Edited Successfully',
                     'success',
                 )
+                // setSubsId(id)
                 getData();
             }).catch(err => {
-                setOpen(false);
+                // setOpen(false);
                 setError(true)
                 setErrorMsg(err?.response?.data?.message[0])
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Could Not Edit Customer',
-                    text: 'Wrong Credentials or Something went wrong!',
+                // Swal.fire({
+                //     icon: 'error',
+                //     title: 'Could Not Edit Customer',
+                //     text: 'Wrong Credentials or Something went wrong!',
 
-                }).then((e) => {
+                // }).then((e) => {
 
-                    setOpen(true);
+                //     setOpen(true);
 
-                })
+                // })
             })
         })
     }
@@ -403,16 +428,19 @@ export default function UserCustomer() {
                 </Backdrop>
                 <div >
                     <Dialog className="px-5" aria-labelledby="customized-dialog-title" open={open}>
+
                         <DialogTitle id="customized-dialog-title" className="mx-3" onClose={handleClose}>
+                            
                             {!EditModal ? 'Create Customer' : 'Edit Customer Details'}
                         </DialogTitle>
-                        <DialogContent dividers className='mx-3'>
-
-                            {
+                        {
                                 error && <Alert variant="danger" onClose={() => setError(false)} dismissible>
                                     <p className="text-center" style={{ fontWeight: 'bold' }}>{errorMsg}</p>
                                 </Alert>
                             }
+                        <DialogContent dividers className='mx-3'>
+
+
                             <form className={classes.form} noValidate>
                                 <Grid container spacing={2}>
 

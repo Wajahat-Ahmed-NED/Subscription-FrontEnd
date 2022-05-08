@@ -73,12 +73,3 @@ export const verifySubscription = async (params) =>{
     })
 }
 
-export const billGeneration = async (params) =>{
-    let adminToken = localStorage.getItem("admin")
-    return await axios.post(`${api}user/generateBill`, params ,
-    {
-        headers: {
-            'Authorization': `Bearer ${JSON.parse(adminToken)?.data?.[0]?.accessToken}`,
-        }
-    })
-}

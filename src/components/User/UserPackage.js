@@ -32,7 +32,8 @@ import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
 import Tooltip from '@mui/material/Tooltip';
 import Alert from 'react-bootstrap/Alert';
 import { apiHandle } from '../api/user/api'
-import { addPackage, getPackage, deletePackage, editPackage, getPackageById, sendOtp, verifySubscription, billGeneration } from '../api/user/userPackageApi';
+import { addPackage, getPackage, deletePackage, editPackage, getPackageById, sendOtp, verifySubscription } from '../api/user/userPackageApi';
+import { billGeneration } from '../api/user/userBillingApi';
 import { getSubscription } from '../api/user/userSubscriptionApi'
 
 const style = {
@@ -47,7 +48,9 @@ const style = {
     bgcolor: 'background.paper',
     boxShadow: 24,
     pb: 4,
-    pl: 4
+    pt: 2,
+    pl: 2,
+    pr: 2
 };
 
 const useStyles = makeStyles((theme) => ({
@@ -171,16 +174,23 @@ export default function UserPackage() {
 
     const getOtp = async () => {
         if (!phone) {
-            setSubModalOpen(false)
+            // setSubModalOpen(false)
+            setError(true)
+            setErrorMsg('Please Enter Phone Number')
+            return
+            // return Swal.fire(
+            //     'Incomplete Details',
+            //     'Please Enter Phone Number',
+            //     'error'
+            // ).then(() => {
+            //     setSubModalOpen(true)
 
-            return Swal.fire(
-                'Incomplete Details',
-                'Please Enter Phone Number',
-                'error'
-            ).then(() => {
-                setSubModalOpen(true)
-
-            })
+            // })
+        }
+        if (phone.length !== 11) {
+            setError(true)
+            setErrorMsg('Phone number must be 11 character long')
+            return
         }
         const obj = {
             "PhoneNumber": phone,
@@ -191,6 +201,7 @@ export default function UserPackage() {
             sendOtp(obj).then((res) => {
                 setSubModalOpen(false)
                 setDisplayStyle("block")
+                setError(false)
                 Swal.fire(
                     'Success',
                     'Otp sent Successfully',
@@ -199,25 +210,32 @@ export default function UserPackage() {
                     setSubModalOpen(true)
                 })
             }).catch(err => {
-                setSubModalOpen(false)
+                // setSubModalOpen(false)
                 setDisplayStyle("none")
                 console.log(err?.response)
                 if (err?.response?.data?.message?.[0] === "Subscription already exists") {
-                    Swal.fire(
-                        'Already Subscribed',
-                        'Subscription Already Exists',
-                        'error',
-                    )
+                    // Swal.fire(
+                    //     'Already Subscribed',
+                    //     'Subscription Already Exists',
+                    //     'error',
+                    // )
+                    setError(true)
+                    setErrorMsg('Subscription Already Exists')
+                    return
                 }
                 else {
-                    Swal.fire(
-                        'Cannot Send Otp',
-                        'Invalid Phone Number or Something Went Wrong',
-                        'error',
-                    ).then(() => {
-                        setSubModalOpen(true)
-                    })
+                    setError(true)
+                    setErrorMsg('Invalid Phone Number')
+                    return
                 }
+                //     Swal.fire(
+                //         'Cannot Send Otp',
+                //         'Invalid Phone Number or Something Went Wrong',
+                //         'error',
+                //     ).then(() => {
+                //         setSubModalOpen(true)
+                //     })
+                // }
 
                 // setSubModalOpen(true)
             })
@@ -235,6 +253,7 @@ export default function UserPackage() {
                 billGeneration(obj).then((res) => {
                     console.log(res)
                     setBillModalOpen(false)
+                    setError(false)
                     Swal.fire(
                         'Success',
                         'Bill Generated Successfully',
@@ -267,6 +286,7 @@ export default function UserPackage() {
             verifySubscription(obj).then((res) => {
                 setSubModalOpen(false)
                 setDisplayStyle("none")
+                setError(false)
                 Swal.fire(
                     'Success',
                     'Subscribed Successfully',
@@ -277,22 +297,10 @@ export default function UserPackage() {
                 })
 
                 getSubscription().then(json => {
-                    // console.log(json?.data?.data?.length)
-                    // if (json?.data?.data?.length === 0) {
-
-                    //     dispatch({
-                    //         type: 'UPDATESUBSCRIPTIONDATA',
-                    //         subscriptionData: json.data.data?.[0],
-                    //         billingData: json.data.data?.[1]
-                    //     })
-                    // }
-
-
-
                     dispatch({
                         type: 'UPDATESUBSCRIPTIONDATA',
-                        subscriptionData: json?.data?.data?.[0],
-                        billingData: json?.data?.data?.[1],
+                        subscriptionData: json?.data?.data[0],
+                        billingData: json?.data?.data[1][0]
                     })
 
                 })
@@ -316,14 +324,22 @@ export default function UserPackage() {
     const handleSubmit = async (e) => {
         e.preventDefault()
         if (!packageName || !packageCost || !period) {
-            setOpen(false);
-            return Swal.fire(
-                'Incomplete Details',
-                'Please Enter All Details',
-                'error'
-            ).then(() => {
-                setOpen(true)
-            })
+            // setOpen(false);
+            setError(true);
+            setErrorMsg('Please Enter All Details');
+            return
+            // return Swal.fire(
+            //     'Incomplete Details',
+            //     'Please Enter All Details',
+            //     'error'
+            // ).then(() => {
+            //     setOpen(true)
+            // })
+        }
+        if (! /^[a-zA-Z]+$/.test(packageName)) {
+            setError(true);
+            setErrorMsg('Package name can only contains letter');
+            return
         }
         let obj = {
             PackageName: packageName,
@@ -345,17 +361,17 @@ export default function UserPackage() {
                 // setOpen(false);
                 getData();
             }).catch(err => {
-                setOpen(false);
+                // setOpen(false);
                 setError(true)
                 setErrorMsg(err?.response?.data?.message[0])
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Could Not Create Package',
-                    text: 'Something went wrong!',
+                // Swal.fire({
+                //     icon: 'error',
+                //     title: 'Could Not Create Package',
+                //     text: 'Something went wrong!',
 
-                }).then((e) => {
-                    setOpen(true);
-                })
+                // }).then((e) => {
+                //     setOpen(true);
+                // })
             })
         })
 
@@ -411,7 +427,7 @@ export default function UserPackage() {
 
         var adminToken = localStorage.getItem("admin")
         adminToken && setAccessToken(JSON.parse(adminToken)?.data?.data?.[0]?.accessToken)
-        if (dataFromRedux.packageData.length === 0) {
+        if (dataFromRedux?.packageData?.length === 0) {
             setNodata(true)
         }
         else {
@@ -420,6 +436,15 @@ export default function UserPackage() {
         }
     }, [])
 
+    useEffect(() => {
+        if (dataFromRedux?.packageData?.length === 0) {
+            setNodata(true)
+        }
+        else {
+            setNodata(false)
+            setData(dataFromRedux.packageData)
+        }
+    }, [dataFromRedux?.packageData?.length])
     const [packageName, setpackageName] = useState('')
     const [packageCost, setpackageCost] = useState('')
     const [period, setperiod] = useState('')
@@ -474,6 +499,7 @@ export default function UserPackage() {
                 apiHandle(adminToken).then(() => {
                     console.log(e)
                     deletePackage(e).then(function (response) {
+                        setError(false)
 
                         Swal.fire(
                             'Success',
@@ -509,14 +535,22 @@ export default function UserPackage() {
     }
     const handleEditSubmit = async (e) => {
         if (!packageName || !packageCost || !period) {
-            setOpen(false);
-            return Swal.fire(
-                'Incomplete Details',
-                'Please Enter All Details',
-                'error'
-            ).then(() => {
-                setOpen(true)
-            })
+            // setOpen(false);
+            setError(true);
+            setErrorMsg('Please Enter All Details');
+            return
+            // return Swal.fire(
+            //     'Incomplete Details',
+            //     'Please Enter All Details',
+            //     'error'
+            // ).then(() => {
+            //     setOpen(true)
+            // })
+        }
+        if (! /^[a-zA-Z]+$/.test(packageName)) {
+            setError(true);
+            setErrorMsg('Package name can only contains letter');
+            return
         }
         let obj = {
             SubscriptionPeriod: period,
@@ -535,6 +569,8 @@ export default function UserPackage() {
                 setpackageCost('')
                 setperiod('')
                 setPhone('')
+                setError(false)
+
                 Swal.fire(
                     'Success',
                     'Package Edited Successfully',
@@ -544,20 +580,21 @@ export default function UserPackage() {
                 })
                 getData();
             }).catch(err => {
-                setOpen(false);
+                // setOpen(false);
                 setError(true)
                 setErrorMsg(err?.response?.data?.message?.[0])
-                console.log(err?.response)
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Could Not Edit Package',
-                    text: 'Something went wrong!',
+                return
+                // console.log(err?.response)
+                // Swal.fire({
+                //     icon: 'error',
+                //     title: 'Could Not Edit Package',
+                //     text: 'Something went wrong!',
 
-                }).then((e) => {
+                // }).then((e) => {
 
-                    setOpen(true);
+                //     setOpen(true);
 
-                })
+                // })
             })
         })
 
@@ -582,7 +619,7 @@ export default function UserPackage() {
             >
 
                 <Box sx={style}>
-                    <Box style={{ width: "100%", float: "right" }}>
+                    <Box style={{ float: "right" }}>
                         <Tooltip style={{ float: 'right', cursor: 'pointer' }} onClick={handleBillModalClose} title="Close">
                             <IconButton><CloseIcon style={{ float: 'right', cursor: 'pointer' }} fontSize="medium" /></IconButton>
                         </Tooltip>
@@ -609,16 +646,26 @@ export default function UserPackage() {
             >
 
                 <Box sx={style}>
-                    <Box style={{ width: "100%", float: "right" }}>
+                    {
+                        error && <Alert variant="danger" onClose={() => setError(false)} dismissible>
+                            <p className="text-center" style={{ fontWeight: 'bold' }}>{errorMsg}</p>
+                        </Alert>
+                    }
+                    <Box style={{ float: "right" }}>
+
                         <Tooltip style={{ float: 'right', cursor: 'pointer' }} onClick={handleSubModalClose} title="Close">
                             <IconButton><CloseIcon style={{ float: 'right', cursor: 'pointer' }} fontSize="medium" /></IconButton>
                         </Tooltip>
+
                     </Box>
+
                     <Box style={{ width: "fit-content" }}>
+
                         <Typography id="modal-modal-title" variant="h6" component="h3" align="center" sx={{ mb: 3 }}>
                             Subscribe to this package
                         </Typography>
                     </Box>
+
                     <Grid container spacing={2} alignItems="center" justify="center">
 
                         <Grid item xs={6}>

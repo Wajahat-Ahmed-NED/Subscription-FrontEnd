@@ -18,6 +18,7 @@ import UserChangePassword from "../components/User/UserChangePassword";
 import UpdateProfile from "../components/admin/updateProfile";
 import ContactUs from "../components/admin/ContactUs";
 import NotFound404 from "../components/admin/404";
+import customer from '../components/User/customer'
 
 export default function AppRouter() {
     return (
@@ -32,7 +33,15 @@ export default function AppRouter() {
                     <Route exact path="/userUpdateProfile" component={UserUpdateProfile} />
                     <Route exact path="/updateProfile" component={UpdateProfile} />
                     <Route path="/dashboard" component={Dashboard} />
+                    <Route exact path='/dashboard/user' component={Dashboard}></Route>
+                    <Route exact path='/dashboard/package' component={Dashboard}></Route>
+                    <Route exact path='/dashboard/subscription' component={Dashboard}></Route>
+                    <Route exact path='/dashboard/customer' component={Dashboard}></Route>
                     <Route path="/userDashboard" component={UserDashboard} />
+                    <Route exact path="/customer" component={UserDashboard} />
+                    <Route path='/package' component={UserDashboard}></Route>
+                    <Route path='/subscription' component={UserDashboard}></Route>
+                    <Route path='/billing' component={UserDashboard}></Route>
                     <Route path="*" component={NotFound404} />
 
                 </Switch>

@@ -66,18 +66,31 @@ export default function ChangePassword({ onClick }) {
     async function logginIn(e) {
         e.preventDefault()
         if (!email || !password || !newpassword || !retypepassword) {
-            return Swal.fire(
-                'Incomplete Details',
-                'Please Enter All Details',
-                'error'
-            )
+            // return Swal.fire(
+            //     'Incomplete Details',
+            //     'Please Enter All Details',
+            //     'error'
+            // )
+            setError(true)
+            setData('Please Enter All Details')
+            return
+        }
+        if(newpassword.length <= 8)
+        {
+            setError(true)
+            setData('Password must be greater than 8')
+            return
+        }
+        if(password.length <= 8)
+        {
+            setError(true)
+            setData('Password must be greater than 8')
+            return
         }
         if (newpassword !== retypepassword) {
-            return Swal.fire(
-                'Password Mismatch',
-                'New Password and Retype Password Should Match',
-                'error'
-            )
+            setError(true)
+            setData('New Password and Retype Password Should Match')
+            return
         }
         const params = {
             'PKAdminId': email,
@@ -101,6 +114,7 @@ export default function ChangePassword({ onClick }) {
                     }
                 })
                 .then(async function (response) {
+                    setError(false)
 
                     Swal.fire(
                         'Success',
@@ -114,14 +128,14 @@ export default function ChangePassword({ onClick }) {
                 .catch(function (error) {
 
                     setError(true)
-                    console.log(error?.response?.data?.message?.[0])
+                    // console.log(error?.response?.data?.message?.[0])
                     setData(error?.response?.data?.message?.[0])
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Could Not Change Passowrd',
-                        text: 'Something went wrong!',
+                    // Swal.fire({
+                    //     icon: 'error',
+                    //     title: 'Could Not Change Passowrd',
+                    //     text: 'Something went wrong!',
 
-                    })
+                    // })
                 });
         }
     };

@@ -76,18 +76,31 @@ export default function UserChangePassword({ onClick }) {
     async function changePassword(e) {
         e.preventDefault()
         if (!email || !password || !newpassword || !retypepassword) {
-            return Swal.fire(
-                'Incomplete Details',
-                'Please Enter All Details',
-                'error'
-            )
+            // return Swal.fire(
+            //     'Incomplete Details',
+            //     'Please Enter All Details',
+            //     'error'
+            // )
+            setError(true)
+            setData('Please Enter All Details')
+            return
+        }
+        if(newpassword.length <= 8)
+        {
+            setError(true)
+            setData('Password must be greater than 8')
+            return
+        }
+        if(password.length <= 8)
+        {
+            setError(true)
+            setData('Password must be greater than 8')
+            return
         }
         if (newpassword !== retypepassword) {
-            return Swal.fire(
-                'Password Mismatch',
-                'New Password and Retype Password Should Match',
-                'error'
-            )
+            setError(true)
+            setData('New Password and Retype Password Should Match')
+            return
         }
         const params = {
             'PKUserId': email,
@@ -111,12 +124,12 @@ export default function UserChangePassword({ onClick }) {
                 .catch(function (error) {
                     setError(true)
                     setData(error?.response?.data?.message[0])
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Could Not Change Password',
-                        text: 'Something went wrong!',
+                    // Swal.fire({
+                    //     icon: 'error',
+                    //     title: 'Could Not Change Password',
+                    //     text: 'Something went wrong!',
 
-                    })
+                    // })
                 });
         })
 

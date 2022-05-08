@@ -51,7 +51,12 @@ export default function ContactUs({ onClick }) {
 
     async function sendMessage(e) {
         e.preventDefault()
-
+        if (phone.length !== 11)
+        {
+            setError(true)
+            setData('Phone Number must be 11 character long')
+            return
+        }
         const params = {
             'Email': email,
             'Name': name,
@@ -71,12 +76,12 @@ export default function ContactUs({ onClick }) {
             .catch(function (error) {
                 setError(true)
                 setData(error?.response?.data?.message)
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Could Not Send Message',
-                    text: 'Something went wrong!',
+                // Swal.fire({
+                //     icon: 'error',
+                //     title: 'Could Not Send Message',
+                //     text: 'Something went wrong!',
 
-                })
+                // })
             });
 
     };
@@ -95,18 +100,20 @@ export default function ContactUs({ onClick }) {
 
                 >
                     <div className={classes.paper}>
-                        <Avatar className={classes.avatar}>
-                            <LockOutlinedIcon color="success" />
-
-                        </Avatar>
-                        <Typography component="h1" variant="h5">
-                            Contact Us
-                        </Typography>
-                        {
+                    {
                             error && <Alert variant="danger" onClose={() => setError(false)} dismissible>
                                 <p className="text-center" style={{ fontWeight: 'bold' }}>{data}</p>
                             </Alert>
                         }
+                        <Avatar className={classes.avatar}>
+                            <LockOutlinedIcon color="success" />
+
+                        </Avatar>
+                        
+                        <Typography component="h1" variant="h5">
+                            Contact Us
+                        </Typography>
+                        
                         <form className={classes.form} onSubmit={sendMessage} >
                             <Grid container spacing={2}>
                                 <Grid item xs={12}>

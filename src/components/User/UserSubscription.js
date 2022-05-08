@@ -31,7 +31,7 @@ import Alert from 'react-bootstrap/Alert';
 
 import { apiHandle } from '../api/api';
 import { billUpdation, getSubscription, getSubscriptionByPkgId, updateSubscription } from '../api/user/userSubscriptionApi';
-
+import { billGeneration } from '../api/user/userBillingApi';
 
 const style = {
     position: 'absolute',
@@ -128,7 +128,6 @@ export default function UserSubscription() {
         setCustomerId('')
     };
 
-
     const handleSubmit = async (e) => {
         e.preventDefault()
     }
@@ -155,24 +154,22 @@ export default function UserSubscription() {
         let adminToken = localStorage.getItem('admin')
         apiHandle(adminToken).then(() => {
             getSubscription().then(json => {
-                console.log(json?.data?.data?.length)
                 if (json?.data?.data?.length === 0) {
                     setNodata(true)
                     dispatch({
                         type: 'UPDATESUBSCRIPTIONDATA',
                         subscriptionData: json.data.data?.[0],
-                        billingData: json.data.data?.[1]
+                        billingData: json.data.data?.[1][0]
                     })
                 }
                 else {
                     setNodata(false)
                     setData(json?.data?.data?.[0])
-                    setBillData(json?.data?.data?.[1])
-                    console.log(json.data.data[1])
+                    setBillData(json?.data?.data?.[1][0])
                     dispatch({
                         type: 'UPDATESUBSCRIPTIONDATA',
                         subscriptionData: json.data.data?.[0],
-                        billingData: json.data.data?.[1],
+                        billingData: json.data.data?.[1][0],
                     })
                 }
 
@@ -187,7 +184,6 @@ export default function UserSubscription() {
         let adminToken = localStorage.getItem('admin')
         apiHandle(adminToken).then(() => {
             getSubscriptionByPkgId(pkgId).then(json => {
-                console.log(json.data.message[0])
                 if (json.data.message[0] == "No subscriptions of current package id found" || json?.data?.data?.length === 0) {
                     setNodata(true)
 
@@ -219,7 +215,7 @@ export default function UserSubscription() {
 
         var adminToken = localStorage.getItem("admin")
         adminToken && setAccessToken(JSON.parse(adminToken)?.data?.data?.[0]?.accessToken)
-        if (dataFromRedux.subscriptionData.length === 0) {
+        if (dataFromRedux?.subscriptionData?.length === 0) {
             setNodata(true)
         }
         else {
@@ -228,6 +224,17 @@ export default function UserSubscription() {
             setBillData(dataFromRedux.billingData)
         }
     }, [])
+
+    useEffect(()=>{
+        if (dataFromRedux?.subscriptionData?.length === 0) {
+            setNodata(true)
+        }
+        else {
+            setNodata(false)
+            setData(dataFromRedux.subscriptionData)
+            setBillData(dataFromRedux.billingData)
+        }
+    },[dataFromRedux?.subscriptionData?.length])
     const [errorMsg, setErrorMsg] = useState('')
 
     const [PackageId, setPackageId] = useState('')
@@ -255,6 +262,34 @@ export default function UserSubscription() {
         setSubModalOpen(true);
     }
 
+    const generateBill = async (e) => {
+
+        let adminToken = localStorage.getItem("admin")
+        apiHandle(adminToken).then(() => {
+            let obj = {
+                "FKSubscriptionId": e?.PKSubscriptionId
+            }
+            billGeneration(obj).then((res) => {
+                setError(false)
+
+                Swal.fire(
+                    'Success',
+                    'Bill Generated Successfully',
+                    'success',
+                )
+        getData();
+
+            }).catch(err => {
+                console.log(err?.response)
+                Swal.fire(
+                    'Bill Not Generated',
+                    'Invalid credentials or something went wrong',
+                    'success',
+                )
+            })
+        })
+    }
+
     const handleUpdateBill = async () => {
         if (!amount) {
             handleSubModalClose()
@@ -276,6 +311,8 @@ export default function UserSubscription() {
                 setAmount(0)
                 handleSubModalClose()
                 if (res?.data?.message) {
+                setError(false)
+
                     Swal.fire(
                         'Already Paid',
                         res?.data?.message?.[0],
@@ -306,14 +343,17 @@ export default function UserSubscription() {
 
     const handleEditSubmit = async (e) => {
         if (!PackageId) {
-            setOpen(false);
-            return Swal.fire(
-                'Incomplete Details',
-                'Please Enter Package Id',
-                'error'
-            ).then(() => {
-                setOpen(true)
-            })
+            setError(true)
+            setErrorMsg('Please Enter Package Id')
+            return
+            // setOpen(false);
+            // return Swal.fire(
+            //     'Incomplete Details',
+            //     'Please Enter Package Id',
+            //     'error'
+            // ).then(() => {
+            //     setOpen(true)
+            // })
         }
         let obj = {
             FKPackageId: PackageId,
@@ -328,6 +368,8 @@ export default function UserSubscription() {
                 setEditModal(null)
                 setPackageId('')
                 setCustomerId('')
+                setError(false)
+
                 Swal.fire(
                     'Success',
                     'Subscription Edited Successfully',
@@ -335,24 +377,23 @@ export default function UserSubscription() {
                 )
                 getData();
             }).catch(err => {
-                setOpen(false);
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Could Not Edit Subscription',
-                    text: err?.response?.data?.message[0],
+                setError(true)
+                setErrorMsg(err?.response?.data?.message[0])
+                return
+                // setOpen(false);
+                // Swal.fire({
+                //     icon: 'error',
+                //     title: 'Could Not Edit Subscription',
+                //     text: err?.response?.data?.message[0],
 
-                }).then((e) => {
+                // }).then((e) => {
 
-                    setOpen(true);
+                //     setOpen(true);
 
-                })
+                // })
             })
 
         })
-
-
-
-
     }
     return (
         <>
@@ -484,8 +525,8 @@ export default function UserSubscription() {
                             <TableRow>
 
                                 <TableCell align="center" style={{ backgroundColor: 'darkcyan', color: 'white', fontSize: '20px' }}>PKSubscriptionID</TableCell>
-                                <TableCell align="center" style={{ backgroundColor: 'darkcyan', color: 'white', fontSize: '20px' }}>FKCustomerID</TableCell>
-                                <TableCell align="center" style={{ backgroundColor: 'darkcyan', color: 'white', fontSize: '20px' }}>FKPackageID</TableCell>
+                                <TableCell align="center" style={{ backgroundColor: 'darkcyan', color: 'white', fontSize: '20px' }}>Customer</TableCell>
+                                <TableCell align="center" style={{ backgroundColor: 'darkcyan', color: 'white', fontSize: '20px' }}>Package</TableCell>
                                 <TableCell align="center" style={{ backgroundColor: 'darkcyan', color: 'white', fontSize: '20px' }}>Status</TableCell>
                                 <TableCell align="center" colSpan={2} style={{ backgroundColor: 'darkcyan', color: 'white', fontSize: '20px' }}>Action</TableCell>
 
@@ -506,16 +547,17 @@ export default function UserSubscription() {
                                             <>
                                                 <TableRow hover={true}>
                                                     <TableCell>{e?.PKSubscriptionId}</TableCell>
-                                                    <TableCell>{e?.FKCustomerId}</TableCell>
-                                                    <TableCell>{e?.FKPackageId}</TableCell>
-                                                    <TableCell>{billdata[i]?.PaymentStatus === '' ? "not_paid" : billdata[i]?.PaymentStatus}</TableCell>
+                                                    <TableCell>{e?.customer.FirstName +" " + e?.customer.LastName}</TableCell>
+                                                    <TableCell>{e?.package.PackageName}</TableCell>
+                                                    <TableCell>{(billdata.filter((f)=>{return f.FKSubscriptionId === e?.PKSubscriptionId}))[0]?.PaymentStatus}</TableCell>
                                                     <TableCell style={{ textAlign: 'left' }}>
                                                         <Tooltip title="Edit" onClick={() => handleEdit(e)}>
                                                             <IconButton><EditIcon color="success" fontSize="medium" />
                                                             </IconButton></Tooltip>
                                                     </TableCell>
                                                     <TableCell>
-                                                        <Button variant="outlined" onClick={() => updateBill(e)}>Update Bill</Button>
+                                                        {(billdata.filter((f)=>{return f.FKSubscriptionId === e?.PKSubscriptionId})).length > 0 ?<Typography style={{ width: 'max-content', color:"green" }}>Bill Generated </Typography>: <Button variant="outlined" onClick={() => generateBill(e)}>Generate Bill</Button>  }
+                                                        {/* <Button variant="outlined" onClick={() => updateBill(e)}>Update Bill</Button> */}
                                                     </TableCell>
                                                 </TableRow>
 

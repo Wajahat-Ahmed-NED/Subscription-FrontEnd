@@ -169,7 +169,7 @@ export default function ContactPage() {
         let adminToken = localStorage.getItem("admin")
         !adminToken && history.push("/")
 
-        if (dataFromRedux.packageData.length === 0) {
+        if (dataFromRedux?.packageData?.length === 0) {
             setNodata(true)
         }
         else {
@@ -178,6 +178,15 @@ export default function ContactPage() {
         }
     }, [])
 
+    useEffect(()=>{
+        if (dataFromRedux?.packageData?.length === 0) {
+            setNodata(true)
+        }
+        else {
+            setNodata(false)
+            setData(dataFromRedux.packageData)
+        }
+    },[dataFromRedux?.packageData?.length])
     const [fname, setFname] = useState('')
     const [lname, setLname] = useState('')
     const [email, setEmail] = useState('')

@@ -54,7 +54,12 @@ export default function Login() {
 
   async function logginIn(e) {
     e.preventDefault()
-
+    if(!email || !password)
+    {
+      setError(true)
+      setData('Fill All details')
+      return 
+    }
     const params = {
       'Username': email,
       'Password': password,
@@ -64,7 +69,6 @@ export default function Login() {
         .then(async function (response) {
           if (!response.data.success) {
             setError(true)
-            console.log(response.data)
             setData(response.data.message[0])
             return
           }
@@ -108,11 +112,13 @@ export default function Login() {
           setError(true)
         });
     } else {
-      Swal.fire(
-        'Fill All details',
-        'Cannot Login',
-        'error',
-      )
+      setError(true)
+      setData('Fill All details')
+      // Swal.fire(
+      //   'Fill All details',
+      //   'Cannot Login',
+      //   'error',
+      // )
     }
   };
 

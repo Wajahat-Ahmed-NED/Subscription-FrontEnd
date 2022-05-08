@@ -206,7 +206,7 @@ export default function ContactPage() {
         let adminToken = localStorage.getItem("admin")
         !adminToken && history.push("/")
 
-        if (dataFromRedux.customerData.length === 0) {
+        if (dataFromRedux?.customerData?.length === 0) {
             setNodata(true)
         }
         else {
@@ -215,6 +215,15 @@ export default function ContactPage() {
         }
     }, [])
 
+    useEffect(()=>{
+        if (dataFromRedux?.customerData?.length === 0) {
+            setNodata(true)
+        }
+        else {
+            setNodata(false)
+            setData(dataFromRedux.customerData)
+        }
+    },[dataFromRedux?.customerData?.length])
     const [currentCustomer, setcurrentCustomer] = useState(null)
 
     const [fname, setFname] = useState('')

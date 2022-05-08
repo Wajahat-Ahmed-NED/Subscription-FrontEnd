@@ -68,11 +68,19 @@ export default function UserUpdateProfile({ onClick }) {
     async function updateProfile(e) {
         e.preventDefault()
         if (!firstName || !lastName || !phone || !cnic) {
-            return Swal.fire(
-                'Incomplete Details',
-                'Please Enter All Details',
-                'error'
-            )
+            setError(true)
+            setData('Please Enter All Details')
+            return 
+        }
+        if (phone.length !== 11 ) {
+            setError(true)
+            setData('Phone number must be 11 characters long')
+            return 
+        }
+        if (cnic.length !== 13) {
+            setError(true)
+            setData('Cnic must be 11 characters long')
+            return 
         }
         const params = {
 
@@ -97,12 +105,12 @@ export default function UserUpdateProfile({ onClick }) {
                 .catch(function (error) {
                     setError(true)
                     setData(error?.response?.data?.message[0])
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Could Not Update Profile',
-                        text: 'Something went wrong!',
+                    // Swal.fire({
+                    //     icon: 'error',
+                    //     title: 'Could Not Update Profile',
+                    //     text: 'Something went wrong!',
 
-                    })
+                    // })
                 });
         })
 

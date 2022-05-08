@@ -162,7 +162,7 @@ export default function ContactPage() {
         let adminToken = localStorage.getItem("admin")
         !adminToken && history.push("/")
 
-        if (dataFromRedux.subscriptionData.length === 0) {
+        if (dataFromRedux?.subscriptionData?.length === 0) {
             setNodata(true)
         }
         else {
@@ -171,7 +171,15 @@ export default function ContactPage() {
         }
     }, [])
 
-
+    useEffect(()=>{
+        if (dataFromRedux?.subscriptionData?.length === 0) {
+            setNodata(true)
+        }
+        else {
+            setNodata(false)
+            setData(dataFromRedux.subscriptionData)
+        }
+    },[dataFromRedux?.subscriptionData?.length])
     const handleChangeRowsPerPage = (event) => {
         setRowsPerPage(+event.target.value);
         setPage(0);

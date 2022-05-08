@@ -170,6 +170,7 @@ export default function ContactPage() {
                 let adminToken = localStorage.getItem("admin")
                 apiHandle(adminToken).then(() => {
                     deleteUser(e).then(function (response) {
+                        setError(false)
 
                         Swal.fire(
                             'Success',
@@ -205,16 +206,51 @@ export default function ContactPage() {
     const handleSubmit = async (e) => {
 
         if (!email || !fname || !lname || !user || !password || !phone || !cnic) {
-            setOpen(false);
-            return Swal.fire(
-                'Incomplete Details',
-                'Please Enter All Details',
-                'error'
-            ).then(() => {
-                setOpen(true)
-            })
+            // setOpen(false);
+            // return Swal.fire(
+            //     'Incomplete Details',
+            //     'Please Enter All Details',
+            //     'error'
+            // ).then(() => {
+            //     setOpen(true)
+            // })
+            setError(true)
+            setErrorMsg('Please Enter All Details')
+            return
         }
-        setOpen(false);
+        if(phone.length !== 11 )
+        {
+            setError(true)
+            setErrorMsg('Phone Number must be 11 characters')
+            return 
+        }
+        if(cnic.length !==13 )
+        {
+            setError(true)
+            setErrorMsg('Cnic must be 13 characters')
+            return 
+        }
+        if(password.length <=8 )
+        {
+            setError(true)
+            setErrorMsg('Password must be greater than 8 characters')
+            return 
+        }
+        if (! /^[a-zA-Z]+$/.test(fname)) {
+            setError(true);
+            setErrorMsg('First name can only contains letter');
+            return
+        }
+        if (! /^[a-zA-Z]+$/.test(lname)) {
+            setError(true);
+            setErrorMsg('Last name can only contains letter');
+            return
+        }
+        if (! /^[a-zA-Z]+$/.test(user)) {
+            setError(true);
+            setErrorMsg('User name can only contains letters and numbers');
+            return
+        }
         let obj = {
             Email: email,
             FirstName: fname,
@@ -227,6 +263,7 @@ export default function ContactPage() {
         let adminToken = localStorage.getItem("admin")
         apiHandle(adminToken).then(() => {
             addUser(obj).then(function (response) {
+                setOpen(false);
                 setError(false)
                 setErrorMsg('')
                 Swal.fire(
@@ -239,11 +276,12 @@ export default function ContactPage() {
             }).catch(err => {
                 setError(true)
                 setErrorMsg(err?.response?.data?.message[0])
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Could Not Create User',
-                    text: 'Something went wrong!',
-                }).then(() => { setOpen(true) })
+                // Swal.fire({
+                //     icon: 'error',
+                //     title: 'Could Not Create User',
+                //     text: 'Something went wrong!',
+                // })
+                // .then(() => { setOpen(true) })
             })
         })
     }
@@ -293,7 +331,7 @@ export default function ContactPage() {
         let adminToken = localStorage.getItem("admin")
         !adminToken && history.push("/")
 
-        if (dataFromRedux.userData.length === 0) {
+        if (dataFromRedux?.userData?.length === 0) {
             setNodata(true)
         }
         else {
@@ -302,6 +340,15 @@ export default function ContactPage() {
         }
     }, [])
 
+    useEffect(() => {
+        if (dataFromRedux?.userData?.length === 0) {
+            setNodata(true)
+        }
+        else {
+            setNodata(false)
+            setData(dataFromRedux.userData)
+        }
+    }, [dataFromRedux?.userData?.length])
     const [fname, setFname] = useState('')
     const [lname, setLname] = useState('')
     const [email, setEmail] = useState('')
@@ -361,6 +408,8 @@ export default function ContactPage() {
             if (res.isConfirmed) {
                 apiHandle(adminToken).then(() => {
                     suspendUser(e).then((res) => {
+                setError(false)
+
                         Swal.fire(
                             'Success',
                             'user Suspended Successfully',
@@ -407,6 +456,8 @@ export default function ContactPage() {
             if (res.isConfirmed) {
                 apiHandle(adminToken).then(() => {
                     tempSuspendUser(e).then((res) => {
+                setError(false)
+
                         Swal.fire(
                             'Success',
                             'User Suspended Temporarily',
@@ -459,6 +510,8 @@ export default function ContactPage() {
             setLname('')
             setEmail('')
             setPhone('')
+            setError(false)
+
             Swal.fire(
                 'Success',
                 'User Edited Successfully',
@@ -739,7 +792,7 @@ export default function ContactPage() {
                                 <TableBody>
                                     {
 
-                                        data[0]?.map((e, i) => {
+                                        data?.[0]?.map((e, i) => {
                                             return (
                                                 <>
                                                     <TableRow hover={true}>

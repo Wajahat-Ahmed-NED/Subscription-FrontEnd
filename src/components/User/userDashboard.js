@@ -15,6 +15,7 @@ import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
 import ChevronRightIcon from '@material-ui/icons/ChevronRight';
 import InventoryIcon from '@mui/icons-material/Inventory';
 import SubscriptionsIcon from '@mui/icons-material/Subscriptions';
+import CreditCardIcon from '@mui/icons-material/CreditCard';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
@@ -37,6 +38,7 @@ import { getSubscription } from '../api/user/userSubscriptionApi';
 import { apiHandle } from '../api/api';
 import { useDispatch } from 'react-redux';
 import { api } from '../api/user/api';
+import UserBilling from './UserBilling';
 
 const drawerWidth = 240;
 
@@ -213,14 +215,14 @@ function UserDashboard() {
                     packageData: json.data.data[0]
                 })
 
-            }).catch((err) => console.log(err))
+            }).catch((err) => console.log(err?.response))
 
             getSubscription().then((json) => {
-
+                console.log(json?.data)
                 dispatch({
                     type: 'DATAFROMLOGIN',
-                    subscriptionData: json.data.data[0],
-                    billingData: json.data.data[1]
+                    subscriptionData: json?.data?.data[0],
+                    billingData: json?.data?.data[1][0]
                 })
 
             }).catch((err) => console.log(err))
@@ -320,6 +322,14 @@ function UserDashboard() {
                                 <ListItemText primary="Subscription Details" />
                             </ListItem>
                         </Link>
+                        <Link style={linkTextColor} to="/billing">
+                            <ListItem button>
+                                <ListItemIcon>
+                                    <CreditCardIcon />
+                                </ListItemIcon>
+                                <ListItemText primary="Billing Details" />
+                            </ListItem>
+                        </Link>
 
 
 
@@ -331,6 +341,7 @@ function UserDashboard() {
                         <Route path='/customer' component={UserCustomer}></Route>
                         <Route path='/package' component={UserPackage}></Route>
                         <Route path='/subscription' component={UserSubscription}></Route>
+                        <Route path='/billing' component={UserBilling}></Route>
                         <Route path='/login' component={Login}></Route>
                     </Switch>
 
