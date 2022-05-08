@@ -440,12 +440,12 @@ export default function UserBilling() {
             <TableHead>
               <TableRow>
 
-                <TableCell align="center" style={{ backgroundColor: 'darkcyan', color: 'white', fontSize: '20px' }}>PKBillID</TableCell>
-                <TableCell align="center" style={{ backgroundColor: 'darkcyan', color: 'white', fontSize: '20px' }}>FKSubscriptionID</TableCell>
-                <TableCell align="center" style={{ backgroundColor: 'darkcyan', color: 'white', fontSize: '20px' }}>Net Amount</TableCell>
-                <TableCell align="center" style={{ backgroundColor: 'darkcyan', color: 'white', fontSize: '20px' }}>Recieved Amount</TableCell>
-                <TableCell align="center" style={{ backgroundColor: 'darkcyan', color: 'white', fontSize: '20px' }}>Discount</TableCell>
-                <TableCell align="center" style={{ backgroundColor: 'darkcyan', color: 'white', fontSize: '20px' }}>Status</TableCell>
+                <TableCell style={{ backgroundColor: 'darkcyan', color: 'white', fontSize: '20px' }}>PKBillID</TableCell>
+                <TableCell style={{ backgroundColor: 'darkcyan', color: 'white', fontSize: '20px' }}>FKSubscriptionID</TableCell>
+                <TableCell style={{ backgroundColor: 'darkcyan', color: 'white', fontSize: '20px' }}>Net Amount</TableCell>
+                <TableCell style={{ backgroundColor: 'darkcyan', color: 'white', fontSize: '20px' }}>Recieved Amount</TableCell>
+                <TableCell style={{ backgroundColor: 'darkcyan', color: 'white', fontSize: '20px' }}>Discount</TableCell>
+                <TableCell style={{ backgroundColor: 'darkcyan', color: 'white', fontSize: '20px' }}>Status</TableCell>
                 <TableCell align="center" colSpan={2} style={{ backgroundColor: 'darkcyan', color: 'white', fontSize: '20px' }}>Action</TableCell>
 
 

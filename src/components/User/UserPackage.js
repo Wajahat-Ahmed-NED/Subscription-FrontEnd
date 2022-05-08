@@ -336,6 +336,18 @@ export default function UserPackage() {
             //     setOpen(true)
             // })
         }
+        if( packageCost <= 0)
+        {
+            setError(true);
+            setErrorMsg('Package Cost should be greater than zero');
+            return
+        }
+        if( period <= 0)
+        {
+            setError(true);
+            setErrorMsg('Subscripton period should be greater than zero');
+            return
+        }
         if (! /^[a-zA-Z]+$/.test(packageName)) {
             setError(true);
             setErrorMsg('Package name can only contains letter');
@@ -836,10 +848,10 @@ export default function UserPackage() {
                         <TableHead>
                             <TableRow>
 
-                                <TableCell align="center" style={{ backgroundColor: 'darkcyan', color: 'white', fontSize: '20px' }}>PKPackageID</TableCell>
-                                <TableCell align="center" style={{ backgroundColor: 'darkcyan', color: 'white', fontSize: '20px' }}>Package Name</TableCell>
-                                <TableCell align="center" style={{ backgroundColor: 'darkcyan', color: 'white', fontSize: '20px' }}>Package Cost</TableCell>
-                                <TableCell align="center" style={{ backgroundColor: 'darkcyan', color: 'white', fontSize: '20px' }}>Subscription Period</TableCell>
+                                <TableCell style={{ backgroundColor: 'darkcyan', color: 'white', fontSize: '20px' }}>PKPackageID</TableCell>
+                                <TableCell style={{ backgroundColor: 'darkcyan', color: 'white', fontSize: '20px' }}>Package Name</TableCell>
+                                <TableCell style={{ backgroundColor: 'darkcyan', color: 'white', fontSize: '20px' }}>Package Cost</TableCell>
+                                <TableCell style={{ backgroundColor: 'darkcyan', color: 'white', fontSize: '20px' }}>Subscription Period</TableCell>
                                 <TableCell align="center" colSpan={4} style={{ backgroundColor: 'darkcyan', color: 'white', fontSize: '20px' }}>Action</TableCell>
 
 
