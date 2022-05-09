@@ -155,6 +155,12 @@ export default function UserCustomer() {
             setErrorMsg('Phone number must be 11 character long')
             return
         }
+        if (phone < 0) {
+            setError(true)
+            setErrorMsg('Phone Number cannot be negative')
+            return
+        }
+
         let obj = {
             PhoneNumber: phone
         }
@@ -185,6 +191,16 @@ export default function UserCustomer() {
         if (phone.length != 11) {
             setError(true)
             setErrorMsg('Phone number must be 11 character long')
+            return
+        }
+        if (phone < 0) {
+            setError(true)
+            setErrorMsg('Phone Number cannot be negative')
+            return
+        }
+        if (cnic < 0) {
+            setError(true)
+            setErrorMsg('Cnic cannot be negative')
             return
         }
         if (cnic.length != 13) {

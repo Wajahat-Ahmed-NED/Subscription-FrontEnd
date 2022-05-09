@@ -222,10 +222,19 @@ export default function ContactPage() {
             setError(true)
             setErrorMsg('Phone Number must be 11 characters')
             return
+        } if (phone < 0) {
+            setError(true)
+            setErrorMsg('Phone Number cannot be negative')
+            return
         }
         if (cnic.length !== 13) {
             setError(true)
             setErrorMsg('Cnic must be 13 characters')
+            return
+        }
+        if (cnic < 0) {
+            setError(true)
+            setErrorMsg('Cnic cannot be negative')
             return
         }
         if (password.length <= 8) {
