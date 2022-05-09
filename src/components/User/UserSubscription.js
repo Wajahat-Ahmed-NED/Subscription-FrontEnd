@@ -225,7 +225,7 @@ export default function UserSubscription() {
         }
     }, [])
 
-    useEffect(()=>{
+    useEffect(() => {
         if (dataFromRedux?.subscriptionData?.length === 0) {
             setNodata(true)
         }
@@ -234,7 +234,7 @@ export default function UserSubscription() {
             setData(dataFromRedux.subscriptionData)
             setBillData(dataFromRedux.billingData)
         }
-    },[dataFromRedux?.subscriptionData?.length])
+    }, [dataFromRedux?.subscriptionData?.length])
     const [errorMsg, setErrorMsg] = useState('')
 
     const [PackageId, setPackageId] = useState('')
@@ -271,13 +271,23 @@ export default function UserSubscription() {
             }
             billGeneration(obj).then((res) => {
                 setError(false)
+                console.log(res)
+                if (res.data === "Bill already exists") {
+                    Swal.fire(
+                        'Alert!',
+                        'Bill Already Generated',
+                        'warning',
+                    )
+                }
+                else {
 
-                Swal.fire(
-                    'Success',
-                    'Bill Generated Successfully',
-                    'success',
-                )
-        getData();
+                    Swal.fire(
+                        'Success',
+                        'Bill Generated Successfully',
+                        'success',
+                    )
+                }
+                getData();
 
             }).catch(err => {
                 console.log(err?.response)
@@ -289,7 +299,7 @@ export default function UserSubscription() {
             })
         })
     }
-
+    console.log("bill data here", billdata)
     const handleUpdateBill = async () => {
         if (!amount) {
             handleSubModalClose()
@@ -311,7 +321,7 @@ export default function UserSubscription() {
                 setAmount(0)
                 handleSubModalClose()
                 if (res?.data?.message) {
-                setError(false)
+                    setError(false)
 
                     Swal.fire(
                         'Already Paid',
@@ -519,15 +529,14 @@ export default function UserSubscription() {
                         </DialogActions>
                     </Dialog>
                 </div>
-                <TableContainer className={classes.container} size='small' style={{ maxHeight: '670px' }}>
+                <TableContainer className={classes.container} size='small' >
                     <Table stickyHeader aria-label="sticky table" size='small' >
                         <TableHead>
                             <TableRow>
 
-                                <TableCell  style={{ backgroundColor: 'darkcyan', color: 'white', fontSize: '20px' }}>PKSubscriptionID</TableCell>
-                                <TableCell  style={{ backgroundColor: 'darkcyan', color: 'white', fontSize: '20px' }}>Customer</TableCell>
+                                <TableCell style={{ backgroundColor: 'darkcyan', color: 'white', fontSize: '20px' }}>PKSubscriptionID</TableCell>
+                                <TableCell style={{ backgroundColor: 'darkcyan', color: 'white', fontSize: '20px' }}>Customer</TableCell>
                                 <TableCell style={{ backgroundColor: 'darkcyan', color: 'white', fontSize: '20px' }}>Package</TableCell>
-                                <TableCell style={{ backgroundColor: 'darkcyan', color: 'white', fontSize: '20px' }}>Status</TableCell>
                                 <TableCell align="center" colSpan={2} style={{ backgroundColor: 'darkcyan', color: 'white', fontSize: '20px' }}>Action</TableCell>
 
 
@@ -547,16 +556,15 @@ export default function UserSubscription() {
                                             <>
                                                 <TableRow hover={true}>
                                                     <TableCell>{e?.PKSubscriptionId}</TableCell>
-                                                    <TableCell>{e?.customer.FirstName +" " + e?.customer.LastName}</TableCell>
+                                                    <TableCell>{e?.customer.FirstName + " " + e?.customer.LastName}</TableCell>
                                                     <TableCell>{e?.package.PackageName}</TableCell>
-                                                    <TableCell>{(billdata.filter((f)=>{return f.FKSubscriptionId === e?.PKSubscriptionId}))[0]?.PaymentStatus}</TableCell>
                                                     <TableCell style={{ textAlign: 'left' }}>
                                                         <Tooltip title="Edit" onClick={() => handleEdit(e)}>
                                                             <IconButton><EditIcon color="success" fontSize="medium" />
                                                             </IconButton></Tooltip>
                                                     </TableCell>
                                                     <TableCell>
-                                                        {(billdata.filter((f)=>{return f.FKSubscriptionId === e?.PKSubscriptionId})).length > 0 ?<Typography style={{ width: 'max-content', color:"green" }}>Bill Generated </Typography>: <Button variant="outlined" onClick={() => generateBill(e)}>Generate Bill</Button>  }
+                                                        <Button variant="outlined" onClick={() => generateBill(e)}>Generate Bill</Button>
                                                         {/* <Button variant="outlined" onClick={() => updateBill(e)}>Update Bill</Button> */}
                                                     </TableCell>
                                                 </TableRow>

@@ -42,8 +42,8 @@ const style = {
   bgcolor: 'background.paper',
   boxShadow: 24,
   pb: 4,
-    pl:2,
-    pr:2
+  pl: 2,
+  pr: 2
 };
 
 const useStyles = makeStyles((theme) => ({
@@ -310,7 +310,7 @@ export default function UserBilling() {
         //   handleSubModalOpen()
         // })
         setError(true)
-        setErrorMsg( err?.response?.data?.message?.[0])
+        setErrorMsg(err?.response?.data?.message?.[0])
       })
     })
   }
@@ -390,8 +390,8 @@ export default function UserBilling() {
       >
 
         <Box sx={style}>
-        {
-            error && <Alert variant="danger" style={{"marginTop":4}} onClose={() => setError(false)} dismissible>
+          {
+            error && <Alert variant="danger" style={{ "marginTop": 4 }} onClose={() => setError(false)} dismissible>
               <p className="text-center" style={{ fontWeight: 'bold' }}>{errorMsg}</p>
             </Alert>
           }
@@ -435,7 +435,7 @@ export default function UserBilling() {
           <CircularProgress color="inherit" />
         </Backdrop>
 
-        <TableContainer className={classes.container} size='small' style={{ maxHeight: '670px' }}>
+        <TableContainer className={classes.container} size='small'  >
           <Table stickyHeader aria-label="sticky table" size='small' >
             <TableHead>
               <TableRow>

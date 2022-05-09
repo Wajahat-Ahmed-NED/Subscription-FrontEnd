@@ -266,7 +266,7 @@ export default function UserPackage() {
                             subscriptionData: json?.data?.data[0],
                             billingData: json?.data?.data[1][0]
                         })
-    
+
                     })
                 }).catch(err => {
                     console.log(err?.response)
@@ -345,14 +345,12 @@ export default function UserPackage() {
             //     setOpen(true)
             // })
         }
-        if( packageCost <= 0)
-        {
+        if (packageCost <= 0) {
             setError(true);
             setErrorMsg('Package Cost should be greater than zero');
             return
         }
-        if( period <= 0)
-        {
+        if (period <= 0) {
             setError(true);
             setErrorMsg('Subscripton period should be greater than zero');
             return
@@ -852,7 +850,7 @@ export default function UserPackage() {
                         </DialogActions>
                     </Dialog>
                 </div>
-                <TableContainer className={classes.container} size='small' style={{ maxHeight: '670px' }}>
+                <TableContainer className={classes.container} size='small' >
                     <Table stickyHeader aria-label="sticky table" size='small' >
                         <TableHead>
                             <TableRow>

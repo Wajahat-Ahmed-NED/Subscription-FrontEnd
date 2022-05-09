@@ -218,23 +218,20 @@ export default function ContactPage() {
             setErrorMsg('Please Enter All Details')
             return
         }
-        if(phone.length !== 11 )
-        {
+        if (phone.length !== 11) {
             setError(true)
             setErrorMsg('Phone Number must be 11 characters')
-            return 
+            return
         }
-        if(cnic.length !==13 )
-        {
+        if (cnic.length !== 13) {
             setError(true)
             setErrorMsg('Cnic must be 13 characters')
-            return 
+            return
         }
-        if(password.length <=8 )
-        {
+        if (password.length <= 8) {
             setError(true)
             setErrorMsg('Password must be greater than 8 characters')
-            return 
+            return
         }
         if (! /^[a-zA-Z]+$/.test(fname)) {
             setError(true);
@@ -408,7 +405,7 @@ export default function ContactPage() {
             if (res.isConfirmed) {
                 apiHandle(adminToken).then(() => {
                     suspendUser(e).then((res) => {
-                setError(false)
+                        setError(false)
 
                         Swal.fire(
                             'Success',
@@ -456,7 +453,7 @@ export default function ContactPage() {
             if (res.isConfirmed) {
                 apiHandle(adminToken).then(() => {
                     tempSuspendUser(e).then((res) => {
-                setError(false)
+                        setError(false)
 
                         Swal.fire(
                             'Success',
@@ -765,13 +762,13 @@ export default function ContactPage() {
                         </DialogActions>
                     </Dialog>
                 </div>
-                <TableContainer className={classes.container} style={{ maxHeight: '670px' }}>
+                <TableContainer className={classes.container}  >
                     <Table stickyHeader aria-label="sticky table" size='small' >
                         <TableHead >
                             <TableRow >
 
-                                <TableCell  style={{ backgroundColor: 'darkcyan', color: 'white', fontSize: '20px' }}>PKUserID</TableCell>
-                                <TableCell  style={{ backgroundColor: 'darkcyan', color: 'white', fontSize: '20px' }}>UserName</TableCell>
+                                <TableCell style={{ backgroundColor: 'darkcyan', color: 'white', fontSize: '20px' }}>PKUserID</TableCell>
+                                <TableCell style={{ backgroundColor: 'darkcyan', color: 'white', fontSize: '20px' }}>UserName</TableCell>
                                 <TableCell align='center' style={{ backgroundColor: 'darkcyan', color: 'white', fontSize: '20px' }}>Name</TableCell>
                                 <TableCell align='center' style={{ backgroundColor: 'darkcyan', color: 'white', fontSize: '20px' }}>Email</TableCell>
                                 <TableCell align='center' style={{ backgroundColor: 'darkcyan', color: 'white', fontSize: '20px' }}>PhoneNumber</TableCell>

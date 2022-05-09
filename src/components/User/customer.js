@@ -672,7 +672,7 @@ export default function UserCustomer() {
                         </DialogActions>
                     </Dialog>
                 </div>
-                <TableContainer className={classes.container} size='small' style={{ maxHeight: '670px' }}>
+                <TableContainer className={classes.container} size='small'  >
                     <Table stickyHeader aria-label="sticky table" size='small' >
                         <TableHead>
                             <TableRow>

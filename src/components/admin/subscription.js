@@ -171,7 +171,7 @@ export default function ContactPage() {
         }
     }, [])
 
-    useEffect(()=>{
+    useEffect(() => {
         if (dataFromRedux?.subscriptionData?.length === 0) {
             setNodata(true)
         }
@@ -179,7 +179,7 @@ export default function ContactPage() {
             setNodata(false)
             setData(dataFromRedux.subscriptionData)
         }
-    },[dataFromRedux?.subscriptionData?.length])
+    }, [dataFromRedux?.subscriptionData?.length])
     const handleChangeRowsPerPage = (event) => {
         setRowsPerPage(+event.target.value);
         setPage(0);
@@ -264,15 +264,15 @@ export default function ContactPage() {
                     <CircularProgress color="inherit" />
                 </Backdrop>
 
-                <TableContainer className={classes.container} size='small' style={{ maxHeight: '670px' }}>
+                <TableContainer className={classes.container} size='small'  >
                     <Table stickyHeader aria-label="sticky table" size='small' >
                         <TableHead>
                             <TableRow>
 
-                                <TableCell style={{ backgroundColor: 'darkcyan', color: 'white', fontSize: '20px' }}>PKSubscriptionID</TableCell>
-                                <TableCell style={{ backgroundColor: 'darkcyan', color: 'white', fontSize: '20px' }}>Customer Name</TableCell>
-                                <TableCell style={{ backgroundColor: 'darkcyan', color: 'white', fontSize: '20px' }}>Package Name</TableCell>
-                                <TableCell style={{ backgroundColor: 'darkcyan', color: 'white', fontSize: '20px' }}>Action</TableCell>
+                                <TableCell style={{ textTransform: "capitalize", backgroundColor: 'darkcyan', color: 'white', fontSize: '20px' }}>PKSubscriptionID</TableCell>
+                                <TableCell style={{ textTransform: "capitalize", backgroundColor: 'darkcyan', color: 'white', fontSize: '20px' }}>Customer Name</TableCell>
+                                <TableCell style={{ textTransform: "capitalize", backgroundColor: 'darkcyan', color: 'white', fontSize: '20px' }}>Package Name</TableCell>
+                                <TableCell style={{ textTransform: "capitalize", backgroundColor: 'darkcyan', color: 'white', fontSize: '20px' }}>Action</TableCell>
 
 
                             </TableRow>
@@ -280,7 +280,7 @@ export default function ContactPage() {
                         {
                             nodata ? <TableBody>
                                 <TableRow>
-                                    <TableCell colSpan={7} align="center"><Typography> No data in table yet </Typography></TableCell>
+                                    <TableCell style={{ textTransform: "capitalize" }} colSpan={7} align="center"><Typography> No data in table yet </Typography></TableCell>
 
                                 </TableRow>
                             </TableBody> : <TableBody>
@@ -290,10 +290,10 @@ export default function ContactPage() {
                                         return (
                                             <>
                                                 <TableRow hover={true}>
-                                                    <TableCell>{e.PKSubscriptionId}</TableCell>
-                                                    <TableCell>{e.FKCustomerId}</TableCell>
-                                                    <TableCell>{e.FKPackageId}</TableCell>
-                                                    <TableCell><Button variant="outlined" onClick={() => getDetails(e)}>Details</Button></TableCell>
+                                                    <TableCell style={{ textTransform: "capitalize" }}>{e.PKSubscriptionId}</TableCell>
+                                                    <TableCell style={{ textTransform: "capitalize" }} >{e.customer.FirstName + " " + e.customer.LastName}</TableCell>
+                                                    <TableCell style={{ textTransform: "capitalize" }} >{e.package.PackageName}</TableCell>
+                                                    <TableCell style={{ textTransform: "capitalize" }}><Button variant="outlined" onClick={() => getDetails(e)}>Details</Button></TableCell>
                                                 </TableRow>
 
                                             </>

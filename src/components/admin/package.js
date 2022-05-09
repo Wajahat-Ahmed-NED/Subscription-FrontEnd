@@ -178,7 +178,7 @@ export default function ContactPage() {
         }
     }, [])
 
-    useEffect(()=>{
+    useEffect(() => {
         if (dataFromRedux?.packageData?.length === 0) {
             setNodata(true)
         }
@@ -186,7 +186,7 @@ export default function ContactPage() {
             setNodata(false)
             setData(dataFromRedux.packageData)
         }
-    },[dataFromRedux?.packageData?.length])
+    }, [dataFromRedux?.packageData?.length])
     const [fname, setFname] = useState('')
     const [lname, setLname] = useState('')
     const [email, setEmail] = useState('')
@@ -313,7 +313,7 @@ export default function ContactPage() {
                     <CircularProgress color="inherit" />
                 </Backdrop>
 
-                <TableContainer className={classes.container} size='small' style={{ maxHeight: '670px' }}>
+                <TableContainer className={classes.container} size='small'  >
                     <Table stickyHeader aria-label="sticky table" size='small' >
                         <TableHead>
                             <TableRow>
