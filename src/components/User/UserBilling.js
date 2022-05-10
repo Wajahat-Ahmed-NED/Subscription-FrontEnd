@@ -184,7 +184,7 @@ export default function UserBilling() {
   const getDataBySubs = async () => {
     let adminToken = localStorage.getItem('admin')
     apiHandle(adminToken).then(() => {
-      getBillBySubscriptionId(pkgId).then(json => {
+      getBillBySubscriptionId(subsId).then(json => {
         if (json.data.message[0] == "No subscription of current user packages found" || json.data.message[0] == "No bills of current subscription found" || json?.data?.data?.length === 0) {
           setNodata(true)
 
@@ -244,14 +244,30 @@ export default function UserBilling() {
   const [CustomerId, setCustomerId] = useState('')
   const [EditModal, setEditModal] = useState(false)
   const [id, setId] = useState(0)
-  const [pkgId, setPkgId] = React.useState(null);
+  const [subsId, setSubsId] = React.useState(null);
 
   const handleChangeRowsPerPage = (event) => {
     setRowsPerPage(+event.target.value);
     setPage(0);
   };
 
+  useEffect(()=>{
+    if(dataFromRedux.subsId)
+    {
+      setSubsId(dataFromRedux.subsId)
+    }
+  },[])
 
+  useEffect(()=>{
+    if(dataFromRedux.subsId && subsId !== null)
+    {
+      getDataBySubs();
+      dispatch({
+        type: "UPDATESUBSCRIPTIONID",
+        subsId: undefined
+    })
+    }
+  },[subsId])
 
   const updateBill = async (e) => {
     setBillId(e?.PKBillId);
@@ -372,7 +388,7 @@ export default function UserBilling() {
           <Grid container >
             <Grid item xs={7}>
               <input className="me-2" placeholder='Bill by Subscription ID' type='number' style={{ height: '33px', outline: 'none', width: "215px" }}
-                onChange={(e) => setPkgId(e.target.value)} />
+                onChange={(e) => setSubsId(e.target.value)} />
             </Grid>
             <Grid item xs={5}>
               <Button className="ms-4 me-0" onClick={() => getDataBySubs()} size='sm' style={{ backgroundColor: 'darkCyan', fontSize: "bolder" }} variant="contained">Search </Button>

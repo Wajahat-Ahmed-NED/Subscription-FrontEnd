@@ -48,6 +48,15 @@ const reducer = (state = INITIAL_STATE, action) => {
         // console.log("Now actual state is", state)
         return { ...state }
     }
+    else if (action.type === "UPDATESUBSCRIPTIONID") {
+
+        // console.log('action in reducer', action)
+        state.subsId = action.subsId;
+
+        // console.log({ ...state, ...action })
+        // console.log("Now actual state is", state)
+        return { ...state }
+    }
 
     return state;
 };

@@ -20,6 +20,7 @@ import CircularProgress from '@material-ui/core/CircularProgress';
 import Grid from '@material-ui/core/Grid';
 import TextField from '@material-ui/core/TextField';
 import { useDispatch, useSelector } from 'react-redux';
+import { useHistory } from "react-router-dom";
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
@@ -28,7 +29,6 @@ import Swal from 'sweetalert2';
 import EditIcon from '@mui/icons-material/Edit';
 import Tooltip from '@mui/material/Tooltip';
 import Alert from 'react-bootstrap/Alert';
-
 import { apiHandle } from '../api/api';
 import { billUpdation, getSubscription, getSubscriptionByPkgId, updateSubscription } from '../api/user/userSubscriptionApi';
 import { billGeneration } from '../api/user/userBillingApi';
@@ -86,6 +86,7 @@ const DialogTitle = withStyles(styles)((props) => {
 });
 
 
+
 const DialogContent = withStyles((theme) => ({
     root: {
         padding: theme.spacing(2),
@@ -117,6 +118,8 @@ export default function UserSubscription() {
     const [open, setOpen] = React.useState(false);
     const [accessToken, setAccessToken] = React.useState('');
     const [submodalOpen, setSubModalOpen] = React.useState(false);
+const history = useHistory()
+
     const handleSubModalOpen = () => setSubModalOpen(true);
     const handleSubModalClose = () => setSubModalOpen(false);
     const handleClose = () => {
@@ -299,7 +302,14 @@ export default function UserSubscription() {
             })
         })
     }
-    console.log("bill data here", billdata)
+
+    const viewBill = async (e) =>{
+        dispatch({
+            type: "UPDATESUBSCRIPTIONID",
+            subsId: e?.PKSubscriptionId
+        })
+        history.push("/billing")
+    }
     const handleUpdateBill = async () => {
         if (!amount) {
             handleSubModalClose()
@@ -522,7 +532,6 @@ export default function UserSubscription() {
                         <DialogActions className='mx-4 mb-2'>
                             <Button fullWidth onClick={!EditModal ? (e) => { handleSubmit(e) } : (e) => { handleEditSubmit(e) }} variant="contained" style={{ backgroundColor: "darkcyan" }}>
                                 {
-
                                     !EditModal ? 'Create Subscription' : 'Edit Subscription Details'
                                 }
                             </Button>
@@ -537,7 +546,7 @@ export default function UserSubscription() {
                                 <TableCell style={{ backgroundColor: 'darkcyan', color: 'white', fontSize: '20px' }}>PKSubscriptionID</TableCell>
                                 <TableCell style={{ backgroundColor: 'darkcyan', color: 'white', fontSize: '20px' }}>Customer</TableCell>
                                 <TableCell style={{ backgroundColor: 'darkcyan', color: 'white', fontSize: '20px' }}>Package</TableCell>
-                                <TableCell align="center" colSpan={2} style={{ backgroundColor: 'darkcyan', color: 'white', fontSize: '20px' }}>Action</TableCell>
+                                <TableCell align="center" colSpan={3} style={{ backgroundColor: 'darkcyan', color: 'white', fontSize: '20px' }}>Action</TableCell>
 
 
 
@@ -546,7 +555,7 @@ export default function UserSubscription() {
                         {
                             nodata ? <TableBody>
                                 <TableRow>
-                                    <TableCell colSpan={5} align="center"><Typography> No data in table yet </Typography></TableCell>
+                                    <TableCell colSpan={6} align="center"><Typography> No data in table yet </Typography></TableCell>
 
                                 </TableRow>
                             </TableBody> : <TableBody>
@@ -565,6 +574,10 @@ export default function UserSubscription() {
                                                     </TableCell>
                                                     <TableCell>
                                                         <Button variant="outlined" onClick={() => generateBill(e)}>Generate Bill</Button>
+                                                        {/* <Button variant="outlined" onClick={() => updateBill(e)}>Update Bill</Button> */}
+                                                    </TableCell>
+                                                    <TableCell>
+                                                        <Button variant="outlined" onClick={() => viewBill(e)}>View Billing Info</Button>
                                                         {/* <Button variant="outlined" onClick={() => updateBill(e)}>Update Bill</Button> */}
                                                     </TableCell>
                                                 </TableRow>
