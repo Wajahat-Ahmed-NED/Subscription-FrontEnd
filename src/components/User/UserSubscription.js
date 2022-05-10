@@ -56,7 +56,7 @@ const useStyles = makeStyles((theme) => ({
     },
     container: {
         maxHeight: 500,
-        // borderRadius: 20,
+
     },
 }));
 const styles = (theme) => ({
@@ -118,7 +118,7 @@ export default function UserSubscription() {
     const [open, setOpen] = React.useState(false);
     const [accessToken, setAccessToken] = React.useState('');
     const [submodalOpen, setSubModalOpen] = React.useState(false);
-const history = useHistory()
+    const history = useHistory()
 
     const handleSubModalOpen = () => setSubModalOpen(true);
     const handleSubModalClose = () => setSubModalOpen(false);
@@ -303,7 +303,7 @@ const history = useHistory()
         })
     }
 
-    const viewBill = async (e) =>{
+    const viewBill = async (e) => {
         dispatch({
             type: "UPDATESUBSCRIPTIONID",
             subsId: e?.PKSubscriptionId
@@ -366,14 +366,7 @@ const history = useHistory()
             setError(true)
             setErrorMsg('Please Enter Package Id')
             return
-            // setOpen(false);
-            // return Swal.fire(
-            //     'Incomplete Details',
-            //     'Please Enter Package Id',
-            //     'error'
-            // ).then(() => {
-            //     setOpen(true)
-            // })
+
         }
         let obj = {
             FKPackageId: PackageId,
@@ -400,17 +393,7 @@ const history = useHistory()
                 setError(true)
                 setErrorMsg(err?.response?.data?.message[0])
                 return
-                // setOpen(false);
-                // Swal.fire({
-                //     icon: 'error',
-                //     title: 'Could Not Edit Subscription',
-                //     text: err?.response?.data?.message[0],
 
-                // }).then((e) => {
-
-                //     setOpen(true);
-
-                // })
             })
 
         })

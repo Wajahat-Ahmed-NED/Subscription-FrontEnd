@@ -64,7 +64,6 @@ const useStyles = makeStyles((theme) => ({
     },
     container: {
         maxHeight: 500,
-        // borderRadius: 20,
     },
 }));
 const styles = (theme) => ({
@@ -174,18 +173,10 @@ export default function UserPackage() {
 
     const getOtp = async () => {
         if (!phone) {
-            // setSubModalOpen(false)
             setError(true)
             setErrorMsg('Please Enter Phone Number')
             return
-            // return Swal.fire(
-            //     'Incomplete Details',
-            //     'Please Enter Phone Number',
-            //     'error'
-            // ).then(() => {
-            //     setSubModalOpen(true)
 
-            // })
         }
         if (phone.length !== 11) {
             setError(true)
@@ -210,15 +201,10 @@ export default function UserPackage() {
                     setSubModalOpen(true)
                 })
             }).catch(err => {
-                // setSubModalOpen(false)
                 setDisplayStyle("none")
                 console.log(err?.response)
                 if (err?.response?.data?.message?.[0] === "Subscription already exists") {
-                    // Swal.fire(
-                    //     'Already Subscribed',
-                    //     'Subscription Already Exists',
-                    //     'error',
-                    // )
+
                     setError(true)
                     setErrorMsg('Subscription Already Exists')
                     return
@@ -228,16 +214,6 @@ export default function UserPackage() {
                     setErrorMsg('Invalid Phone Number')
                     return
                 }
-                //     Swal.fire(
-                //         'Cannot Send Otp',
-                //         'Invalid Phone Number or Something Went Wrong',
-                //         'error',
-                //     ).then(() => {
-                //         setSubModalOpen(true)
-                //     })
-                // }
-
-                // setSubModalOpen(true)
             })
         })
     }
@@ -325,7 +301,6 @@ export default function UserPackage() {
                     ).then(() => {
                         setSubModalOpen(true)
                     })
-                    // setSubModalOpen(true)
                 })
         })
     }
@@ -333,17 +308,10 @@ export default function UserPackage() {
     const handleSubmit = async (e) => {
         e.preventDefault()
         if (!packageName || !packageCost || !period) {
-            // setOpen(false);
             setError(true);
             setErrorMsg('Please Enter All Details');
             return
-            // return Swal.fire(
-            //     'Incomplete Details',
-            //     'Please Enter All Details',
-            //     'error'
-            // ).then(() => {
-            //     setOpen(true)
-            // })
+
         }
         if (packageCost <= 0) {
             setError(true);
@@ -377,20 +345,11 @@ export default function UserPackage() {
                     'Package Created Successfully',
                     'success',
                 )
-                // setOpen(false);
                 getData();
             }).catch(err => {
-                // setOpen(false);
                 setError(true)
                 setErrorMsg(err?.response?.data?.message[0])
-                // Swal.fire({
-                //     icon: 'error',
-                //     title: 'Could Not Create Package',
-                //     text: 'Something went wrong!',
 
-                // }).then((e) => {
-                //     setOpen(true);
-                // })
             })
         })
 
@@ -554,17 +513,11 @@ export default function UserPackage() {
     }
     const handleEditSubmit = async (e) => {
         if (!packageName || !packageCost || !period) {
-            // setOpen(false);
+
             setError(true);
             setErrorMsg('Please Enter All Details');
             return
-            // return Swal.fire(
-            //     'Incomplete Details',
-            //     'Please Enter All Details',
-            //     'error'
-            // ).then(() => {
-            //     setOpen(true)
-            // })
+
         }
         if (! /^[a-zA-Z]+$/.test(packageName)) {
             setError(true);
@@ -599,21 +552,10 @@ export default function UserPackage() {
                 })
                 getData();
             }).catch(err => {
-                // setOpen(false);
                 setError(true)
                 setErrorMsg(err?.response?.data?.message?.[0])
                 return
-                // console.log(err?.response)
-                // Swal.fire({
-                //     icon: 'error',
-                //     title: 'Could Not Edit Package',
-                //     text: 'Something went wrong!',
 
-                // }).then((e) => {
-
-                //     setOpen(true);
-
-                // })
             })
         })
 
